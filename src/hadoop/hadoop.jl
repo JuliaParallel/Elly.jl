@@ -3,6 +3,7 @@ module hadoop
     include("ProtobufRpcEngine_pb.jl")
     include("RpcHeader_pb.jl")
     include("Security_pb.jl")
+    include("IpcConnectionContext_pb.jl")
   end
   module hdfs
     include("hdfs_pb.jl")

@@ -26,7 +26,7 @@ HADOOP_MR_PROTO=${HADOOP_SRC}/hadoop-mapreduce-project/hadoop-mapreduce-client/h
 PROTOC_INCLUDES="-I=${HADOOP_COMMON_PROTO} -I=${HADOOP_HDFS_PROTO} -I=${HADOOP_MR_PROTO}"
 
 PROTO_FILES=
-for proto_file in ProtobufRpcEngine RpcHeader Security
+for proto_file in ProtobufRpcEngine RpcHeader Security IpcConnectionContext
 do
     PROTO_FILES="${PROTO_FILES} ${HADOOP_COMMON_PROTO}/${proto_file}.proto"
 done
