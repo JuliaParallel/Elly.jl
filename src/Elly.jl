@@ -3,10 +3,13 @@ module Elly
 using Compat
 using ProtoBuf
 
-import Base: connect, readdir, show
+import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, convert
 import ProtoBuf: write_bytes, read_bytes, call_method
 
-export HDFSClient, readdir, show
+export HDFSClient, readdir, show, convert,
+        hdfs_server_defaults, hdfs_default_block_size, hdfs_default_replication,
+        hdfs_status, hdfs_capacity, hdfs_capacity_used, hdfs_capacity_remaining,
+        isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists
 
 # enable logging only during debugging
 using Logging
@@ -22,6 +25,5 @@ using Elly.hadoop.hdfs
 
 include("rpc.jl")
 include("api.jl")
-# package code goes here
 
 end # module
