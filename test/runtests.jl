@@ -22,3 +22,21 @@ for k in keys(fs_status)
     println("\t$k => $(fs_status[k])")
 end
 @test hdfs_capacity(clnt) > 0
+
+println("/tmp should be a directory")
+@test isdir(clnt, "/tmp")
+
+println("du should be > 0")
+@test du(clnt, "/") > 0
+
+println("stat /tmp")
+st = stat(clnt, "/tmp")
+println(st)
+@test st.name == "/tmp"
+
+println("blocks for /tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
+blocks = hdfs_blocks(clnt, "/tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
+println(blocks)
+
+println("setting replication factor for /tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
+@test hdfs_set_replication(clnt, "/tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary", 2)

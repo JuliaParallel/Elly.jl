@@ -3,13 +3,15 @@ module Elly
 using Compat
 using ProtoBuf
 
-import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, convert
+import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, mv, rm
 import ProtoBuf: write_bytes, read_bytes, call_method
 
-export HDFSClient, readdir, show, convert,
+export HDFSClient, HDFSFileInfo, readdir, show, convert,
         hdfs_server_defaults, hdfs_default_block_size, hdfs_default_replication,
         hdfs_status, hdfs_capacity, hdfs_capacity_used, hdfs_capacity_remaining,
-        isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists
+        isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists,
+        mkdir, mv, rm,
+        hdfs_blocks, hdfs_set_replication
 
 # enable logging only during debugging
 using Logging

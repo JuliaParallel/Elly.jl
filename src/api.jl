@@ -1,8 +1,4 @@
 
-type NameNode
-    
-end
-
 type HDFSException <: Exception
     message::AbstractString
 end
@@ -87,8 +83,11 @@ function _walkdir(client::HDFSClient, path::AbstractString, process_entry::Funct
             else
                 cont = false
             end
+        else
+            cont = false
         end
     end
+    nothing
 end
 
 function _get_file_info(client::HDFSClient, path::AbstractString)
@@ -96,6 +95,16 @@ function _get_file_info(client::HDFSClient, path::AbstractString)
     set_field(inp, :src, path)
     resp = getFileInfo(client.stub, client.controller, inp)
     isfilled(resp, :fs) ? Nullable{HdfsFileStatusProto}(resp.fs) : Nullable{HdfsFileStatusProto}()
+end
+
+function _get_block_locations(client::HDFSClient, path::AbstractString, offset::UInt64=uint64(0), length::UInt64=uint64(0))
+    (length == uint64(0)) && (length = uint64(1024))
+    inp = GetBlockLocationsRequestProto()
+    set_field(inp, :src, path)
+    set_field(inp, :offset, offset)
+    set_field(inp, :length, length)
+    resp = getBlockLocations(client.stub, client.controller, inp)
+    isfilled(resp, :locations) ? Nullable{LocatedBlocksProto}(resp.locations) : Nullable{LocatedBlocksProto}()
 end
 
 #
@@ -125,7 +134,9 @@ hdfs_capacity_remaining(client::HDFSClient) = _get_fs_status(client).remaining
 function stat(client::HDFSClient, path::AbstractString)
     fileinfo = _get_file_info(client, path)
     isnull(fileinfo) && throw(HDFSException("Path not found $path"))
-    HDFSFileInfo(get(fileinfo))
+    hdfs_file_info = HDFSFileInfo(get(fileinfo))
+    hdfs_file_info.name = path
+    hdfs_file_info
 end
 
 exists(client::HDFSClient, path::AbstractString) = !isnull(_get_file_info(client, path))
@@ -150,6 +161,33 @@ mtime(fileinfo::HDFSFileInfo) = fileinfo.last_mod
 
 atime(client::HDFSClient, path::AbstractString) = atime(stat(client, path))
 atime(fileinfo::HDFSFileInfo) = fileinfo.last_access
+
+function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::UInt64=uint64(0), length::UInt64=uint64(0))
+    blocks = (UInt64,Array)[]
+    _locations = _get_block_locations(client, path, offset, length)
+    isnull(_locations) && (return blocks)
+    locations = get(_locations)
+    for block in locations.blocks
+        block.corrupt && throw(HDFSException("Corrupt block found at offset $(block.offset)"))
+        node_ips = AbstractString[]
+        for loc in block.locs
+            (loc.adminState == DatanodeInfoProto_AdminState.NORMAL) || continue
+            node_id = loc.id
+            push!(node_ips, node_id.ipAddr)
+        end
+        push!(blocks, (block.offset, node_ips))
+    end
+    blocks
+end
+
+function hdfs_set_replication(client::HDFSClient, path::AbstractString, replication::Integer)
+    inp = SetReplicationRequestProto()
+    set_field(inp, :src, path)
+    set_field(inp, :replication, UInt32(replication))
+
+    resp = setReplication(client.stub, client.controller, inp)
+    resp.result
+end
 
 #
 # Disk Usage
@@ -178,24 +216,55 @@ function readdir(client::HDFSClient, path::AbstractString=".", limit::Int=typema
     result
 end
 
-function mkdir()
+function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=false, mode::UInt32=uint32(0o755))
+    inp = MkdirsRequestProto()
+    set_field(inp, :src, path)
+    set_field(inp, :createParent, create_parents)
+
+    perms = FsPermissionProto()
+    set_field(perms, :perm, mode)
+    set_field(inp, :masked, perms)
+
+    resp = mkdirs(client.stub, client.controller, inp)
+    resp.result
 end
-function mv()
+
+function mv(client::HDFSClient, src::AbstractString, dst::AbstractString, overwrite::Bool)
+    inp = Rename2RequestProto()
+    set_field(inp, :src, src)
+    set_field(inp, :dst, dst)
+    set_field(ino, :overwriteDest, overwrite)
+
+    rename2(client.stub, client.controller, inp)
+    true
 end
+
+function mv(client::HDFSClient, src::AbstractString, dst::AbstractString)
+    inp = RenameRequestProto()
+    set_field(inp, :src, src)
+    set_field(inp, :dst, dst)
+
+    resp = rename(client.stub, client.controller, inp)
+    resp.result
+end
+
+function rm(client::HDFSClient, path::AbstractString, recursive::Bool=false)
+    inp = DeleteRequestProto()
+    set_field(inp, :src, path)
+    set_field(inp, :recursive, recursive)
+
+    resp = delete(client.stub, client.controller, inp)
+    resp.result
+end
+
 function open()
 end
 function close()
 end
 function cp()
 end
-function rm()
-end
-function hdfs_set_replication()
-end
 function pwd()
 end
 function cd()
-end
-function hdfs_blocks()
 end
 
