@@ -7,28 +7,38 @@ type HDFSClient
     channel::HadoopRpcChannel
     controller::HadoopRpcController
     stub::ClientNamenodeProtocolBlockingStub
+    wd::AbstractString
 
     function HDFSClient(host::AbstractString, port::Integer, user::AbstractString)
         channel = HadoopRpcChannel(host, port, user)
         controller = HadoopRpcController(false)
         stub = ClientNamenodeProtocolBlockingStub(channel)
 
-        new(channel, controller, stub)
+        new(channel, controller, stub, "/")
     end
 end
 
-function show(io::IO, clnt::HDFSClient)
-    ch = clnt.channel
+function show(io::IO, client::HDFSClient)
+    ch = client.channel
     user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
     println(io, "HDFSClient: hdfs://$(user_spec)$(ch.host):$(ch.port)/")
-    println("    id: $(clnt.channel.clnt_id)")
+    println("    id: $(ch.clnt_id)")
     println("    blocking: true")
     println("    connected: $(isconnected(ch))")
+    println("    pwd: $(client.wd)")
 end
 
-function set_debug(clnt::HDFSClient, debug::Bool)
-    clnt.controller.debug = debug
+function set_debug(client::HDFSClient, debug::Bool)
+    client.controller.debug = debug
 end
+
+abspath(client::HDFSClient, path::AbstractString) = abspath(client.wd, path)
+function cd(client::HDFSClient, path::AbstractString)
+    wd = abspath(client, path)
+    !isdir(client, wd) && throw(HDFSException("Directory not found: $wd"))
+    client.wd = wd
+end
+pwd(client::HDFSClient) = client.wd
 
 type HDFSFile
 end
@@ -59,6 +69,7 @@ function _as_dict(obj, d=Dict{Symbol,Any}())
 end
 
 function _walkdir(client::HDFSClient, path::AbstractString, process_entry::Function)
+    path = abspath(client, path)
     cont = true
     start_after = UInt8[]
     while cont
@@ -91,6 +102,7 @@ function _walkdir(client::HDFSClient, path::AbstractString, process_entry::Funct
 end
 
 function _get_file_info(client::HDFSClient, path::AbstractString)
+    path = abspath(client, path)
     inp = GetFileInfoRequestProto()
     set_field(inp, :src, path)
     resp = getFileInfo(client.stub, client.controller, inp)
@@ -98,6 +110,7 @@ function _get_file_info(client::HDFSClient, path::AbstractString)
 end
 
 function _get_block_locations(client::HDFSClient, path::AbstractString, offset::UInt64=uint64(0), length::UInt64=uint64(0))
+    path = abspath(client, path)
     (length == uint64(0)) && (length = uint64(1024))
     inp = GetBlockLocationsRequestProto()
     set_field(inp, :src, path)
@@ -181,6 +194,7 @@ function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::UInt64=ui
 end
 
 function hdfs_set_replication(client::HDFSClient, path::AbstractString, replication::Integer)
+    path = abspath(client, path)
     inp = SetReplicationRequestProto()
     set_field(inp, :src, path)
     set_field(inp, :replication, UInt32(replication))
@@ -192,6 +206,7 @@ end
 #
 # Disk Usage
 function _get_content_summary(client::HDFSClient, path::AbstractString)
+    path = abspath(client, path)
     inp = GetContentSummaryRequestProto()
     set_field(inp, :path, path)
 
@@ -217,6 +232,7 @@ function readdir(client::HDFSClient, path::AbstractString=".", limit::Int=typema
 end
 
 function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=false, mode::UInt32=uint32(0o755))
+    path = abspath(client, path)
     inp = MkdirsRequestProto()
     set_field(inp, :src, path)
     set_field(inp, :createParent, create_parents)
@@ -230,6 +246,8 @@ function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=fa
 end
 
 function mv(client::HDFSClient, src::AbstractString, dst::AbstractString, overwrite::Bool)
+    src = abspath(client, src)
+    dst = abspath(client, dst)
     inp = Rename2RequestProto()
     set_field(inp, :src, src)
     set_field(inp, :dst, dst)
@@ -240,6 +258,8 @@ function mv(client::HDFSClient, src::AbstractString, dst::AbstractString, overwr
 end
 
 function mv(client::HDFSClient, src::AbstractString, dst::AbstractString)
+    src = abspath(client, src)
+    dst = abspath(client, dst)
     inp = RenameRequestProto()
     set_field(inp, :src, src)
     set_field(inp, :dst, dst)
@@ -249,6 +269,7 @@ function mv(client::HDFSClient, src::AbstractString, dst::AbstractString)
 end
 
 function rm(client::HDFSClient, path::AbstractString, recursive::Bool=false)
+    path = abspath(client, path)
     inp = DeleteRequestProto()
     set_field(inp, :src, path)
     set_field(inp, :recursive, recursive)
@@ -257,14 +278,63 @@ function rm(client::HDFSClient, path::AbstractString, recursive::Bool=false)
     resp.result
 end
 
+function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=false, replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644), docomplete::Bool=true)
+    path = abspath(client, path)
+
+    if (blocksz == 0) || (replication == 0)
+        defaults = _get_server_defaults(client)
+        (blocksz == 0) && (blocksz = defaults.blockSize)
+        (replication == 0) && (replication = defaults.replication)
+    end
+
+    perms = FsPermissionProto()
+    set_field(perms, :perm, mode)
+
+    createFlag = uint32(overwrite ? CreateFlagProto.OVERWRITE : CreateFlagProto.CREATE)
+
+    inp = CreateRequestProto()
+    set_field(inp, :src, path)
+    set_field(inp, :masked, perms)
+    set_field(inp, :clientName, ELLY_CLIENTNAME)
+    set_field(inp, :createFlag, createFlag)
+    set_field(inp, :createParent, false)
+    set_field(inp, :replication, replication)
+    set_field(inp, :blockSize, blocksz)
+
+    resp = create(client.stub, client.controller, inp)
+    isfilled(resp, :fs) || (return Nullable{HdfsFileStatusProto}())
+   
+    if docomplete 
+        endinp = CompleteRequestProto()
+        set_field(endinp, :src, path)
+        set_field(endinp, :clientName, ELLY_CLIENTNAME)
+        endresp = complete(client.stub, client.controller, endinp)
+        endresp.result || (return Nullable{HdfsFileStatusProto}())
+    end
+
+    return Nullable(resp.fs)
+end
+
+function touch(client::HDFSClient, path::AbstractString, replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644))
+    if exists(client, path)
+        inp = SetTimesRequestProto()
+        path = abspath(client, path)
+        t = uint64(Base.Dates.datetime2unix(now(Base.Dates.UTC))*1000)
+        set_field(inp, :src, path)
+        set_field(inp, :mtime, t)
+        set_field(inp, :atime, t)
+
+        setTimes(client.stub, client.controller, inp)
+    else
+        fs = _create_file(client, path, false, replication, blocksz, mode)
+        isnull(fs) && throw(HDFSException("Could not create file $path"))
+    end
+    nothing
+end
+
 function open()
 end
 function close()
 end
 function cp()
 end
-function pwd()
-end
-function cd()
-end
-
