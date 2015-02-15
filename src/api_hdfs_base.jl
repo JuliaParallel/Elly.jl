@@ -1,8 +1,20 @@
 
+@doc doc"""
+# HDFSException
+Thrown by HDFS APIs.
+""" ->
 type HDFSException <: Exception
     message::AbstractString
 end
 
+
+
+
+@doc doc"""
+# HDFSClient
+A client to the namenode in a HDFS cluster and holds a connection to it.
+It also stores the folder context for using relative paths in APIs that use the client.
+""" ->
 type HDFSClient
     channel::HadoopRpcChannel
     controller::HadoopRpcController
@@ -40,9 +52,13 @@ function cd(client::HDFSClient, path::AbstractString)
 end
 pwd(client::HDFSClient) = client.wd
 
-type HDFSFile
-end
 
+
+
+@doc doc"""
+# HDFSFileInfo
+Stat structure for file/foledr in HDFS
+""" ->
 type HDFSFileInfo
     kind::Int32
     name::AbstractString
@@ -221,7 +237,7 @@ function du(client::HDFSClient, path::AbstractString=".", details::Nullable{Dict
 end
 
 #
-# File listing
+# File create, delete, list
 function readdir(client::HDFSClient, path::AbstractString=".", limit::Int=typemax(Int))
     result = AbstractString[]
     _walkdir(client, path, (filestatus)->begin
@@ -330,11 +346,4 @@ function touch(client::HDFSClient, path::AbstractString, replication::UInt32=uin
         isnull(fs) && throw(HDFSException("Could not create file $path"))
     end
     nothing
-end
-
-function open()
-end
-function close()
-end
-function cp()
 end

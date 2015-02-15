@@ -2,15 +2,21 @@ module Elly
 
 using Compat
 using ProtoBuf
+using URIParser
 
-import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, mv, rm, abspath, cd, pwd, touch
+import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, 
+        mv, rm, abspath, cd, pwd, touch, open, nb_available,
+        eof, position, seek, seekend, seekstart, skip, read, write, read!, readbytes, readall, close
 import ProtoBuf: write_bytes, read_bytes, call_method
+import URIParser: URI
 
-export HDFSClient, HDFSFileInfo, readdir, show, convert,
+export HDFSClient, HDFSFile, HDFSFileInfo, readdir, show, convert, URI,
         hdfs_server_defaults, hdfs_default_block_size, hdfs_default_replication,
         hdfs_status, hdfs_capacity, hdfs_capacity_used, hdfs_capacity_remaining,
         isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists,
-        mkdir, touch, mv, rm, abspath, cd, pwd,
+        mkdir, touch, mv, rm, abspath, cd, pwd, open, eof, position, seek, seekend, seekstart, skip, nb_available,
+        read!, read, write, readbytes, readall, close,
+        cptolocal,
         hdfs_blocks, hdfs_set_replication
 
 # enable logging only during debugging
@@ -28,6 +34,7 @@ using Elly.hadoop.hdfs
 const ELLY_CLIENTNAME = "elly"
 
 include("rpc.jl")
-include("api.jl")
+include("api_hdfs_base.jl")
+include("api_hdfs_io.jl")
 
 end # module

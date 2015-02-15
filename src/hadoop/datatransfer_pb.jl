@@ -217,16 +217,17 @@ const __req_ShortCircuitShmResponseProto = Symbol[:status]
 meta(t::Type{ShortCircuitShmResponseProto}) = meta(t, __req_ShortCircuitShmResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 
 type PacketHeaderProto
-    offsetInBlock::Float64
-    seqno::Float64
+    offsetInBlock::Int64
+    seqno::Int64
     lastPacketInBlock::Bool
-    dataLen::Float32
+    dataLen::Int32
     syncBlock::Bool
     PacketHeaderProto() = (o=new(); fillunset(o); o)
 end #type PacketHeaderProto
 const __req_PacketHeaderProto = Symbol[:offsetInBlock,:seqno,:lastPacketInBlock,:dataLen]
 const __val_PacketHeaderProto = @compat Dict(:syncBlock => false)
-meta(t::Type{PacketHeaderProto}) = meta(t, __req_PacketHeaderProto, ProtoBuf.DEF_FNUM, __val_PacketHeaderProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __wtype_PacketHeaderProto = @compat Dict(:offsetInBlock => :sfixed64, :seqno => :sfixed64, :dataLen => :sfixed32)
+meta(t::Type{PacketHeaderProto}) = meta(t, __req_PacketHeaderProto, ProtoBuf.DEF_FNUM, __val_PacketHeaderProto, true, ProtoBuf.DEF_PACK, __wtype_PacketHeaderProto)
 
 type PipelineAckProto
     seqno::Int64
