@@ -14,4 +14,12 @@ module hadoop
     include("inotify_pb.jl")
     include("ClientNamenodeProtocol_pb.jl")
   end
+  module yarn
+    include("yarn_protos_pb.jl")
+    include("yarn_service_protos_pb.jl")
+    include("applicationmaster_protocol_pb.jl")
+    include("applicationclient_protocol_pb.jl")
+    include("containermanagement_protocol_pb.jl")
+    include("application_history_client_pb.jl")
+  end
 end
