@@ -3,6 +3,7 @@ module Elly
 using Compat
 using ProtoBuf
 using URIParser
+using CRC
 
 import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, 
         mv, rm, abspath, cd, pwd, touch, open, nb_available,
@@ -16,8 +17,8 @@ export HDFSClient, HDFSFile, HDFSFileInfo, readdir, show, convert, URI,
         isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists,
         mkdir, touch, mv, rm, abspath, cd, pwd, open, eof, position, seek, seekend, seekstart, skip, nb_available,
         read!, read, write, readbytes, readall, close,
-        cptolocal,
-        hdfs_blocks, hdfs_set_replication
+        hdfs_cptolocal,
+        hdfs_renewlease, hdfs_blocks, hdfs_set_replication
 
 # enable logging only during debugging
 using Logging

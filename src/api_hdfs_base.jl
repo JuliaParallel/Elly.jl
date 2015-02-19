@@ -20,13 +20,14 @@ type HDFSClient
     controller::HadoopRpcController
     stub::ClientNamenodeProtocolBlockingStub
     wd::AbstractString
+    server_defaults::Nullable{FsServerDefaultsProto}
 
     function HDFSClient(host::AbstractString, port::Integer, user::AbstractString)
         channel = HadoopRpcChannel(host, port, user)
         controller = HadoopRpcController(false)
         stub = ClientNamenodeProtocolBlockingStub(channel)
 
-        new(channel, controller, stub, "/")
+        new(channel, controller, stub, "/", Nullable{FsServerDefaultsProto}())
     end
 end
 
@@ -139,9 +140,12 @@ end
 #
 # Server defaults
 function _get_server_defaults(client::HDFSClient)
-    inp = GetServerDefaultsRequestProto()
-    resp = getServerDefaults(client.stub, client.controller, inp)
-    return resp.serverDefaults
+    if isnull(client.server_defaults)
+        inp = GetServerDefaultsRequestProto()
+        resp = getServerDefaults(client.stub, client.controller, inp)
+        client.server_defaults = Nullable(resp.serverDefaults)
+    end
+    get(client.server_defaults)
 end
 
 hdfs_server_defaults(client::HDFSClient) = _as_dict(_get_server_defaults(client))
@@ -321,14 +325,46 @@ function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=
     isfilled(resp, :fs) || (return Nullable{HdfsFileStatusProto}())
    
     if docomplete 
-        endinp = CompleteRequestProto()
-        set_field(endinp, :src, path)
-        set_field(endinp, :clientName, ELLY_CLIENTNAME)
-        endresp = complete(client.stub, client.controller, endinp)
-        endresp.result || (return Nullable{HdfsFileStatusProto}())
+        _complete_file(client, path) || (return Nullable{HdfsFileStatusProto}())
     end
 
     return Nullable(resp.fs)
+end
+
+function _complete_file(client::HDFSClient, path::AbstractString, last::Nullable{ExtendedBlockProto}=Nullable{ExtendedBlockProto}())
+    path = abspath(client, path)
+
+    endinp = CompleteRequestProto()
+    set_field(endinp, :src, path)
+    set_field(endinp, :clientName, ELLY_CLIENTNAME)
+    isnull(last) || set_field(endinp, :last, last)
+
+    endresp = complete(client.stub, client.controller, endinp)
+    endresp.result
+end
+
+function _add_block(client::HDFSClient, path::AbstractString, previous::Nullable{ExtendedBlockProto}=Nullable{ExtendedBlockProto}())
+    path = abspath(client, path)
+
+    inp = AddBlockRequestProto()
+    set_field(inp, :src, path)
+    set_field(inp, :clientName, ELLY_CLIENTNAME)
+    isnull(previous) || set_field(inp, :previous, previous)
+
+    resp = addBlock(client.stub, client.controller, inp)
+    return resp.block
+end
+
+@doc doc"""
+Applications that write infrequently/slowly must call renewlease periodically to prevent
+the namenode from assuming the client from having abandoned the file or some other client
+from recovering the lease.
+""" ->
+function renewlease(client::HDFSClient)
+    inp = RenewLeaseRequestProto()
+    set_field(inp, :clientName, ELLY_CLIENTNAME)
+    renewLease(client.stub, client.controller, inp)
+    nothing
 end
 
 function touch(client::HDFSClient, path::AbstractString, replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644))

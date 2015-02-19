@@ -277,6 +277,20 @@ function buffer_opcode(channel::HadoopDataChannel, opcode::Int8)
 end
 
 
+function _select_node_for_block(block::LocatedBlockProto)
+    nodes = DatanodeIDProto[]
+    dnodes = DatanodeInfoProto[]
+    for loc in block.locs
+        (loc.adminState == DatanodeInfoProto_AdminState.NORMAL) || continue
+        node_id = loc.id
+        push!(nodes, node_id)
+        push!(dnodes, loc)
+    end
+    isempty(nodes) && (return (Nullable{DatanodeIDProto}(), Nullable{DatanodeInfoProto}()))
+    # TODO: algo to select best node
+    return (Nullable{DatanodeIDProto}(nodes[1]), Nullable{DatanodeInfoProto}(dnodes[1]))
+end
+
 
 #
 # Block Reader to read data
@@ -302,15 +316,16 @@ type HDFSBlockReader
     chunk::Array{UInt8,1}
 
     checksums::Array{UInt32,1}
+    chk_crc::Bool
 
-    function HDFSBlockReader(host::AbstractString, port::Integer, block::LocatedBlockProto, offset::UInt64, len::UInt64)
+    function HDFSBlockReader(host::AbstractString, port::Integer, block::LocatedBlockProto, offset::UInt64, len::UInt64, chk_crc::Bool)
         channel = HadoopDataChannel(host, port)
         logmsg("creating block reader for offset $offset at $host:$port for length $len")
         new(channel, block, offset, len,
             Nullable{BlockOpResponseProto}(), 0,
             Nullable{PacketHeaderProto}(), 0, 0, 
             0, 0, 0, UInt8[],
-            UInt32[])
+            UInt32[], chk_crc)
     end
 end
 
@@ -468,6 +483,26 @@ function recv_packet_hdr(reader::HDFSBlockReader)
     end
 end
 
+crc32 = crc(CRC_32)
+crc32c = crc(CRC_32_C)
+
+function verify_checksum(reader::HDFSBlockReader)
+    block_op_resp = get(reader.block_op_resp)
+    checksum_type = block_op_resp.readOpChecksumInfo.checksum._type
+    chksum = reader.checksums[reader.chunks_read]
+    chunk = reader.chunk
+    chunk = copy(chunk)
+    if checksum_type == ChecksumTypeProto.CHECKSUM_CRC32
+        calc_chksum = crc32(chunk)
+    elseif checksum_type == ChecksumTypeProto.CHECKSUM_CRC32C
+        calc_chksum = crc32c(chunk)
+    else
+        throw(HDFSException("Unknown CRC type $checksum_type"))
+    end
+    (chksum == calc_chksum) || throw(HDFSException("Checksum mismatch at chunk $(reader.chunks_read). Expected $(chksum), got $(calc_chksum)"))
+    nothing
+end
+
 eofpacket(reader::HDFSBlockReader) = (reader.packet_read >= reader.packet_len)
 eof(reader::HDFSBlockReader) = (reader.total_read >= reader.len)
 function read_chunk!(reader::HDFSBlockReader)
@@ -496,6 +531,9 @@ function read_chunk!(reader::HDFSBlockReader)
         reader.packet_read += curr_chunk_len
         reader.total_read += curr_chunk_len
 
+        # verify crc
+        reader.chk_crc && verify_checksum(reader)
+
         # send the success block read status
         eof(reader) && send_read_status(reader)
         reader.chunk
@@ -505,3 +543,104 @@ function read_chunk!(reader::HDFSBlockReader)
         rethrow(ex)
     end
 end
+
+
+#
+# HDFSBlockWriter to write data
+type HDFSBlockWriter
+    channel::HadoopDataChannel
+    server_defaults::FsServerDefaultsProto
+
+    block::LocatedBlockProto
+    source_node::DatanodeInfoProto
+
+    function HDFSBlockWriter(block::LocatedBlockProto, defaults::FsServerDefaultsProto)
+        nnode,ndnode = _select_node_for_block(writer.block)
+        isnull(nnode) && throw(HDFSException("Could not get a valid datanode to write"))
+
+        node = get(nnode)
+        dnode = get(ndnode)
+        host = node.ipAddr
+        port = node.xferPort
+        
+        channel = HadoopDataChannel(host, port)
+        logmsg("creating block writer for offset $(block.offset) at $host:$port")
+        new(channel, defaults, block, ndnode)
+    end
+end
+
+isconnected(writer::HDFSBlockWriter) = isconnected(writer.channel)
+function disconnect(writer::HDFSBlockWriter)
+    isconnected(writer.channel) && disconnect(writer.channel)
+    nothing
+end
+
+function connect(writer::HDFSBlockWriter)
+    connect(writer.channel)
+    nothing
+end
+
+function buffer_writeblock(writer::HDFSBlockWriter)
+    channel = writer.channel
+    block = writer.block
+    defaults = writer.server_defaults
+
+    token = TokenProto()
+    for fld in (:identifier, :password, :kind, :service)
+        set_field(token, fld, get_field(block.blockToken, fld))
+    end
+
+    exblock = ExtendedBlockProto()
+    for fld in (:poolId, :blockId, :generationStamp)
+        set_field(exblock, fld, get_field(block.b, fld))
+    end
+
+    basehdr = BaseHeaderProto()
+    set_field(basehdr, :block, exblock)
+    set_field(basehdr, :token, token)
+    
+    hdr = ClientOperationHeaderProto()
+    set_field(hdr, :baseHeader, basehdr)
+    set_field(hdr, :clientName, ELLY_CLIENTNAME)
+
+    chksum = ChecksumProto()
+    chksum._type = defaults.checksumType
+    chksum.bytesPerChecksum = defaults.bytesPerChecksum
+
+    writeblock = OpWriteBlockProto()
+    set_field(writeblock, :header, hdr)
+    set_field(writeblock, :targets, block.locs)
+    set_field(writeblock, :source, writer.source_node)
+    set_field(writeblock, :stage, OpWriteBlockProto_BlockConstructionStage.PIPELINE_SETUP_CREATE)
+    set_field(writeblock, :pipelineSize, uint32(length(block.locs)))
+    set_field(writeblock, :minBytesRcvd, uint64(block.b.numBytes))
+    set_field(writeblock, :maxBytesRcvd, uint64(0))
+    set_field(writeblock, :latestGenerationStamp, exblock.generationStamp)
+    set_field(writeblock, :requestedChecksum, chksum)
+    set_field(writeblock, :targetStorageTypes, block.storageTypes)
+    logmsg("sending block write message for offset $offset")
+
+    buffer_size_delimited(channel.iob, writeblock)
+end
+
+function send_block_write(writer::HDFSBlockWriter)
+    isconnected(writer) || connect(writer)
+    channel = writer.channel
+
+    try
+        logmsg("send block write message")
+        begin_send(channel)
+        buffer_opcode(channel, HDATA_WRITE_BLOCK)
+        buffer_writeblock(writer)
+        send_buffered(channel, false)
+    catch ex
+        logmsg("exception sending to $(channel.host):$(channel.port): $ex")
+        disconnect(writer)
+        rethrow(ex)
+    end
+    nothing
+end
+
+function recv_blockop(writer::HDFSBlockWriter)
+end
+

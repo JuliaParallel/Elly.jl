@@ -102,18 +102,6 @@ function disconnect(reader::HDFSFileReader)
     reader.buffer = PipeBuffer()
     nothing
 end
-
-function _select_node_for_block(block::LocatedBlockProto)
-    nodes = DatanodeIDProto[]
-    for loc in block.locs
-        (loc.adminState == DatanodeInfoProto_AdminState.NORMAL) || continue
-        node_id = loc.id
-        push!(nodes, node_id)
-    end
-    isempty(nodes) && return Nullable{DatanodeIDProto}()
-    # TODO: algo to select best node
-    return Nullable{DatanodeIDProto}(nodes[1])
-end
  
 function connect(reader::HDFSFileReader)
     logmsg("connect if required $(URI(reader,true))")
@@ -137,7 +125,7 @@ function connect(reader::HDFSFileReader)
     block = get(nblock)
     block.corrupt && throw(HDFSException("Corrupt block found for $(URI(reader,true))"))
 
-    nnode = _select_node_for_block(block)
+    nnode,ndnode = _select_node_for_block(block)
     isnull(nnode) && throw(HDFSException("Could not get a valid datanode for $(URI(reader,true))"))
     node = get(nnode)
 
@@ -150,7 +138,7 @@ function connect(reader::HDFSFileReader)
         disconnect(get(reader.blk_reader))
     end
     logmsg("creating new block reader")
-    reader.blk_reader = Nullable(HDFSBlockReader(node.ipAddr, node.xferPort, block, offset_into_block, len))
+    reader.blk_reader = Nullable(HDFSBlockReader(node.ipAddr, node.xferPort, block, offset_into_block, len, reader.crc_check))
     nothing
 end
 
@@ -191,30 +179,6 @@ function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::U
     requested - len
 end
 
-function open(client::HDFSClient, path::AbstractString, rd::Bool, wr::Bool, ff::Bool; 
-                replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644), 
-                offset::UInt64=uint64(0), crc::Bool=false)
-    if rd
-        return HDFSFileReader(client, path, offset, crc)
-    elseif wr
-        if ff
-        end
-        error("Not implemented")
-    else
-        throw(ArgumentError("invalid open mode. read:$rd, write:$wr, append:$ff"))
-    end
-end
-open(client::HDFSClient, path::AbstractString) = open(client, path, true, false, false)
-
-function open(client::HDFSClient, path::AbstractString, open_mode::AbstractString; 
-                replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644), 
-                offset::UInt64=uint64(0), crc::Bool=false)
-    open_mode == "r"  ? open(client, path, true , false, false; offset=offset, crc=crc) :
-    open_mode == "w"  ? open(client, path, false, true , false; replication=replication, blocksz=blocksz, mode=mode) :
-    open_mode == "a"  ? open(client, path, false, true , true;  replication=replication, blocksz=blocksz, mode=mode) :
-    throw(ArgumentError("invalid open mode: $mode"))
-end
-
 close(reader::HDFSFileReader) = disconnect(reader::HDFSFileReader)
 
 #
@@ -244,12 +208,12 @@ end
 readbytes(reader::HDFSFileReader, nb::Integer) = read!(reader, Array(Uint8, nb))
 readall(reader::HDFSFileReader) = readbytes(reader, nb_available(reader))
 
-function cptolocal(client::HDFSClient, hdfs_path::AbstractString, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
+function hdfs_cptolocal(client::HDFSClient, hdfs_path::AbstractString, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
     reader = open(client, hdfs_path, "r"; offset=offset)
-    cptolocal(reader, local_path::AbstractString; len=len)
+    hdfs_cptolocal(reader, local_path::AbstractString; len=len)
 end
 
-function cptolocal(reader::HDFSFileReader, local_path::AbstractString; len::UInt64=uint64(0))
+function hdfs_cptolocal(reader::HDFSFileReader, local_path::AbstractString; len::UInt64=uint64(0))
     brem = btot = (len == 0) ? nb_available(reader) : len
     buff_sz = 128*1024
     buff = Array(UInt8, buff_sz)
@@ -264,4 +228,53 @@ function cptolocal(reader::HDFSFileReader, local_path::AbstractString; len::UInt
         end
     end
     nothing
+end
+
+@doc doc"""
+# HDFSFileWriter
+Provides Julia IO APIs for writing HDFS files.
+
+Steps:
+- get datanodes to write onto from namenode
+- break bytes into packets
+- write packets into first datanode's data channel (datanode will mirror packets to downstream datanodes)
+- when complete, confirm namenode with a blockReceived
+
+On close call NameNode.complete to:
+- remove lease
+    lease is a write lock for file modification. no leases are required for reading files.
+    leases are managed by namenode
+    lease is added on file create or append
+    dfs client should start thread to renew leases periodically
+- change file from under construction to complete
+""" ->
+type HDFSFileWriter
+    client::HDFSClient
+    path::AbstractString
+    size::UInt64
+    block_sz::UInt64
+end
+
+#
+# File open
+function open(client::HDFSClient, path::AbstractString, rd::Bool, wr::Bool, ff::Bool; 
+                replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644), 
+                offset::UInt64=uint64(0), crc::Bool=false)
+    if rd
+        return HDFSFileReader(client, path, offset, crc)
+    elseif wr
+        if ff
+        end
+        error("Not implemented")
+    else
+        throw(ArgumentError("invalid open mode. read:$rd, write:$wr, append:$ff"))
+    end
+end
+open(client::HDFSClient, path::AbstractString; opts...) = open(client, path, true, false, false; opts...)
+
+function open(client::HDFSClient, path::AbstractString, open_mode::AbstractString; opts...)
+    open_mode == "r"  ? open(client, path, true , false, false; opts...) :
+    open_mode == "w"  ? open(client, path, false, true , false; opts...) :
+    open_mode == "a"  ? open(client, path, false, true , true;  opts...) :
+    throw(ArgumentError("invalid open mode: $mode"))
 end
