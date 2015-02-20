@@ -251,8 +251,57 @@ On close call NameNode.complete to:
 type HDFSFileWriter
     client::HDFSClient
     path::AbstractString
-    size::UInt64
-    block_sz::UInt64
+    fptr::UInt64
+    blk_writer::Nullable{HDFSBlockWriter}
+
+    function HDFSFileWriter(client::HDFSClient, path::AbstractString)
+        path = abspath(client, path)
+        new(client, path, 0, Nullable{HDFSBlockWriter}())
+    end
+end
+
+function URI(writer::HDFSFileWriter, show_offset::Bool)
+    ch = writer.client.channel
+    user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
+    offset = show_offset ? "#$(writer.fptr)" : ""
+    URI("hdfs://$(user_spec)$(ch.host):$(ch.port)$(writer.path)$(offset)")
+end
+
+show(io::IO, reader::HDFSFileWriter) = println(io, "HDFSFileWriter: $(URI(writer, true))")
+
+function renewlease(writer::HDFSFileWriter)
+    renewlease(writer.client)
+end
+
+function write(writer::HDFSFileWriter, data::Vector{UInt8})
+    if isnull(writer.blk_writer)
+        blk = _add_block(writer.client, writer.path)
+        blk_writer = HDFSBlockWriter(blk, _get_server_defaults(writer.client))
+        writer.blk_writer = Nullable(blk_writer)
+    end
+    nbytes = write(writer.blk_writer, data)
+    if nbytes < length(data)
+        flush(writer.blk_writer)
+        close(writer.blk_writer)
+    end
+end
+
+function flush(writer::HDFSFileWriter)
+    if !isnull(writer.blk_writer)
+        blk_writer = get(writer.blk_writer)
+        flush(blk_writer)
+        close(writer)
+    end
+    nothing
+end
+
+function close(writer::HDFSFileWriter)
+    if !isnull(writer.blk_writer)
+        blk_writer = get(writer.blk_writer)
+        close(blk_writer)
+        writer.blk_writer = Nullable{HDFSBlockWriter}()
+    end
+    nothing
 end
 
 #
