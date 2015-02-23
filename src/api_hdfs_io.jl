@@ -1,3 +1,6 @@
+
+
+
 @doc doc"""
 Default length (bytes) upto which to pre-fetch block metadata.
 (10 blocks of default size)
@@ -125,9 +128,9 @@ function connect(reader::HDFSFileReader)
     block = get(nblock)
     block.corrupt && throw(HDFSException("Corrupt block found for $(URI(reader,true))"))
 
-    nnode,ndnode = _select_node_for_block(block)
-    isnull(nnode) && throw(HDFSException("Could not get a valid datanode for $(URI(reader,true))"))
-    node = get(nnode)
+    nnode_info = _select_node_for_block(block)
+    isnull(nnode_info) && throw(HDFSException("Could not get a valid datanode for $(URI(reader,true))"))
+    node = get(nnode_info).id
 
     block_len = block.b.numBytes
     offset_into_block = (reader.fptr % reader.block_sz)
@@ -208,27 +211,27 @@ end
 readbytes(reader::HDFSFileReader, nb::Integer) = read!(reader, Array(Uint8, nb))
 readall(reader::HDFSFileReader) = readbytes(reader, nb_available(reader))
 
-function hdfs_cptolocal(client::HDFSClient, hdfs_path::AbstractString, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
-    reader = open(client, hdfs_path, "r"; offset=offset)
-    hdfs_cptolocal(reader, local_path::AbstractString; len=len)
-end
-
-function hdfs_cptolocal(reader::HDFSFileReader, local_path::AbstractString; len::UInt64=uint64(0))
-    brem = btot = (len == 0) ? nb_available(reader) : len
-    buff_sz = 128*1024
-    buff = Array(UInt8, buff_sz)
-    open(local_path, "w") do f
-        while !eof(reader)
-            bread = min(brem, buff_sz)
-            (bread == length(buff)) || resize!(buff, bread)
-            read!(reader, buff)
-            write(f, buff)
-            brem -= bread
-            logmsg("remaining $brem/$btot")
-        end
-    end
-    nothing
-end
+#function hdfs_cptolocal(client::HDFSClient, hdfs_path::AbstractString, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
+#    reader = open(client, hdfs_path, "r"; offset=offset)
+#    hdfs_cptolocal(reader, local_path::AbstractString; len=len)
+#end
+#
+#function hdfs_cptolocal(reader::HDFSFileReader, local_path::AbstractString; len::UInt64=uint64(0))
+#    brem = btot = (len == 0) ? nb_available(reader) : len
+#    buff_sz = 128*1024
+#    buff = Array(UInt8, buff_sz)
+#    open(local_path, "w") do f
+#        while !eof(reader)
+#            bread = min(brem, buff_sz)
+#            (bread == length(buff)) || resize!(buff, bread)
+#            read!(reader, buff)
+#            write(f, buff)
+#            brem -= bread
+#            logmsg("remaining $brem/$btot")
+#        end
+#    end
+#    nothing
+#end
 
 @doc doc"""
 # HDFSFileWriter
@@ -252,11 +255,15 @@ type HDFSFileWriter
     client::HDFSClient
     path::AbstractString
     fptr::UInt64
+    blk::Nullable{LocatedBlockProto}
     blk_writer::Nullable{HDFSBlockWriter}
 
     function HDFSFileWriter(client::HDFSClient, path::AbstractString)
         path = abspath(client, path)
-        new(client, path, 0, Nullable{HDFSBlockWriter}())
+        path_exists = exists(client, path)
+        fs = _create_file(client, path, path_exists, uint32(0), uint64(0), uint32(0o644), false)
+        isnull(fs) && throw(HDFSException("Error openeing $path for write"))
+        new(client, path, 0, Nullable{LocatedBlockProto}(), Nullable{HDFSBlockWriter}())
     end
 end
 
@@ -267,7 +274,7 @@ function URI(writer::HDFSFileWriter, show_offset::Bool)
     URI("hdfs://$(user_spec)$(ch.host):$(ch.port)$(writer.path)$(offset)")
 end
 
-show(io::IO, reader::HDFSFileWriter) = println(io, "HDFSFileWriter: $(URI(writer, true))")
+show(io::IO, writer::HDFSFileWriter) = println(io, "HDFSFileWriter: $(URI(writer, true))")
 
 function renewlease(writer::HDFSFileWriter)
     renewlease(writer.client)
@@ -275,34 +282,59 @@ end
 
 function write(writer::HDFSFileWriter, data::Vector{UInt8})
     if isnull(writer.blk_writer)
-        blk = _add_block(writer.client, writer.path)
+        blk = _add_block(writer.client, writer.path, writer.blk)
         blk_writer = HDFSBlockWriter(blk, _get_server_defaults(writer.client))
         writer.blk_writer = Nullable(blk_writer)
-    end
-    nbytes = write(writer.blk_writer, data)
-    if nbytes < length(data)
-        flush(writer.blk_writer)
-        close(writer.blk_writer)
-    end
-end
-
-function flush(writer::HDFSFileWriter)
-    if !isnull(writer.blk_writer)
+        writer.blk = Nullable(blk)
+    else
         blk_writer = get(writer.blk_writer)
-        flush(blk_writer)
-        close(writer)
     end
-    nothing
+    nbytes = write(blk_writer, data)
+    nbytes_remaining = length(data) - nbytes
+    if nbytes_remaining > 0
+        flush(blk_writer)
+        disconnect(blk_writer)
+        writer.blk_writer = Nullable{HDFSBlockWriter}()
+
+        remaining = pointer_to_array(pointer(data, nbytes+1), nbytes_remaining)
+        nbytes += write(writer, remaining)
+    end
+    nbytes
 end
 
 function close(writer::HDFSFileWriter)
     if !isnull(writer.blk_writer)
         blk_writer = get(writer.blk_writer)
-        close(blk_writer)
+        flush(blk_writer)
+        disconnect(blk_writer)
+        _complete_file(writer.client, writer.path, Nullable(blk_writer.block.b))
         writer.blk_writer = Nullable{HDFSBlockWriter}()
     end
     nothing
 end
+
+#function hdfs_cptodfs(client::HDFSClient, hdfs_path::AbstractString, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
+#    writer = open(client, hdfs_path, "w")
+#    hdfs_cptodfs(writer, local_path::AbstractString; offset=offset, len=len)
+#end
+#
+#function hdfs_cptodfs(writer::HDFSFileWriter, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
+#    brem = btot = (len == 0) ? (filesize(local_path)-offset) : len
+#    buff_sz = 128*1024
+#    buff = Array(UInt8, buff_sz)
+#    open(local_path, "r") do f
+#        (offset > 0) && skip(f, offset)
+#        while !eof(f)
+#            bread = min(brem, buff_sz)
+#            (bread == length(buff)) || resize!(buff, bread)
+#            read!(f, buff)
+#            write(writer, buff)
+#            brem -= bread
+#            logmsg("remaining $brem/$btot")
+#        end
+#    end
+#    nothing
+#end
 
 #
 # File open
@@ -313,8 +345,10 @@ function open(client::HDFSClient, path::AbstractString, rd::Bool, wr::Bool, ff::
         return HDFSFileReader(client, path, offset, crc)
     elseif wr
         if ff
+            error("Not implemented")
+        else
+            return HDFSFileWriter(client, path)
         end
-        error("Not implemented")
     else
         throw(ArgumentError("invalid open mode. read:$rd, write:$wr, append:$ff"))
     end
@@ -326,4 +360,36 @@ function open(client::HDFSClient, path::AbstractString, open_mode::AbstractStrin
     open_mode == "w"  ? open(client, path, false, true , false; opts...) :
     open_mode == "a"  ? open(client, path, false, true , true;  opts...) :
     throw(ArgumentError("invalid open mode: $mode"))
+end
+
+#
+# File copy
+function cp(frompath::Union(HDFSFile,AbstractString), topath::Union(HDFSFile,AbstractString); offset::UInt64=uint64(0), len::UInt64=uint64(0), crc::Bool=false)
+    if isa(frompath, HDFSFile)
+        fromfile = open(frompath.client, frompath.path, "r"; offset=offset, crc=crc)
+    else
+        fromfile = open(frompath, "r")
+        (offset > 0) && skip(fromfile, offset)
+    end
+
+    if isa(topath, HDFSFile)
+        tofile = open(topath.client, topath.path, "w")
+    else
+        tofile = open(topath, "w")
+    end
+
+    buff_sz = 128*1024
+    buff = Array(UInt8, buff_sz)
+    brem = btot = (len == 0) ? (filesize(fromfile)-offset) : len
+    while brem > 0
+        bread = min(brem, buff_sz)
+        (bread == length(buff)) || resize!(buff, bread)
+        read!(fromfile, buff)
+        write(tofile, buff)
+        brem -= bread
+        logmsg("remaining $brem/$btot")
+    end
+    close(fromfile)
+    close(tofile)
+    nothing
 end

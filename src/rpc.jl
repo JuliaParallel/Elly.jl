@@ -1,4 +1,8 @@
+# Protocol implementations for:
+# - Client - Namenode
+# - Client - Datanode
 # ref: https://wiki.apache.org/hadoop/HadoopRpc
+
 const HRPC_HEADER = "hrpc"
 const HRPC_VERSION = 0x09
 const HRPC_SERVICE_CLASS = 0x00
@@ -12,6 +16,12 @@ const HRPC_CLIENT_PROTOCOL_VERSION = uint64(1)
 const HRPC_CALL_ID_HANDSHAKE = -3
 const HRPC_CALL_ID_NORMAL = 0
 
+@doc doc"""
+HadoopRpcException is thrown on Rpc interaction errors either with namenode or datanode.
+Field `status` contains error code (enum) if received from the connected entity or just ERROR (1) to indicate failure.
+Though HadoopRpcException is used while communicating with both namenodes and datanodes, SUCCESS and ERROR are coded 
+with the same values in both cases. Other specific error codes need knowledge of the context to interpret.
+""" ->
 type HadoopRpcException <: Exception
     status::Int32
     message::AbstractString
@@ -20,6 +30,9 @@ type HadoopRpcException <: Exception
     end
     function HadoopRpcException(msg::AbstractString)
         new(RpcResponseHeaderProto_RpcStatusProto.ERROR, msg)
+    end
+    function HadoopRpcException(status::Int32, message::AbstractString)
+        new(status, message)
     end
 end
 
@@ -57,15 +70,15 @@ function send_buffered(buff::IOBuffer, sock::TCPSocket, delimited::Bool)
     len
 end
 
-function recv_blockop(channel::HadoopDataChannel)
+function recv_blockop(sock::TCPSocket)
     logmsg("recv block read message")
-    data_bytes = read_bytes(get(channel.sock))
+    data_bytes = read_bytes(sock)
     logmsg("block_resp <- sock. len $(length(data_bytes))")
 
     block_resp = BlockOpResponseProto()
     readproto(IOBuffer(data_bytes), block_resp)
 
-    (block_resp.status == Status.SUCCESS) || throw(HadoopRpcException("Error in block operation: $(block_resp.status): $(block_resp.message)"))
+    (block_resp.status == Status.SUCCESS) || throw(HadoopRpcException(block_resp.status, "Error in block operation: $(block_resp.message)"))
     return block_resp
 end
 
@@ -105,7 +118,7 @@ function next_call_id(channel::HadoopRpcChannel)
 end
 
 function buffer_handshake(channel::HadoopRpcChannel)
-    write(channel.iob, [HRPC_HEADER.data, HRPC_VERSION, HRPC_SERVICE_CLASS, HRPC_AUTH_PROTOCOL_NONE])
+    write(channel.iob, [HRPC_HEADER.data, HRPC_VERSION, HRPC_SERVICE_CLASS, HRPC_AUTH_PROTOCOL_NONE;])
 end
 
 function buffer_connctx(channel::HadoopRpcChannel)
@@ -142,7 +155,7 @@ end
 # Connect to the hadoop server and complete the handshake
 function connect(channel::HadoopRpcChannel)
     # open connection
-    logmsg("connecting to $(channel.host):$(channel.port)")
+    logmsg("connecting to HadoopRpcChannel $(channel.host):$(channel.port)")
     try
         sock = connect(channel.host, channel.port)
         channel.sock = Nullable{TCPSocket}(sock)
@@ -155,7 +168,7 @@ function connect(channel::HadoopRpcChannel)
         buffer_rpc_reqhdr(channel)
         buffer_connctx(channel)
         send_buffered(channel, true)
-        logmsg("connected to $(channel.host):$(channel.port)")
+        logmsg("connected to HadoopRpcChannel $(channel.host):$(channel.port)")
     catch ex
         logmsg("exception connecting to $(channel.host):$(channel.port): $ex")
         disconnect(channel)
@@ -260,15 +273,15 @@ type HadoopDataChannel
 end
 
 function connect(channel::HadoopDataChannel)
-    logmsg("connecting to datanode $(channel.host):$(channel.port)")
+    logmsg("connecting to HadoopDataChannel $(channel.host):$(channel.port)")
     try
         sock = connect(channel.host, channel.port)
-        channel.sock = Nullable{TCPSocket}(sock)
+        channel.sock = Nullable(sock)
     catch ex
-        logmsg("exception connecting to datanode $(channel.host):$(channel.port): $ex")
+        logmsg("exception connecting to HadoopDataChannel $(channel.host):$(channel.port): $ex")
         rethrow(ex)
     end
-    logmsg("connected to datanode $(channel.host):$(channel.port)")
+    logmsg("connected to HadoopDataChannel $(channel.host):$(channel.port)")
     nothing
 end
 
@@ -276,7 +289,7 @@ function disconnect(channel::HadoopDataChannel)
     try
         isconnected(channel) && close(get(channel.sock))
     catch ex
-        logmsg("exception while closing channel socket $ex")
+        logmsg("exception while closing HadoopDataChannel socket $ex")
     end
     channel.sock = Nullable{TCPSocket}()
     nothing
@@ -291,24 +304,20 @@ function buffer_opcode(channel::HadoopDataChannel, opcode::Int8)
     len += write(channel.iob, opcode)
 end
 
-
 function _select_node_for_block(block::LocatedBlockProto)
-    nodes = DatanodeIDProto[]
-    dnodes = DatanodeInfoProto[]
+    node_infos = DatanodeInfoProto[]
     for loc in block.locs
-        (loc.adminState == DatanodeInfoProto_AdminState.NORMAL) || continue
-        node_id = loc.id
-        push!(nodes, node_id)
-        push!(dnodes, loc)
+        (loc.adminState == DatanodeInfoProto_AdminState.NORMAL) && push!(node_infos, loc)
     end
-    isempty(nodes) && (return (Nullable{DatanodeIDProto}(), Nullable{DatanodeInfoProto}()))
+    isempty(node_infos) && (return Nullable{DatanodeInfoProto}())
     # TODO: algo to select best node
-    return (Nullable{DatanodeIDProto}(nodes[1]), Nullable{DatanodeInfoProto}(dnodes[1]))
+    return Nullable(node_infos[1])
 end
 
 
 #
-# Block Reader to read data
+# Begin Block Reader implementation to read data
+
 type HDFSBlockReader
     channel::HadoopDataChannel
 
@@ -436,7 +445,7 @@ end
 function recv_blockop(reader::HDFSBlockReader)
     channel = reader.channel
     try
-        block_resp = recv_blockop(channel)
+        block_resp = recv_blockop(get(channel.sock))
         checksum_type = block_resp.readOpChecksumInfo.checksum._type
         (checksum_type == ChecksumTypeProto.CHECKSUM_CRC32) || (checksum_type == ChecksumTypeProto.CHECKSUM_CRC32C) || throw(HadoopRpcException("Unknown checksum type $checksum_type"))
         reader.block_op_resp = Nullable(block_resp)
@@ -469,7 +478,7 @@ function recv_packet_hdr(reader::HDFSBlockReader)
         reader.chunk = Array(UInt8, reader.chunk_len)
         reader.chunk_count = div(data_len + reader.chunk_len - 1, reader.chunk_len)    # chunk_len-1 to take care of chunks with partial data
         reader.chunks_read = 0
-        logmsg("received packet with $(reader.chunk_count) chunks of $(reader.chunk_len) bytes each in $data_len bytes of data")
+        #logmsg("received packet with $(reader.chunk_count) chunks of $(reader.chunk_len) bytes each in $data_len bytes of data")
 
         checksums = Array(UInt32, reader.chunk_count)
         read!(sock, checksums)
@@ -482,7 +491,7 @@ function recv_packet_hdr(reader::HDFSBlockReader)
         reader.packet_read = 4 + sizeof(checksums)
         reader.pkt_hdr = Nullable(pkt_hdr)
         reader.checksums = checksums
-        logmsg("current read position pkt $(reader.packet_read)/$(reader.packet_len), block $(reader.total_read)/$(reader.len)")
+        #logmsg("current read position pkt $(reader.packet_read)/$(reader.packet_len), block $(reader.total_read)/$(reader.len)")
         nothing
     catch ex
         logmsg("exception receiving from $(channel.host):$(channel.port): $ex")
@@ -502,9 +511,9 @@ function verify_checksum(reader::HDFSBlockReader)
     elseif checksum_type == ChecksumTypeProto.CHECKSUM_CRC32C
         calc_chksum = crc32c(chunk)
     else
-        throw(HDFSException("Unknown CRC type $checksum_type"))
+        throw(HadoopRpcException("Unknown CRC type $checksum_type"))
     end
-    (chksum == calc_chksum) || throw(HDFSException("Checksum mismatch at chunk $(reader.chunks_read). Expected $(chksum), got $(calc_chksum)"))
+    (chksum == calc_chksum) || throw(HadoopRpcException("Checksum mismatch at chunk $(reader.chunks_read). Expected $(chksum), got $(calc_chksum)"))
     nothing
 end
 
@@ -551,25 +560,39 @@ end
 
 
 #
-# HDFSBlockWriter to write data
+# Begin Block Writer implementation for writing / appending data
+
+@doc doc"""
+PipelinedPacket holds a packet of data while it is sent to datanodes and acknowledged.
+The data bytes are reset once acks are received successfully to reduce memory usage.
+""" ->
 type PipelinedPacket
-    seqno::UInt64
+    seqno::Int64
     hdr::PacketHeaderProto
     bytes::Vector{UInt8}
     checksums::Vector{UInt32}
     acks::Vector{Int32}
 end
 
+@doc doc"""
+WriterPipeline holds all packets of data for a block and provides methods to maintain
+their states. Pipeline `failed` status is set if any of the acks received is a failure.
+Field `acked_bytes` contains the count of bytes successfully sent till an error is 
+encountered.
+""" ->
 type WriterPipeline
     pkt_prepared::Vector{PipelinedPacket}
     pkt_ackwait::Vector{PipelinedPacket}
     pkt_ackrcvd::Vector{PipelinedPacket}
+    acked_bytes::UInt64
     failed::Bool
+    triggers::Vector{Condition}
+    flush::Bool
 
-    WriterPipeline = new(PipelinedPacket[], PipelinedPacket[], PipelinedPacket[], false)
+    WriterPipeline() = new(PipelinedPacket[], PipelinedPacket[], PipelinedPacket[], 0, false, [Condition(), Condition()], false)
 end
 
-function move(from::Vector{PipelinedPacket}, to::Vector{PipelinesPacket}, seqno::UInt64)
+function move(from::Vector{PipelinedPacket}, to::Vector{PipelinedPacket}, seqno::Int64)
     for idx in 1:length(from)
         pkt = from[idx]
         if pkt.seqno == seqno
@@ -577,29 +600,59 @@ function move(from::Vector{PipelinedPacket}, to::Vector{PipelinesPacket}, seqno:
             return pkt
         end
     end
-    throw(HDFSException("Packet seqno:$seqno not found in pipeline"))
+    throw(HadoopRpcException("Packet seqno:$seqno not found in pipeline"))
 end
 
-enqueue(pipeline::WriterPipeline, pkt::PipelinesPacket) = (push!(pipeline.pkt_prepared, pkt); nothing)
+wait_pkt(pipeline::WriterPipeline) = wait(pipeline.triggers[1])
+wait_flushed(pipeline::WriterPipeline) = pipeline.failed || wait(pipeline.triggers[2])
+trigger_pkt(pipeline::WriterPipeline) = notify(pipeline.triggers[1])
+trigger_flushed(pipeline::WriterPipeline) = notify(pipeline.triggers[2])
 
-function ackwait(pipeline::WriterPipeline, seqno::UInt64)
+function enqueue(pipeline::WriterPipeline, pkt::PipelinedPacket)
+    push!(pipeline.pkt_prepared, pkt)
+    #trigger_pkt(pipeline)
+    nothing
+end
+
+function ackwait(pipeline::WriterPipeline, seqno::Int64)
     pkt = move(pipeline.pkt_prepared, pipeline.pkt_ackwait, seqno)
     pkt.bytes = UInt8[]
     pkt.checksums = UInt32[]
     nothing
 end
 
-function ackrcvd(pipeline::WriterPipeline, seqno::UInt64, acks::Vector{Int32})
+function ackrcvd(pipeline::WriterPipeline, seqno::Int64, acks::Vector{Int32})
     pkt = move(pipeline.pkt_ackwait, pipeline.pkt_ackrcvd, seqno)
     pkt.acks = acks
     for ack in acks
         (ack == Status.SUCCESS) || (pipeline.failed = true)
     end
+    if !pipeline.failed
+        pipeline.acked_bytes += pkt.hdr.dataLen
+    end
     nothing
 end
 
-pending(pipeline::WriterPipeline) = !(isempty(pipeline.pkt_prepared) && isempty(pipeline.pkt_ackwait))
+function assert_no_failure(pipeline::WriterPipeline)
+    if pipeline.failed
+        throw(HadoopRpcException("Received failure ack from datanode. Pipeline proecssing has failed"))
+    end
+    nothing
+end
 
+pending(pipeline::WriterPipeline) = (length(pipeline.pkt_prepared) + length(pipeline.pkt_ackwait))
+
+
+@doc doc"""
+HDFSBlockWriter writes one block worth of data to a datanode.
+
+The `write` method returns number of bytes accepted for writing into this block, which may be less than
+what was requested if block is full.
+
+Packets are sent and acks received as and when data being written exceed packet size limit.
+
+The `close` operation flushes remaining data in the block and waits for all pending acks.
+""" ->
 type HDFSBlockWriter
     channel::HadoopDataChannel
     server_defaults::FsServerDefaultsProto
@@ -610,28 +663,31 @@ type HDFSBlockWriter
 
     total_written::UInt64
 
-    pkt_seq::UInt64
+    pkt_seq::Int64
     pkt_pipeline::WriterPipeline
-    pipeline_task::Nullable{Task}
+    pipeline_task::Task
 
     function HDFSBlockWriter(block::LocatedBlockProto, defaults::FsServerDefaultsProto)
-        nnode,ndnode = _select_node_for_block(writer.block)
-        isnull(nnode) && throw(HDFSException("Could not get a valid datanode to write"))
+        nnode_info = _select_node_for_block(block)
+        isnull(nnode_info) && throw(HadoopRpcException("Could not get a valid datanode to write"))
 
-        node = get(nnode)
-        dnode = get(ndnode)
+        node_info = get(nnode_info)
+        node = node_info.id
         host = node.ipAddr
         port = node.xferPort
         
         channel = HadoopDataChannel(host, port)
         logmsg("creating block writer for offset $(block.offset) at $host:$port")
-        new(channel, defaults, block, ndnode, IOBuffer(), 0, 1, WriterPipeline(), Nullable{Task}())
+        writer = new(channel, defaults, block, node_info, PipeBuffer(), 0, 0, WriterPipeline())
+        writer.pipeline_task = @async process_pipeline(writer)
+        writer
     end
 end
 
 isconnected(writer::HDFSBlockWriter) = isconnected(writer.channel)
 function disconnect(writer::HDFSBlockWriter)
     isconnected(writer.channel) && disconnect(writer.channel)
+    istaskdone(writer.pipeline_task) || trigger_pkt(writer.pkt_pipeline)
     nothing
 end
 
@@ -640,49 +696,103 @@ function connect(writer::HDFSBlockWriter)
     nothing
 end
 
+function check_write_buffer(writer::HDFSBlockWriter)
+    defaults = writer.server_defaults
+    max_buffer_pkt = 10
+    max_buffer_bytes = defaults.writePacketSize * max_buffer_pkt
+    buffered_bytes = nb_available(writer.buffer)
+    if ((buffered_bytes >= max_buffer_bytes) || (pending(writer.pkt_pipeline) >= max_buffer_pkt))
+        logmsg("waiting for pkt_pipeline to finish. still buffered:$(nb_available(writer.buffer)), pending packets:$(pending(writer.pkt_pipeline))")
+        trigger_pkt(writer.pkt_pipeline)
+        wait_pkt(writer.pkt_pipeline)
+    elseif buffered_bytes >= defaults.writePacketSize
+        logmsg("triggering pkt_pipeline. buffered:$(nb_available(writer.buffer)), pending packets:$(pending(writer.pkt_pipeline))")
+        trigger_pkt(writer.pkt_pipeline)
+        yield()
+    end
+end
+
 function write(writer::HDFSBlockWriter, buff::Vector{UInt8})
     defaults = writer.server_defaults
-    nbytes = min(defaults.writePacketSize - writer.total_written, length(buff))
-    (nbytes > 0) && write_sub(writer.buffer, buff, 1, nbytes)
-    #TODO: process_pipeline should be an async task
-    process_pipeline(writer)
-    writer.pkt_pipeline.failed && throw(HDFSException("Pipeline proecssing has failed"))
+    nbytes = min(defaults.blockSize - writer.total_written, length(buff))
+    if nbytes > 0
+        Base.write_sub(writer.buffer, buff, 1, nbytes)
+        #logmsg("accumulated $(nbytes)/$(length(buff)) bytes to buffer. accumulated size:$(nb_available(writer.buffer))")
+    end
+    check_write_buffer(writer)
     nbytes
 end
 
 function flush(writer::HDFSBlockWriter)
-    prepare_packet(writer)
-    while pending(writer.pkt_pipeline)
-        process_pipeline(writer)
-        writer.pkt_pipeline.failed && throw(HDFSException("Pipeline proecssing has failed"))
-    end
+    logmsg("flush of block writer invoked")
+    pipeline = writer.pkt_pipeline
+    pipeline.flush = true
+    trigger_pkt(pipeline)
+    wait_flushed(pipeline)
+    pipeline.failed && throw(HadoopRpcException("Error flushing pipeline"))
     nothing
 end
 
 function process_pipeline(writer::HDFSBlockWriter)
     pipeline = writer.pkt_pipeline
-    channel = writer.channel
-    sock = get(channel.sock)
-    defaults = writer.defaults
+    defaults = writer.server_defaults
+    flushed = false
+    failed = pipeline.failed
 
-    if !isconnected(writer)
-        connect(writer)
-        send_block_write(writer)
-        recv_blockop(writer)
-    end
+    try
+        while !(failed || flushed)
+            if (nb_available(writer.buffer) < defaults.writePacketSize) && 
+                isempty(pipeline.pkt_prepared) && 
+                (isempty(pipeline.pkt_ackwait) || (nb_available(sock) == 0))
+                logmsg("process_pipeline: waiting for more data")
+                wait_pkt(pipeline)
+            end
+            logmsg("process_pipeline triggerred")
 
-    while !isempty(pipeline.pkt_ackwait) && (nb_available(sock) > 0)
-        read_packet_ack(writer)
-    end
+            if !isconnected(writer)
+                connect(writer)
+                send_block_write(writer)
+                recv_blockop(writer)
+            end
 
-    while nb_available(writer.buffer) >= defaults.writePacketSize
-        prepare_packet(writer)
-    end
+            channel = writer.channel
+            sock = get(channel.sock)
 
-    while !isempty(pipeline.pkt_prepared)
-        pkt = pipeline.pkt_prepared[1]
-        write_packet(writer, pkt)
+            while nb_available(writer.buffer) >= defaults.writePacketSize
+                prepare_packet(writer)
+            end
+
+            flushed = pipeline.flush
+
+            if flushed
+                while nb_available(writer.buffer) > 0
+                    logmsg("flushing remaining data packet...")
+                    prepare_packet(writer)
+                end
+                logmsg("preparing last empty packet...")
+                prepare_packet(writer)
+            end
+
+            while !isempty(pipeline.pkt_prepared)
+                pkt = pipeline.pkt_prepared[1]
+                write_packet(writer, pkt)
+            end
+
+            logmsg("process_pipeline: nackwait: $(length(pipeline.pkt_ackwait)) nb_available:$(nb_available(sock)) flush:$(flushed)")
+            while !failed && !isempty(pipeline.pkt_ackwait) && (flushed || (nb_available(sock) > 0))
+                read_packet_ack(writer)
+                failed = pipeline.failed
+            end
+            trigger_pkt(pipeline)
+            #yield()
+        end
+    catch ex
+        logmsg("pipeline failed with $ex")
+        pipeline.failed = true
     end
+    logmsg("process_pipeline finished. pipeline failed: $(failed), flushed: $(flushed)")
+    trigger_pkt(pipeline)
+    trigger_flushed(pipeline)
 end
 
 function buffer_writeblock(writer::HDFSBlockWriter)
@@ -699,6 +809,7 @@ function buffer_writeblock(writer::HDFSBlockWriter)
     for fld in (:poolId, :blockId, :generationStamp)
         set_field(exblock, fld, get_field(block.b, fld))
     end
+    set_field(exblock, :numBytes, uint64(0))
 
     basehdr = BaseHeaderProto()
     set_field(basehdr, :block, exblock)
@@ -709,12 +820,17 @@ function buffer_writeblock(writer::HDFSBlockWriter)
     set_field(hdr, :clientName, ELLY_CLIENTNAME)
 
     chksum = ChecksumProto()
-    chksum._type = defaults.checksumType
-    chksum.bytesPerChecksum = defaults.bytesPerChecksum
+    set_field(chksum, :_type, defaults.checksumType)
+    set_field(chksum, :bytesPerChecksum, defaults.bytesPerChecksum)
+
+    targets = DatanodeInfoProto[]
+    for loc in block.locs
+        (loc.id != writer.source_node.id) && push!(targets, loc)
+    end
 
     writeblock = OpWriteBlockProto()
     set_field(writeblock, :header, hdr)
-    set_field(writeblock, :targets, block.locs)
+    set_field(writeblock, :targets, targets)
     set_field(writeblock, :source, writer.source_node)
     set_field(writeblock, :stage, OpWriteBlockProto_BlockConstructionStage.PIPELINE_SETUP_CREATE)
     set_field(writeblock, :pipelineSize, uint32(length(block.locs)))
@@ -722,8 +838,7 @@ function buffer_writeblock(writer::HDFSBlockWriter)
     set_field(writeblock, :maxBytesRcvd, uint64(0))
     set_field(writeblock, :latestGenerationStamp, exblock.generationStamp)
     set_field(writeblock, :requestedChecksum, chksum)
-    set_field(writeblock, :targetStorageTypes, block.storageTypes)
-    logmsg("sending block write message for offset $offset")
+    logmsg("sending block write message for offset $(block.offset)")
 
     buffer_size_delimited(channel.iob, writeblock)
 end
@@ -749,27 +864,34 @@ end
 function recv_blockop(writer::HDFSBlockWriter)
     channel = writer.channel
     try
-        block_resp = recv_blockop(channel)
-        checksum_type = block_resp.readOpChecksumInfo.checksum._type
-        (checksum_type == ChecksumTypeProto.CHECKSUM_CRC32) || (checksum_type == ChecksumTypeProto.CHECKSUM_CRC32C) || throw(HadoopRpcException("Unknown checksum type $checksum_type"))
-        reader.block_op_resp = Nullable(block_resp)
+        recv_blockop(get(channel.sock))
     catch ex
         logmsg("exception receiving from $(channel.host):$(channel.port): $ex")
-        disconnect(reader)
+        disconnect(writer)
         rethrow(ex)
     end
     nothing
 end
 
-function populate_checksums(bytes::Vector{UInt8}, chunk_len::UInt64, checksums::Vector{UInt32})
+function populate_checksums(bytes::Vector{UInt8}, chunk_len::UInt32, checksums::Vector{UInt32}, checksum_type::Int32)
     nbytes = length(bytes)
     nchunks = length(checksums)
     c_offset = 1
     for idx in 1:nchunks
         c_len = (c_offset+chunk_len > nbytes) ? (nbytes-c_offset+1) : chunk_len
-        c_ptr = pointer(bytes, c_offset)
-        c_data = pointer_to_array(c_ptr+c_offset-1, c_len)
-        checksums[idx] = crc32(c_data)
+        c_data = pointer_to_array(pointer(bytes, c_offset), c_len)
+
+        if checksum_type == ChecksumTypeProto.CHECKSUM_CRC32
+            calc_chksum = crc32(c_data)
+        elseif checksum_type == ChecksumTypeProto.CHECKSUM_CRC32C
+            calc_chksum = crc32c(c_data)
+        else
+            throw(HadoopRpcException("Unknown CRC type $checksum_type"))
+        end
+
+        checksums[idx] = hton(calc_chksum)
+        #logmsg("chksum $calc_chksum")
+        c_offset += c_len
     end
     nothing
 end
@@ -777,18 +899,18 @@ end
 function prepare_packet(writer::HDFSBlockWriter)
     defaults = writer.server_defaults
 
-    logmsg("prepare block packet")
+    #logmsg("prepare block packet")
     bytes_in_packet = min(defaults.writePacketSize, nb_available(writer.buffer))
-    logmsg("bytes in packet $(bytes_in_packet). default pkt size: $(defaults.writePacketSize)")
 
-    last_pkt = (bytes_in_packet < defaults.writePacketSize)
-    seq_no = uint64(writer.pkt_seq += 1)
+    last_pkt = (bytes_in_packet == 0)
+    seq_no = int64(writer.pkt_seq += 1)
+    #logmsg("packet seqno $seq_no with $(bytes_in_packet)/$(defaults.writePacketSize) bytes is last packet: $last_pkt")
 
     pkt_hdr = PacketHeaderProto()
-    set_field(pkt_hdr, :offsetInBlock, uint64(writer.block.offset + writer.total_written))
+    set_field(pkt_hdr, :offsetInBlock, int64(writer.total_written))
     set_field(pkt_hdr, :seqno, seq_no)
     set_field(pkt_hdr, :lastPacketInBlock, last_pkt)
-    set_field(pkt_hdr, :dataLen, bytes_in_packet)
+    set_field(pkt_hdr, :dataLen, int32(bytes_in_packet))
 
     writer.total_written += bytes_in_packet
 
@@ -800,16 +922,16 @@ function prepare_packet(writer::HDFSBlockWriter)
     end
 
     chunk_len = defaults.bytesPerChecksum
-    chunk_count = div(bytes_in_packet + chunk_len, chunk_len)
+    chunk_count = div(bytes_in_packet + chunk_len - 1, chunk_len)
     checksums = Array(UInt32, chunk_count)
-    populate_checksums(bytes, chunk_len, checksums)
+    populate_checksums(bytes, chunk_len, checksums, defaults.checksumType)
 
     enqueue(writer.pkt_pipeline, PipelinedPacket(seq_no, pkt_hdr, bytes, checksums, Int32[]))
     nothing
 end
 
 function write_packet(writer::HDFSBlockWriter, pkt::PipelinedPacket)
-    logmsg("write block packet")
+    #logmsg("write block packet")
     channel = writer.channel
 
     try
@@ -828,7 +950,7 @@ function write_packet(writer::HDFSBlockWriter, pkt::PipelinedPacket)
         write(sock, pkt.bytes)
 
         ackwait(writer.pkt_pipeline, pkt.seqno)
-        logmsg("sent packet to $(channel.host):$(channel.port). total_written:$(writer.total_written)")
+        #logmsg("sent packet to $(channel.host):$(channel.port). total_written:$(writer.total_written)")
         nothing
     catch ex
         logmsg("exception sending to $(channel.host):$(channel.port): $ex")
@@ -838,19 +960,25 @@ function write_packet(writer::HDFSBlockWriter, pkt::PipelinedPacket)
 end
 
 function read_packet_ack(writer::HDFSBlockWriter)
-    logmsg("reading packet ack")
+    #logmsg("reading packet ack")
     channel = writer.channel
 
     try
         sock = get(channel.sock)
-        logmsg("recv packet ack message")
+        #logmsg("recv packet ack message")
         data_bytes = read_bytes(sock)
-        logmsg("ack <- sock. len $(length(data_bytes))")
+        #logmsg("ack <- sock. len $(length(data_bytes))")
 
         ack = PipelineAckProto()
         readproto(IOBuffer(data_bytes), ack)
-        ackrcvd(writer.pkt_pipeline, ack.seqno, ack.status)
-        logmsg("received ack for seqno: $(ack.seqno), status: $(ack.status)")
+
+        pipeline = writer.pkt_pipeline
+        ackrcvd(pipeline, ack.seqno, ack.status)
+
+        exblk = writer.block.b
+        set_field(exblk, :numBytes, pipeline.acked_bytes)
+
+        #logmsg("received ack for seqno: $(ack.seqno), status: $(ack.status) bytes acked: $(exblk.numBytes)")
         nothing
     catch ex
         logmsg("exception reading from $(channel.host):$(channel.port): $ex")

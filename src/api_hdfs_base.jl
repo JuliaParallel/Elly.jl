@@ -55,6 +55,22 @@ pwd(client::HDFSClient) = client.wd
 
 
 
+@doc doc"""
+# HDFSFile
+Holds a HDFSClient and path pointing to a file on HDFS
+""" ->
+type HDFSFile
+    client::HDFSClient
+    path::AbstractString
+end
+
+function HDFSFile(uristr::AbstractString)
+    uri = URI(uristr)
+    (uri.schema == "hdfs") || throw(HDFSException("Not a HDFS URI: $uristr"))
+    client = HDFSClient(uri.host, uri.port, uri.userinfo)
+    HDFSFile(client, u.path)
+end
+
 
 @doc doc"""
 # HDFSFileInfo
@@ -164,6 +180,7 @@ hdfs_capacity_remaining(client::HDFSClient) = _get_fs_status(client).remaining
 
 #
 # File Status
+stat(file::HDFSFile) = stat(file.client, file.path)
 function stat(client::HDFSClient, path::AbstractString)
     fileinfo = _get_file_info(client, path)
     isnull(fileinfo) && throw(HDFSException("Path not found $path"))
@@ -172,29 +189,38 @@ function stat(client::HDFSClient, path::AbstractString)
     hdfs_file_info
 end
 
+exists(file::HDFSFile) = exists(file.client, file.path)
 exists(client::HDFSClient, path::AbstractString) = !isnull(_get_file_info(client, path))
 
+isdir(file::HDFSFile) = isdir(file.client, file.path)
 isdir(client::HDFSClient, path::AbstractString) = isdir(stat(client, path))
 isdir(fileinfo::HDFSFileInfo) = (fileinfo.kind == HdfsFileStatusProto_FileType.IS_DIR)
 
+isfile(file::HDFSFile) = isfile(file.client, file.path)
 isfile(client::HDFSClient, path::AbstractString) = isfile(stat(client, path))
 isfile(fileinfo::HDFSFileInfo) = (fileinfo.kind == HdfsFileStatusProto_FileType.IS_FILE)
 
+islink(file::HDFSFile) = islink(file.client, file.path)
 islink(client::HDFSClient, path::AbstractString) = islink(stat(client, path))
 islink(fileinfo::HDFSFileInfo) = (fileinfo.kind == HdfsFileStatusProto_FileType.IS_SYMLINK)
 
+filesize(file::HDFSFile) = filesize(file.client, file.path)
 filesize(client::HDFSClient, path::AbstractString) = filesize(stat(client, path))
 filesize(fileinfo::HDFSFileInfo) = fileinfo.size
 
+filemode(file::HDFSFile) = filemode(file.client, file.path)
 filemode(client::HDFSClient, path::AbstractString) = filemode(stat(client, path))
 filemode(fileinfo::HDFSFileInfo) = fileinfo.permissions
 
+mtime(file::HDFSFile) = mtime(file.client, file.path)
 mtime(client::HDFSClient, path::AbstractString) = mtime(stat(client, path))
 mtime(fileinfo::HDFSFileInfo) = fileinfo.last_mod
 
+atime(file::HDFSFile) = atime(file.client, file.path)
 atime(client::HDFSClient, path::AbstractString) = atime(stat(client, path))
 atime(fileinfo::HDFSFileInfo) = fileinfo.last_access
 
+hdfs_blocks(file::HDFSFile, offset::UInt64=uint64(0), length::UInt64=uint64(0)) = hdfs_blocks(file.client, file.path, offset, length)
 function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::UInt64=uint64(0), length::UInt64=uint64(0))
     blocks = (UInt64,Array)[]
     _locations = _get_block_locations(client, path, offset, length)
@@ -213,6 +239,7 @@ function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::UInt64=ui
     blocks
 end
 
+hdfs_set_replication(file::HDFSFile, replication::Integer) = hdfs_set_replication(file.client, file.path, replication)
 function hdfs_set_replication(client::HDFSClient, path::AbstractString, replication::Integer)
     path = abspath(client, path)
     inp = SetReplicationRequestProto()
@@ -234,6 +261,7 @@ function _get_content_summary(client::HDFSClient, path::AbstractString)
     resp.summary
 end
 
+du(file::HDFSFile, details::Nullable{Dict{Symbol,Any}}=Nullable{Dict{Symbol,Any}}()) = du(file.client, file.path, details)
 function du(client::HDFSClient, path::AbstractString=".", details::Nullable{Dict{Symbol,Any}}=Nullable{Dict{Symbol,Any}}())
     summary = _get_content_summary(client, path)
     isnull(details) || _as_dict(summary, get(details))
@@ -242,6 +270,7 @@ end
 
 #
 # File create, delete, list
+readdir(file::HDFSFile, limit::Int=typemax(Int)) = readdir(file.client, file.path, limit)
 function readdir(client::HDFSClient, path::AbstractString=".", limit::Int=typemax(Int))
     result = AbstractString[]
     _walkdir(client, path, (filestatus)->begin
@@ -251,6 +280,7 @@ function readdir(client::HDFSClient, path::AbstractString=".", limit::Int=typema
     result
 end
 
+mkdir(file::HDFSFile, create_parents::Bool=false, mode::UInt32=uint32(0o755)) = mkdir(file.client, file.path, create_parents, mode)
 function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=false, mode::UInt32=uint32(0o755))
     path = abspath(client, path)
     inp = MkdirsRequestProto()
@@ -265,6 +295,7 @@ function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=fa
     resp.result
 end
 
+mv(src::HDFSFile, dst::AbstractString, overwrite::Bool) = mv(src.client, src.path, dst, overwrite)
 function mv(client::HDFSClient, src::AbstractString, dst::AbstractString, overwrite::Bool)
     src = abspath(client, src)
     dst = abspath(client, dst)
@@ -277,6 +308,7 @@ function mv(client::HDFSClient, src::AbstractString, dst::AbstractString, overwr
     true
 end
 
+mv(src::HDFSFile, dst::AbstractString) = mv(src.client, src.path, dst)
 function mv(client::HDFSClient, src::AbstractString, dst::AbstractString)
     src = abspath(client, src)
     dst = abspath(client, dst)
@@ -288,6 +320,7 @@ function mv(client::HDFSClient, src::AbstractString, dst::AbstractString)
     resp.result
 end
 
+rm(file::HDFSFile, recursive::Bool=false) = rm(file.client, file.path, recursive)
 function rm(client::HDFSClient, path::AbstractString, recursive::Bool=false)
     path = abspath(client, path)
     inp = DeleteRequestProto()
@@ -337,19 +370,27 @@ function _complete_file(client::HDFSClient, path::AbstractString, last::Nullable
     endinp = CompleteRequestProto()
     set_field(endinp, :src, path)
     set_field(endinp, :clientName, ELLY_CLIENTNAME)
-    isnull(last) || set_field(endinp, :last, last)
+    if !isnull(last)
+        set_field(endinp, :last, get(last))
+        logmsg("setting last block as $(get(last))")
+    end
 
     endresp = complete(client.stub, client.controller, endinp)
     endresp.result
 end
 
+function _add_block(client::HDFSClient, path::AbstractString, previous::Nullable{LocatedBlockProto}=Nullable{LocatedBlockProto}())
+    isnull(previous) && (return _add_block(client, path))
+    logmsg("adding next block to $(get(previous).b)")
+    _add_block(client, path, Nullable(get(previous).b))
+end
 function _add_block(client::HDFSClient, path::AbstractString, previous::Nullable{ExtendedBlockProto}=Nullable{ExtendedBlockProto}())
     path = abspath(client, path)
 
     inp = AddBlockRequestProto()
     set_field(inp, :src, path)
     set_field(inp, :clientName, ELLY_CLIENTNAME)
-    isnull(previous) || set_field(inp, :previous, previous)
+    isnull(previous) || set_field(inp, :previous, get(previous))
 
     resp = addBlock(client.stub, client.controller, inp)
     return resp.block
@@ -367,6 +408,7 @@ function renewlease(client::HDFSClient)
     nothing
 end
 
+touch(file::HDFSFile, replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644)) = touch(file.client, file.path, replication, blocksz, mode)
 function touch(client::HDFSClient, path::AbstractString, replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644))
     if exists(client, path)
         inp = SetTimesRequestProto()

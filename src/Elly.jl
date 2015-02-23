@@ -6,7 +6,7 @@ using URIParser
 using CRC
 
 import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, 
-        mv, rm, abspath, cd, pwd, touch, open, nb_available,
+        mv, rm, abspath, cd, pwd, touch, open, nb_available, cp,
         eof, position, seek, seekend, seekstart, skip, read, write, read!, readbytes, readall, close
 import ProtoBuf: write_bytes, read_bytes, call_method
 import URIParser: URI
@@ -16,8 +16,8 @@ export HDFSClient, HDFSFile, HDFSFileInfo, readdir, show, convert, URI,
         hdfs_status, hdfs_capacity, hdfs_capacity_used, hdfs_capacity_remaining,
         isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists,
         mkdir, touch, mv, rm, abspath, cd, pwd, open, eof, position, seek, seekend, seekstart, skip, nb_available,
-        read!, read, write, readbytes, readall, close,
-        hdfs_cptolocal,
+        read!, read, write, readbytes, readall, close, cp,
+        #hdfs_cptolocal,
         hdfs_renewlease, hdfs_blocks, hdfs_set_replication
 
 # enable logging only during debugging
