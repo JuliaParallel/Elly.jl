@@ -211,28 +211,6 @@ end
 readbytes(reader::HDFSFileReader, nb::Integer) = read!(reader, Array(Uint8, nb))
 readall(reader::HDFSFileReader) = readbytes(reader, nb_available(reader))
 
-#function hdfs_cptolocal(client::HDFSClient, hdfs_path::AbstractString, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
-#    reader = open(client, hdfs_path, "r"; offset=offset)
-#    hdfs_cptolocal(reader, local_path::AbstractString; len=len)
-#end
-#
-#function hdfs_cptolocal(reader::HDFSFileReader, local_path::AbstractString; len::UInt64=uint64(0))
-#    brem = btot = (len == 0) ? nb_available(reader) : len
-#    buff_sz = 128*1024
-#    buff = Array(UInt8, buff_sz)
-#    open(local_path, "w") do f
-#        while !eof(reader)
-#            bread = min(brem, buff_sz)
-#            (bread == length(buff)) || resize!(buff, bread)
-#            read!(reader, buff)
-#            write(f, buff)
-#            brem -= bread
-#            logmsg("remaining $brem/$btot")
-#        end
-#    end
-#    nothing
-#end
-
 @doc doc"""
 # HDFSFileWriter
 Provides Julia IO APIs for writing HDFS files.
@@ -313,29 +291,6 @@ function close(writer::HDFSFileWriter)
     nothing
 end
 
-#function hdfs_cptodfs(client::HDFSClient, hdfs_path::AbstractString, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
-#    writer = open(client, hdfs_path, "w")
-#    hdfs_cptodfs(writer, local_path::AbstractString; offset=offset, len=len)
-#end
-#
-#function hdfs_cptodfs(writer::HDFSFileWriter, local_path::AbstractString; offset::UInt64=uint64(0), len::UInt64=uint64(0))
-#    brem = btot = (len == 0) ? (filesize(local_path)-offset) : len
-#    buff_sz = 128*1024
-#    buff = Array(UInt8, buff_sz)
-#    open(local_path, "r") do f
-#        (offset > 0) && skip(f, offset)
-#        while !eof(f)
-#            bread = min(brem, buff_sz)
-#            (bread == length(buff)) || resize!(buff, bread)
-#            read!(f, buff)
-#            write(writer, buff)
-#            brem -= bread
-#            logmsg("remaining $brem/$btot")
-#        end
-#    end
-#    nothing
-#end
-
 #
 # File open
 function open(client::HDFSClient, path::AbstractString, rd::Bool, wr::Bool, ff::Bool; 
@@ -353,7 +308,9 @@ function open(client::HDFSClient, path::AbstractString, rd::Bool, wr::Bool, ff::
         throw(ArgumentError("invalid open mode. read:$rd, write:$wr, append:$ff"))
     end
 end
+open(file::HDFSFile, rd::Bool, wr::Bool, ff::Bool; opts...) = open(file.client, file.path, rd, wr, ff; opts...)
 open(client::HDFSClient, path::AbstractString; opts...) = open(client, path, true, false, false; opts...)
+open(file::HDFSFile; opts...) = open(file.client, file.path; opts...)
 
 function open(client::HDFSClient, path::AbstractString, open_mode::AbstractString; opts...)
     open_mode == "r"  ? open(client, path, true , false, false; opts...) :
@@ -361,6 +318,7 @@ function open(client::HDFSClient, path::AbstractString, open_mode::AbstractStrin
     open_mode == "a"  ? open(client, path, false, true , true;  opts...) :
     throw(ArgumentError("invalid open mode: $mode"))
 end
+open(file::HDFSFile, open_mode::AbstractString; opts...) = open(file.client, file.path, open_mode; opts...)
 
 #
 # File copy

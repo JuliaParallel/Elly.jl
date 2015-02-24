@@ -724,16 +724,19 @@ function write(writer::HDFSBlockWriter, buff::Vector{UInt8})
 end
 
 function flush(writer::HDFSBlockWriter)
-    logmsg("flush of block writer invoked")
     pipeline = writer.pkt_pipeline
+    logmsg("flush of block writer invoked $(object_id(pipeline))")
     pipeline.flush = true
+    #logmsg("triggering for flushed state. $(pipeline.flush)")
     trigger_pkt(pipeline)
+    #logmsg("waiting for flushed state. $(pipeline.flush)")
     wait_flushed(pipeline)
     pipeline.failed && throw(HadoopRpcException("Error flushing pipeline"))
     nothing
 end
 
 function process_pipeline(writer::HDFSBlockWriter)
+    #logmsg("process_pipeline: started")
     pipeline = writer.pkt_pipeline
     defaults = writer.server_defaults
     flushed = false
@@ -744,10 +747,12 @@ function process_pipeline(writer::HDFSBlockWriter)
             if (nb_available(writer.buffer) < defaults.writePacketSize) && 
                 isempty(pipeline.pkt_prepared) && 
                 (isempty(pipeline.pkt_ackwait) || (nb_available(sock) == 0))
-                logmsg("process_pipeline: waiting for more data")
-                wait_pkt(pipeline)
+                if !pipeline.flush
+                    #logmsg("process_pipeline: waiting for more data $(object_id(pipeline)), $(pipeline.flush)")
+                    wait_pkt(pipeline)
+                end
             end
-            logmsg("process_pipeline triggerred")
+            logmsg("process_pipeline triggerred or flushed")
 
             if !isconnected(writer)
                 connect(writer)
@@ -788,9 +793,9 @@ function process_pipeline(writer::HDFSBlockWriter)
         end
     catch ex
         logmsg("pipeline failed with $ex")
-        pipeline.failed = true
+        failed = pipeline.failed = true
     end
-    logmsg("process_pipeline finished. pipeline failed: $(failed), flushed: $(flushed)")
+    logmsg("process_pipeline finished. failed: $(failed), flushed: $(flushed)")
     trigger_pkt(pipeline)
     trigger_flushed(pipeline)
 end

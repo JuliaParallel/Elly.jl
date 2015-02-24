@@ -36,7 +36,6 @@ function show(io::IO, client::HDFSClient)
     user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
     println(io, "HDFSClient: hdfs://$(user_spec)$(ch.host):$(ch.port)/")
     println("    id: $(ch.clnt_id)")
-    println("    blocking: true")
     println("    connected: $(isconnected(ch))")
     println("    pwd: $(client.wd)")
 end
@@ -71,6 +70,13 @@ function HDFSFile(uristr::AbstractString)
     HDFSFile(client, u.path)
 end
 
+function show(io::IO, file::HDFSFile)
+    client = file.client
+    ch = client.channel
+    user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
+
+    println(io, "HDFSFile: hdfs://$(user_spec)$(ch.host):$(ch.port)$(abspath(client, file.path))")
+end
 
 @doc doc"""
 # HDFSFileInfo
@@ -92,6 +98,21 @@ type HDFSFileInfo
                     fs.length, fs.block_replication, fs.blocksize,
                     fs.owner, fs.group, fs.permission.perm,
                     fs.modification_time, fs.access_time)
+end
+
+function show(io::IO, st::HDFSFileInfo)
+    println(io, "HDFSFileInfo: $(st.name)")
+    if isdir(st)
+        println(io, "    type: folder")
+    elseif islink(st)
+        println(io, "    type: link")
+    else
+        println(io, "    type: file")
+        println(io, "    size: $(st.size)")
+        println(io, "    block_sz: $(st.block_sz)")
+    end
+    println(io, "    owner: $(st.owner)")
+    println(io, "    group: $(st.grp)")
 end
 
 function _as_dict(obj, d=Dict{Symbol,Any}())
