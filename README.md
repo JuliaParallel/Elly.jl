@@ -17,7 +17,7 @@ HDFSClient: hdfs://hdfs@localhost:9000/
     id: 3c9f6059-7e35-44
     connected: false
     pwd: /
-
+````
 
 In the example above, `dfs` is the instance of `HDFSClient` which needs to be used with other APIs. It will be connected automatically on first use. The dfs working directory is set to `/` on a new client.
 

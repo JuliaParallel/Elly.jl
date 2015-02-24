@@ -603,14 +603,22 @@ function move(from::Vector{PipelinedPacket}, to::Vector{PipelinedPacket}, seqno:
     throw(HadoopRpcException("Packet seqno:$seqno not found in pipeline"))
 end
 
-wait_pkt(pipeline::WriterPipeline) = wait(pipeline.triggers[1])
+# since these use condition variables that are edge triggered,
+# take care to ensure atomicity of the methods (do not introduce anything that may yield)
+wait_pkt(pipeline::WriterPipeline) = pipeline.flush || wait(pipeline.triggers[1])
 wait_flushed(pipeline::WriterPipeline) = pipeline.failed || wait(pipeline.triggers[2])
 trigger_pkt(pipeline::WriterPipeline) = notify(pipeline.triggers[1])
 trigger_flushed(pipeline::WriterPipeline) = notify(pipeline.triggers[2])
+function flush_and_wait(pipeline::WriterPipeline)
+    pipeline.flush = true
+    trigger_pkt(pipeline)
+    wait_flushed(pipeline)
+    pipeline.failed && throw(HadoopRpcException("Error flushing pipeline"))
+    nothing
+end
 
 function enqueue(pipeline::WriterPipeline, pkt::PipelinedPacket)
     push!(pipeline.pkt_prepared, pkt)
-    #trigger_pkt(pipeline)
     nothing
 end
 
@@ -724,19 +732,12 @@ function write(writer::HDFSBlockWriter, buff::Vector{UInt8})
 end
 
 function flush(writer::HDFSBlockWriter)
-    pipeline = writer.pkt_pipeline
-    logmsg("flush of block writer invoked $(object_id(pipeline))")
-    pipeline.flush = true
-    #logmsg("triggering for flushed state. $(pipeline.flush)")
-    trigger_pkt(pipeline)
-    #logmsg("waiting for flushed state. $(pipeline.flush)")
-    wait_flushed(pipeline)
-    pipeline.failed && throw(HadoopRpcException("Error flushing pipeline"))
-    nothing
+    logmsg("flush of block writer invoked")
+    flush_and_wait(writer.pkt_pipeline)
 end
 
 function process_pipeline(writer::HDFSBlockWriter)
-    #logmsg("process_pipeline: started")
+    logmsg("process_pipeline: started")
     pipeline = writer.pkt_pipeline
     defaults = writer.server_defaults
     flushed = false
@@ -747,10 +748,7 @@ function process_pipeline(writer::HDFSBlockWriter)
             if (nb_available(writer.buffer) < defaults.writePacketSize) && 
                 isempty(pipeline.pkt_prepared) && 
                 (isempty(pipeline.pkt_ackwait) || (nb_available(sock) == 0))
-                if !pipeline.flush
-                    #logmsg("process_pipeline: waiting for more data $(object_id(pipeline)), $(pipeline.flush)")
-                    wait_pkt(pipeline)
-                end
+                wait_pkt(pipeline)
             end
             logmsg("process_pipeline triggerred or flushed")
 
@@ -789,7 +787,6 @@ function process_pipeline(writer::HDFSBlockWriter)
                 failed = pipeline.failed
             end
             trigger_pkt(pipeline)
-            #yield()
         end
     catch ex
         logmsg("pipeline failed with $ex")
