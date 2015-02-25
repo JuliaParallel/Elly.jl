@@ -59,7 +59,14 @@ function seek(reader::HDFSFileReader, n::Integer)
     (0 <= n <= filesize(reader)) || throw(HDFSException("invalid seek position $n"))
     reader.fptr = n
     # TODO: do not disconnect if new fptr is still within the reach
-    isconnected(reader) && disconnect(reader)
+    if isconnected(reader)
+        reuse = false
+        if !isnull(reader.blk_reader)
+            blk_reader = get(reader.blk_reader)
+            reuse = eof(blk_readder)
+        end
+        disconnect(reader, reuse)
+    end
     nothing
 end
 seekend(reader::HDFSFileReader) = seek(reader, filesize(reader))
@@ -92,14 +99,14 @@ function _current_window(reader::HDFSFileReader)
 end
 
 isconnected(reader::HDFSFileReader) = !isnull(reader.blk_reader)
-function disconnect(reader::HDFSFileReader)
-    logmsg("disconnecting $(URI(reader,true))")
+function disconnect(reader::HDFSFileReader, reuse::Bool)
+    #logmsg("disconnecting $(URI(reader,true)) reuse:$reuse")
     if !isnull(reader.blocks)
         reader.blocks = Nullable{LocatedBlocksProto}()
     end
     if !isnull(reader.blk_reader) 
         blk_reader = get(reader.blk_reader)
-        isconnected(blk_reader) && disconnect(blk_reader)
+        isconnected(blk_reader) && disconnect(blk_reader, reuse)
         reader.blk_reader = Nullable{HDFSBlockReader}()
     end
     reader.buffer = PipeBuffer()
@@ -107,13 +114,13 @@ function disconnect(reader::HDFSFileReader)
 end
  
 function connect(reader::HDFSFileReader)
-    logmsg("connect if required $(URI(reader,true))")
+    #logmsg("connect if required $(URI(reader,true))")
     eof(reader) && return
     isconnected(reader) && return
 
-    logmsg("connecting $(URI(reader,true))")
+    #logmsg("connecting $(URI(reader,true))")
     if !(reader.fptr in _current_window(reader))
-        logmsg("moving block window for  $(URI(reader,true))")
+        #logmsg("moving block window for  $(URI(reader,true))")
         len = min(nb_available(reader), HDFS_READER_WINDOW_LENGTH)
         nblocks = _get_block_locations(reader.client, reader.path, reader.fptr, len)
         isnull(nblocks) && throw(HDFSException("Could not get block metadata for $(URI(reader,true))"))
@@ -135,12 +142,6 @@ function connect(reader::HDFSFileReader)
     block_len = block.b.numBytes
     offset_into_block = (reader.fptr % reader.block_sz)
     len = block_len - offset_into_block
-
-    if !isnull(reader.blk_reader)
-        logmsg("disconnecting old block reader")
-        disconnect(get(reader.blk_reader))
-    end
-    logmsg("creating new block reader")
     reader.blk_reader = Nullable(HDFSBlockReader(node.ipAddr, node.xferPort, block, offset_into_block, len, reader.crc_check))
     nothing
 end
@@ -153,7 +154,7 @@ function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::U
         if !isnull(reader.blk_reader)
             blk_reader = get(reader.blk_reader)
             if eof(blk_reader)
-                disconnect(blk_reader)
+                disconnect(blk_reader, true)
                 reader.blk_reader = Nullable{HDFSBlockReader}()
                 connect(reader)
             end
@@ -182,7 +183,14 @@ function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::U
     requested - len
 end
 
-close(reader::HDFSFileReader) = disconnect(reader::HDFSFileReader)
+function close(reader::HDFSFileReader)
+    reuse = false
+    if !isnull(reader.blk_reader)
+        blk_reader = get(reader.blk_reader)
+        reuse = eof(blk_reader)
+    end
+    disconnect(reader, reuse)
+end
 
 #
 # File read
@@ -197,7 +205,7 @@ function read!{T}(reader::HDFSFileReader, a::Array{T})
             nbytes = _read_and_buffer(reader, a, offset, remaining)
         else
             nbytes = min(navlb, remaining)
-            logmsg("reading $nbytes from buffer. navlb:$navlb remaining:$remaining, offset:$offset")
+            #logmsg("reading $nbytes from buffer. navlb:$navlb remaining:$remaining, offset:$offset")
             Base.read_sub(reader.buffer, a, offset+1, nbytes)
         end
         # fill from buffer
@@ -271,7 +279,7 @@ function write(writer::HDFSFileWriter, data::Vector{UInt8})
     nbytes_remaining = length(data) - nbytes
     if nbytes_remaining > 0
         flush(blk_writer)
-        disconnect(blk_writer)
+        disconnect(blk_writer, true)
         writer.blk_writer = Nullable{HDFSBlockWriter}()
 
         remaining = pointer_to_array(pointer(data, nbytes+1), nbytes_remaining)
@@ -284,7 +292,7 @@ function close(writer::HDFSFileWriter)
     if !isnull(writer.blk_writer)
         blk_writer = get(writer.blk_writer)
         flush(blk_writer)
-        disconnect(blk_writer)
+        disconnect(blk_writer, true)
         _complete_file(writer.client, writer.path, Nullable(blk_writer.block.b))
         writer.blk_writer = Nullable{HDFSBlockWriter}()
     end
@@ -336,7 +344,7 @@ function cp(frompath::Union(HDFSFile,AbstractString), topath::Union(HDFSFile,Abs
         tofile = open(topath, "w")
     end
 
-    buff_sz = 128*1024
+    buff_sz = 64*1024*1024
     buff = Array(UInt8, buff_sz)
     brem = btot = (len == 0) ? (filesize(fromfile)-offset) : len
     while brem > 0
@@ -345,7 +353,7 @@ function cp(frompath::Union(HDFSFile,AbstractString), topath::Union(HDFSFile,Abs
         read!(fromfile, buff)
         write(tofile, buff)
         brem -= bread
-        logmsg("remaining $brem/$btot")
+        #logmsg("remaining $brem/$btot")
     end
     close(fromfile)
     close(tofile)

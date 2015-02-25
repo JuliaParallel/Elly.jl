@@ -24,7 +24,7 @@ export HDFSClient, HDFSFile, HDFSFileInfo, readdir, show, convert, URI,
 using Logging
 const logger = Logging.configure(level=DEBUG)
 #const logger = Logging.configure(filename="elly.log", level=DEBUG)
-logmsg(s) = debug(s)
+#logmsg(s) = debug(s)
 #logmsg(s) = nothing
 
 include("hadoop/hadoop.jl")
