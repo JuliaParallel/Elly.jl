@@ -551,31 +551,41 @@ function recv_packet_hdr(reader::HDFSBlockReader)
     end
 end
 
-function verify_checksum(reader::HDFSBlockReader)
-    block_op_resp = get(reader.block_op_resp)
-    checksum_type = block_op_resp.readOpChecksumInfo.checksum._type
-    chksum = reader.checksums[reader.chunks_read]
-    chunk = reader.chunk
-    chunk = copy(chunk)
-    if checksum_type == ChecksumTypeProto.CHECKSUM_CRC32
-        calc_chksum = crc32(chunk)
-    elseif checksum_type == ChecksumTypeProto.CHECKSUM_CRC32C
-        calc_chksum = crc32c(chunk)
-    else
-        disconnect(reader, false)
-        throw(HadoopRpcException("Unknown CRC type $checksum_type"))
-    end
-    (chksum == calc_chksum) || throw(HadoopRpcException("Checksum mismatch at chunk $(reader.chunks_read). Expected $(chksum), got $(calc_chksum)"))
-    nothing
-end
-
 eofpacket(reader::HDFSBlockReader) = (reader.packet_read >= reader.packet_len)
 eof(reader::HDFSBlockReader) = (reader.total_read >= reader.len)
 
-# TODO: read optimizations
-# - implement read_chunks! method that optimizes by reading multiple chunks in one read operation to fit as many whole chunks as can fit in provided buffer.
-# - it should be zero copy
-function read_chunk!(reader::HDFSBlockReader)
+function verify_pkt_checksums(reader::HDFSBlockReader, buff::Vector{UInt8})
+    data_len = length(buff)
+    #logmsg("verifying packet crc data_len: $data_len")
+    (data_len > 0) || return
+
+    block_op_resp = get(reader.block_op_resp)
+    checksum_type = block_op_resp.readOpChecksumInfo.checksum._type
+
+    crc = (checksum_type == ChecksumTypeProto.CHECKSUM_CRC32) ? crc32 :
+          (checksum_type == ChecksumTypeProto.CHECKSUM_CRC32C) ? crc32c :
+          (disconnect(reader, false); throw(HadoopRpcException("Unknown CRC type $checksum_type")))
+
+    chunk_len = reader.chunk_len
+    offset = 1
+    checksums = reader.checksums
+    for idx in 1:(length(checksums)-1)
+        chksum = crc(pointer_to_array(pointer(buff, offset), chunk_len))
+        (chksum == checksums[idx]) || throw(HadoopRpcException("Checksum mismatch at chunk $(idx). Expected $(checksums[idx]), got $(chksum)"))
+        offset += chunk_len
+    end
+
+    chksum = crc(pointer_to_array(pointer(buff, offset), data_len-(offset-1)))
+    (chksum == checksums[end]) || throw(HadoopRpcException("Checksum mismatch at last chunk $(length(checksums)). Expected $(checksums[end]), got $(chksum)"))
+    nothing
+end
+
+@doc doc"""
+Read one packet into `inbuff` starting from `offset`.
+If `inbuff` has insufficient space, returns the minimum additional space required in `inbuff` to read the packet as a negative number.
+Otherwise, returns the number of bytes available in `inbuff` after reading the packet.
+""" ->
+function read_packet!(reader::HDFSBlockReader, inbuff::Vector{UInt8}, offset::UInt64)
     channel = reader.channel
 
     if !isconnected(channel)
@@ -584,35 +594,37 @@ function read_chunk!(reader::HDFSBlockReader)
         recv_blockop(reader)
         recv_packet_hdr(reader)
     elseif eofpacket(reader)
-        # send success status
+        # recv the next packet
         recv_packet_hdr(reader)
     end
 
+    packet_remaining = reader.packet_len - reader.packet_read
+    excess = int64(length(inbuff)+1-offset) - int64(packet_remaining)
+    (excess >= 0) || return excess
+    
+    buff = pointer_to_array(pointer(inbuff, offset), packet_remaining)
+
     try
-        packet_remaining = reader.packet_len - reader.packet_read
-        curr_chunk_len = min(packet_remaining, reader.chunk_len)
-        #logmsg("recv $(curr_chunk_len) byte chunk# $(reader.chunks_read+1)/$(reader.chunk_count), pkt $(reader.packet_read)/$(reader.packet_len), block $(reader.total_read)/$(reader.len)")
-
         sock = get(channel.sock)
-        reader.chunk = resize!(reader.chunk, curr_chunk_len)
 
-        read!(sock, reader.chunk)
-        reader.chunks_read += 1
-        reader.packet_read += curr_chunk_len
-        reader.total_read += curr_chunk_len
+        read!(sock, buff)
+        reader.packet_read += packet_remaining
+        reader.total_read += packet_remaining
+        #logmsg("recv $(packet_remaining) packet_read $(reader.packet_read), total_read $(reader.total_read)")
 
-        # verify crc
-        reader.chk_crc && verify_checksum(reader)
+        # verify crc only if required
+        reader.chk_crc && verify_pkt_checksums(reader, buff)
 
         # send the success block read status
         eof(reader) && send_read_status(reader)
-        reader.chunk
     catch ex
         #logmsg("exception receiving from $(channel.host):$(channel.port): $ex")
         disconnect(reader, false)
         rethrow(ex)
     end
+    excess
 end
+
 
 
 #

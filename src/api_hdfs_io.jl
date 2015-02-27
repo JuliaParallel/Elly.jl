@@ -147,7 +147,7 @@ function connect(reader::HDFSFileReader)
 end
 
 function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::UInt64, len::UInt64)
-    requested = len
+    requested::UInt64 = len
     # while data remains to be copied
     while len > 0
         # set/reset block reader if required
@@ -162,25 +162,26 @@ function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::U
             connect(reader)
         end
         blk_reader = get(reader.blk_reader)
-        # read chunk from reader
-        chunk = read_chunk!(blk_reader)
 
-        # copy into out and advance fptr
-        chunk_len = length(chunk)
-        copylen = min(len, chunk_len)
-        for i in 1:copylen
-            out[offset+i] = chunk[i]
+        # read packet from reader
+        ret = read_packet!(blk_reader, out, offset)                     # try to read directly into output
+        if ret < 0
+            pkt_len = len - ret                                         # bytes in this packet
+            buff = Array(UInt8, pkt_len)                                # allocate a temporary array
+            #logmsg("allocated temporary array of size $pkt_len")
+            ret = read_packet!(blk_reader, buff, pkt_len)               # read complete packet
+            copy!(out, offset+1, buff, 1, len)                          # copy len bytes to output
+            Base.write_sub(reader.buffer, buff, len+1, pkt_len-len)     # copy remaining data to buffer
+            copylen = len
+            len = 0                                                     # we definitely do not need to read any more
+        else
+            copylen = len - ret                                         # packet was read directly into output
+            len = ret                                                   # we may still have to read more data
         end
         offset += copylen
         reader.fptr += copylen
-        len -= copylen
-        
-        # copy remaining data to buffer
-        if copylen < chunk_len
-            Base.write_sub(reader.buffer, chunk, copylen+1, chunk_len-copylen)
-        end
     end
-    requested - len
+    requested
 end
 
 function close(reader::HDFSFileReader)
@@ -196,7 +197,7 @@ end
 # File read
 function read!{T}(reader::HDFSFileReader, a::Array{T})
     remaining::UInt64 = length(a)*sizeof(T)
-    offset::UInt64 = 0
+    offset::UInt64 = 1
     # while not eof and remaining to be filled
     while !eof(reader) && (remaining > 0)
         navlb = nb_available(reader.buffer)
@@ -206,7 +207,7 @@ function read!{T}(reader::HDFSFileReader, a::Array{T})
         else
             nbytes = min(navlb, remaining)
             #logmsg("reading $nbytes from buffer. navlb:$navlb remaining:$remaining, offset:$offset")
-            Base.read_sub(reader.buffer, a, offset+1, nbytes)
+            Base.read_sub(reader.buffer, a, offset, nbytes)
         end
         # fill from buffer
         (nbytes == 0) && break
