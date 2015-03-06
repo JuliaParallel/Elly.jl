@@ -115,9 +115,68 @@ type YarnAppStatus
 end
 
 function show(io::IO, status::YarnAppStatus)
-    println(io, "$(status.report)")
+    report = status.report
+
+    if isfilled(report, :final_application_status) && report.final_application_status > 0
+        final_state = "-$(FINAL_APP_STATES[report.final_application_status])"
+    else
+        final_state = ""
+    end
+    if isfilled(report, :progress)
+        final_state *= "-$(report.progress)"
+    end
+    println(io, "YarnApp $(report.applicationType) ($(report.name)/$(report.applicationId.id)): $(APP_STATES[report.yarn_application_state])$(final_state)")
+    println(io, "    location: $(report.user)@$(report.host):$(report.rpc_port)/$(report.queue)")
+    if report.yarn_application_state > YarnApplicationStateProto.RUNNING
+        println(io, "    time: $(report.startTime) to $(report.finishTime)")
+        if isfilled(report, :app_resource_Usage)
+            rusage = report.app_resource_Usage
+            println(io, "    rusage:")
+            println(io, "        mem,vcore seconds: $(rusage.memory_seconds), $(rusage.vcore_seconds)")
+            println(io, "        containers: used $(rusage.num_used_containers), reserved $(rusage.num_reserved_containers)")
+            println(io, "        mem: used $(rusage.used_resources.memory), reserved $(rusage.reserved_resources.memory), needed $(rusage.needed_resources.memory)")
+            println(io, "        vcores: used $(rusage.used_resources.virtual_cores), reserved $(rusage.reserved_resources.virtual_cores), needed $(rusage.needed_resources.virtual_cores)")
+        end
+        if isfilled(report, :diagnostics)
+            println(io, "    diagnostics: $(report.diagnostics)")
+        end
+    elseif report.yarn_application_state == YarnApplicationStateProto.RUNNING
+        println(io, "    start time: $(report.startTime)")
+    end
+    nothing
 end
 
+
+@doc doc"""
+YarnAppAttemptStatus wraps the protobuf type for ease of use
+""" ->
+type YarnAppAttemptStatus
+    report::ApplicationAttemptReportProto
+    function YarnAppAttemptStatus(report::ApplicationAttemptReportProto)
+        new(report)
+    end
+end
+
+function show(io::IO, status::YarnAppAttemptStatus)
+    report = status.report
+
+    atmpt_id = report.application_attempt_id
+
+    atmpt_str = "$(atmpt_id.application_id.id)"
+    if isfilled(report, :am_container_id)
+        atmpt_str *= "/$(report.am_container_id.id)"
+    else
+        atmpt_str *= "/-"
+    end
+    atmpt_str *= "/$(atmpt_id.attemptId)"
+
+    println(io, "YarnAppAttempt $(atmpt_str): $(ATTEMPT_STATES[report.yarn_application_attempt_state])")
+    println(io, "    location: $(report.host):$(report.rpc_port)")
+    if isfilled(report, :diagnostics)
+        println(io, "    diagnostics: $(report.diagnostics)")
+    end
+    nothing
+end
 
 @doc doc"""
 YarnApp represents one instance of application running on the yarn cluster
@@ -126,10 +185,10 @@ type YarnApp
     client::YarnClient
     appid::ApplicationIdProto
     status::Nullable{YarnAppStatus}
-    attempts::Nullable{Array}
+    attempts::Array{YarnAppAttemptStatus}
 
     function YarnApp(client::YarnClient, appid::ApplicationIdProto)
-        new(client, appid, Nullable{YarnAppStatus}(), Nullable{Array}())
+        new(client, appid, Nullable{YarnAppStatus}(), YarnAppAttemptStatus[])
     end
 end
 
@@ -143,64 +202,58 @@ FINAL_APP_STATES: enum value to state map. Used for converting state for display
 """ ->
 const FINAL_APP_STATES = [:succeeded, :failed, :killed]
 
+@doc doc"""
+ATTEMPT_STATES: enum value to state map. Used for converting state for display.
+""" ->
+const ATTEMPT_STATES = [:new, :submitted, :scheduled, :scheduled, :allocated_saving, :allocated, :launched, :failed, :running, :finishing, :finished, :killed]
+
 function show(io::IO, app::YarnApp)
     if isnull(app.status)
         println(io, "YarnApp: $(app.appid.id)")
-        return
-    end
-
-    status = get(app.status)
-    if isfilled(status, :final_application_status) && status.final_application_status > 0
-        final_state = "-$(FINAL_APP_STATES[status.final_application_status])"
     else
-        final_state = ""
-    end
-    if isfilled(status, :progress)
-        final_state *= "-$(status.progress)"
-    end
-    println(io, "YarnApp $(status.applicationType) ($(status.name)/$(app.appid.id)): $(APP_STATES[status.yarn_application_state])$(final_state)")
-    println(io, "    location: $(status.user)@$(status.host):$(status.rpc_port)/$(status.queue)")
-    if status.yarn_application_state > YarnApplicationStateProto.RUNNING
-        println(io, "    time: $(status.startTime) to $(status.finishTime)")
-        if isfilled(status, :app_resource_Usage)
-            rusage = status.app_resource_Usage
-            println(io, "    rusage:")
-            println(io, "        mem,vcore seconds: $(rusage.memory_seconds), $(rusage.vcore_seconds)")
-            println(io, "        containers: used $(rusage.num_used_containers), reserved $(rusage.num_reserved_containers)")
-            println(io, "        mem: used $(rusage.used_resources.memory), reserved $(rusage.reserved_resources.memory), needed $(rusage.needed_resources.memory)")
-            println(io, "        vcores: used $(rusage.used_resources.virtual_cores), reserved $(rusage.reserved_resources.virtual_cores), needed $(rusage.needed_resources.virtual_cores)")
-        end
-    elseif status.yarn_application_state == YarnApplicationStateProto.RUNNING
-        println(io, "    start time: $(status.startTime)")
+        show(io, get(app.status))
     end
     nothing
 end
 
 function _new_app(client::YarnClient)
     inp = GetNewApplicationRequestProto()
-    resp = getNewApplicaton(client.stub, client.controller, inp)
+    resp = getNewApplication(client.stub, client.controller, inp)
     resp.application_id, resp.maximumCapability.memory, resp.maximumCapability.virtual_cores
 end
 
-function launchcontext(cmd::AbstractString)
+# TODO: support local resources
+# TODO: support tokens
+function launchcontext(cmd::AbstractString, 
+                        env::Dict{AbstractString,AbstractString}=Dict{AbstractString,AbstractString}(),
+                        service_data::Dict{AbstractString,Vector{UInt8}}=Dict{AbstractString,Vector{UInt8}}())
+    envproto = [StringStringMapProto(n,v) for (n,v) in env]
+    svcdataproto = [StringBytesMapProto(n,v) for (n,v) in service_data]
+    clc = ContainerLaunchContextProto()
+    set_field(clc, :command, AbstractString[cmd])
+    set_field(clc, :environment, envproto)
+    set_field(clc, :service_data, svcdataproto)
+    clc
 end
 
-function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Int32, cores::Int32; 
-        priority::Int32=int32(1), appname::AbstractString="EllyApp", queue::AbstractString="default", apptype::AbstractString="YARN", reuse::Bool=false)
+function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Integer, cores::Integer; 
+        priority::Int32=int32(1), appname::AbstractString="EllyApp", queue::AbstractString="default", apptype::AbstractString="YARN", 
+        reuse::Bool=false, unmanaged::Bool=false)
     appid, maxmem, maxcores = _new_app(client)
 
     prio = PriorityProto()
     set_field(prio, :priority, int32(priority))
 
     res = ResourceProto()
-    set_field(res, :memory, mem)
-    set_field(res, :virtual_cores, cores)
+    set_field(res, :memory, int32(mem))
+    set_field(res, :virtual_cores, int32(cores))
 
     asc = ApplicationSubmissionContextProto()
     set_field(asc, :application_id, appid)
     set_field(asc, :application_name, appname)
     set_field(asc, :queue, queue)
     set_field(asc, :priority, prio)
+    set_field(asc, :unmanaged_am, unmanaged)
     set_field(asc, :am_container_spec, container_spec)
     set_field(asc, :resource, res)
     set_field(asc, :applicationType, apptype)
@@ -216,7 +269,7 @@ end
 function kill(app::YarnApp)
     client = app.client
     inp = KillApplicationRequestProto()
-    set_field(inp, :application_id, client.appid)
+    set_field(inp, :application_id, app.appid)
 
     resp = forceKillApplication(client.stub, client.controller, inp)
     resp.is_kill_completed
@@ -234,9 +287,20 @@ function status(app::YarnApp, refresh::Bool=true)
     app.status
 end
 
-# getApplications
-# getNewApplication
-# SubmitApplication
-# GetApplicationReport
-# GetApplicationAttemptReport
+function attempts(app::YarnApp, refresh::Bool=true)
+    if refresh || isnull(app.attempts)
+        client = app.client
+        inp = GetApplicationAttemptsRequestProto()
+        set_field(inp, :application_id, app.appid)
 
+        resp = getApplicationAttempts(client.stub, client.controller, inp)
+        atmptlist = app.attempts
+        empty!(atmptlist)
+        if isfilled(resp.application_attempts)
+            for atmpt in resp.application_attempts
+                push!(atmptlist, YarnAppAttemptStatus(atmpt))
+            end
+        end
+    end
+    app.attempts
+end

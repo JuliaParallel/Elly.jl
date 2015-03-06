@@ -21,7 +21,7 @@ export HDFSClient, HDFSFile, HDFSFileInfo,
         eof, position, seek, seekend, seekstart, skip, nb_available,
         read!, read, write, readbytes, readall, open, close, cp
 
-export YarnClient, nodecount, nodes
+export YarnClient, YarnNode, YarnAppStatus, YarnAppAttemptStatus, nodecount, nodes, launchcontext, submit, kill, status, attempts
 
 # enable logging only during debugging
 using Logging
