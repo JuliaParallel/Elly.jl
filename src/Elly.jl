@@ -11,14 +11,17 @@ import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, file
 import ProtoBuf: write_bytes, read_bytes, call_method
 import URIParser: URI
 
-export HDFSClient, HDFSFile, HDFSFileInfo, readdir, show, convert, URI,
-        hdfs_server_defaults, hdfs_default_block_size, hdfs_default_replication,
-        hdfs_status, hdfs_capacity, hdfs_capacity_used, hdfs_capacity_remaining,
-        isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists,
-        mkdir, touch, mv, rm, abspath, cd, pwd, open, eof, position, seek, seekend, seekstart, skip, nb_available,
-        read!, read, write, readbytes, readall, close, cp,
-        #hdfs_cptolocal,
-        hdfs_renewlease, hdfs_blocks, hdfs_set_replication
+export show, convert, URI
+
+export HDFSClient, HDFSFile, HDFSFileInfo,
+        hdfs_server_defaults, hdfs_default_block_size, hdfs_default_replication, hdfs_blocks, hdfs_set_replication,
+        hdfs_status, hdfs_capacity, hdfs_capacity_used, hdfs_capacity_remaining, hdfs_renewlease, 
+        isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists, readdir,
+        mkdir, touch, mv, rm, abspath, cd, pwd, 
+        eof, position, seek, seekend, seekstart, skip, nb_available,
+        read!, read, write, readbytes, readall, open, close, cp
+
+export YarnClient, nodecount, nodes
 
 # enable logging only during debugging
 using Logging
@@ -31,11 +34,13 @@ include("hadoop/hadoop.jl")
 using Elly.hadoop
 using Elly.hadoop.common
 using Elly.hadoop.hdfs
+using Elly.hadoop.yarn
 
 const ELLY_CLIENTNAME = "elly"
 
 include("rpc.jl")
 include("api_hdfs_base.jl")
 include("api_hdfs_io.jl")
+include("api_yarn_client.jl")
 
 end # module

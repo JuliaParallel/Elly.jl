@@ -9,8 +9,11 @@ const HRPC_SERVICE_CLASS = 0x00
 const HRPC_AUTH_PROTOCOL_NONE = 0x00
 const HRPC_PROTOBUFF_TYPE = RpcKindProto.RPC_PROTOCOL_BUFFER
 const HRPC_FINAL_PACKET = RpcRequestHeaderProto_OperationProto.RPC_FINAL_PACKET
-const HRPC_CLIENT_PROTOCOL = "org.apache.hadoop.hdfs.protocol.ClientProtocol"
-const HRPC_CLIENT_PROTOCOL_VERSION = uint64(1)
+
+const HRPC_PROTOCOLS = Dict(
+    :hdfs_client => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",           :ver => uint64(1)),
+    :yarn_client => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",   :ver => uint64(1))
+)
 
 # The call id is set to -3 during initial handshake. Post the handshake it cycles sequentially between 1:typemax(Int32)
 const HRPC_CALL_ID_HANDSHAKE = -3
@@ -91,6 +94,8 @@ end
 type HadoopRpcChannel <: ProtoRpcChannel
     host::AbstractString
     port::Integer
+    protocol::AbstractString
+    protocol_ver::UInt64
     call_id::Int32          # see: RpcRequestHeaderProto.callId
     sent_call_id::Int32     # set to the last call id sent for verification purpose
     clnt_id::ASCIIString    # string(Base.Random.uuid4())
@@ -98,10 +103,11 @@ type HadoopRpcChannel <: ProtoRpcChannel
     iob::IOBuffer
     sock::Nullable{TCPSocket}
 
-    function HadoopRpcChannel(host::AbstractString, port::Integer, user::AbstractString)
+    function HadoopRpcChannel(host::AbstractString, port::Integer, user::AbstractString, protocol::Symbol)
         call_id = HRPC_CALL_ID_HANDSHAKE
         clnt_id = string(Base.Random.uuid4())[1:16]
-        new(host, port, call_id, call_id, clnt_id, user, IOBuffer(), Nullable{TCPSocket}())
+        proto = HRPC_PROTOCOLS[protocol]
+        new(host, port, proto[:id], proto[:ver], call_id, call_id, clnt_id, user, IOBuffer(), Nullable{TCPSocket}())
     end
 end
 
@@ -127,7 +133,7 @@ function buffer_connctx(channel::HadoopRpcChannel)
 
     connctx = IpcConnectionContextProto()
     set_field(connctx, :userInfo, userinfo)
-    set_field(connctx, :protocol, HRPC_CLIENT_PROTOCOL)
+    set_field(connctx, :protocol, channel.protocol)
 
     buffer_size_delimited(channel.iob, connctx)
 end
@@ -146,8 +152,8 @@ end
 function buffer_method_reqhdr(channel::HadoopRpcChannel, method::MethodDescriptor)
     hdr = RequestHeaderProto()
     set_field(hdr, :methodName, method.name)
-    set_field(hdr, :declaringClassProtocolName, HRPC_CLIENT_PROTOCOL)
-    set_field(hdr, :clientProtocolVersion, HRPC_CLIENT_PROTOCOL_VERSION)
+    set_field(hdr, :declaringClassProtocolName, channel.protocol)
+    set_field(hdr, :clientProtocolVersion, channel.protocol_ver)
 
     buffer_size_delimited(channel.iob, hdr)
 end

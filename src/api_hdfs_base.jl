@@ -23,7 +23,7 @@ type HDFSClient
     server_defaults::Nullable{FsServerDefaultsProto}
 
     function HDFSClient(host::AbstractString, port::Integer, user::AbstractString)
-        channel = HadoopRpcChannel(host, port, user)
+        channel = HadoopRpcChannel(host, port, user, :hdfs_client)
         controller = HadoopRpcController(false)
         stub = ClientNamenodeProtocolBlockingStub(channel)
 
@@ -35,9 +35,10 @@ function show(io::IO, client::HDFSClient)
     ch = client.channel
     user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
     println(io, "HDFSClient: hdfs://$(user_spec)$(ch.host):$(ch.port)/")
-    println("    id: $(ch.clnt_id)")
-    println("    connected: $(isconnected(ch))")
-    println("    pwd: $(client.wd)")
+    println(io, "    id: $(ch.clnt_id)")
+    println(io, "    connected: $(isconnected(ch))")
+    println(io, "    pwd: $(client.wd)")
+    nothing
 end
 
 function set_debug(client::HDFSClient, debug::Bool)
@@ -76,6 +77,7 @@ function show(io::IO, file::HDFSFile)
     user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
 
     println(io, "HDFSFile: hdfs://$(user_spec)$(ch.host):$(ch.port)$(abspath(client, file.path))")
+    nothing
 end
 
 @doc doc"""
@@ -94,7 +96,7 @@ type HDFSFileInfo
     last_mod::UInt64
     last_access::UInt64
 
-    HDFSFileInfo(fs::HdfsFileStatusProto) = new(fs.fileType, bytestring(fs.path), 
+    HDFSFileInfo(fs::HdfsFileStatusProto) = new(fs.fileType, bytestring(fs.path),
                     fs.length, fs.block_replication, fs.blocksize,
                     fs.owner, fs.group, fs.permission.perm,
                     fs.modification_time, fs.access_time)
@@ -113,6 +115,7 @@ function show(io::IO, st::HDFSFileInfo)
     end
     println(io, "    owner: $(st.owner)")
     println(io, "    group: $(st.grp)")
+    nothing
 end
 
 function _as_dict(obj, d=Dict{Symbol,Any}())
@@ -377,8 +380,8 @@ function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=
 
     resp = create(client.stub, client.controller, inp)
     isfilled(resp, :fs) || (return Nullable{HdfsFileStatusProto}())
-   
-    if docomplete 
+
+    if docomplete
         _complete_file(client, path) || (return Nullable{HdfsFileStatusProto}())
     end
 
