@@ -11,8 +11,8 @@ const HRPC_PROTOBUFF_TYPE = RpcKindProto.RPC_PROTOCOL_BUFFER
 const HRPC_FINAL_PACKET = RpcRequestHeaderProto_OperationProto.RPC_FINAL_PACKET
 
 const HRPC_PROTOCOLS = Dict(
-    :hdfs_client => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",           :ver => uint64(1)),
-    :yarn_client => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",   :ver => uint64(1))
+    :hdfs_client => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",           :ver => @compat UInt64(1)),
+    :yarn_client => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",   :ver => @compat UInt64(1))
 )
 
 # The call id is set to -3 during initial handshake. Post the handshake it cycles sequentially between 1:typemax(Int32)
@@ -66,7 +66,8 @@ function send_buffered(buff::IOBuffer, sock::TCPSocket, delimited::Bool)
     data = takebuf_array(buff)
     len::UInt32 = 0
     if delimited
-        len = write(sock, hton(uint32(length(data))))
+        datalen = @compat UInt32(length(data))
+        len = write(sock, hton(datalen))
     end
     len += write(sock, data)
     #logmsg("buffer -> sock. len $len")
@@ -118,7 +119,7 @@ send_buffered(channel::HadoopRpcChannel, delimited::Bool) = send_buffered(channe
 function next_call_id(channel::HadoopRpcChannel)
     id = channel.sent_call_id = channel.call_id
     channel.call_id = (id == HRPC_CALL_ID_HANDSHAKE) ? HRPC_CALL_ID_NORMAL : 
-                      (id < typemax(Int32)) ? (id + int32(1)) : 
+                      (id < typemax(Int32)) ? (id + @compat Int32(1)) : 
                       HRPC_CALL_ID_NORMAL
     id
 end
@@ -144,7 +145,7 @@ function buffer_rpc_reqhdr(channel::HadoopRpcChannel)
     set_field(hdr, :rpcOp, HRPC_FINAL_PACKET)
     set_field(hdr, :callId, next_call_id(channel))
     set_field(hdr, :clientId, channel.clnt_id.data)
-    #set_field(hdr, :retryCount, int32(-1))
+    #set_field(hdr, :retryCount, @compat Int32(-1))
 
     buffer_size_delimited(channel.iob, hdr)
 end
@@ -228,7 +229,7 @@ function recv_rpc_message(channel::HadoopRpcChannel, controller::HadoopRpcContro
         (resp_hdr.status == RpcResponseHeaderProto_RpcStatusProto.SUCCESS) || throw(HadoopRpcException(resp_hdr))
 
         if resp_hdr.status == RpcResponseHeaderProto_RpcStatusProto.SUCCESS
-            hdr_len = uint32(length(hdr_bytes))
+            hdr_len = @compat UInt32(length(hdr_bytes))
             hdr_len += _len_uleb(hdr_len)
             if msg_len > hdr_len
                 data_bytes = read_bytes(get(channel.sock))
@@ -260,14 +261,14 @@ end
 # Hadoop Data Channel. Base type for communicating with data nodes.
 
 # Opcodes
-const HDATA_VERSION             = int16(28)
-const HDATA_WRITE_BLOCK         = int8(80)
-const HDATA_READ_BLOCK          = int8(81)
-const HDATA_READ_METADATA       = int8(82)
-const HDATA_REPLACE_BLOCK       = int8(83)
-const HDATA_COPY_BLOCK          = int8(84)
-const HDATA_BLOCK_CHECKSUM      = int8(85)
-const HDATA_TRANSFER_BLOCK      = int8(86)
+const HDATA_VERSION             = @compat Int16(28)
+const HDATA_WRITE_BLOCK         = @compat Int8(80)
+const HDATA_READ_BLOCK          = @compat Int8(81)
+const HDATA_READ_METADATA       = @compat Int8(82)
+const HDATA_REPLACE_BLOCK       = @compat Int8(83)
+const HDATA_COPY_BLOCK          = @compat Int8(84)
+const HDATA_BLOCK_CHECKSUM      = @compat Int8(85)
+const HDATA_TRANSFER_BLOCK      = @compat Int8(86)
 
 @doc doc"""
 HadoopDataChannel is the connection to a datanode.
@@ -310,7 +311,8 @@ begin_send(channel::HadoopDataChannel) = truncate(channel.iob, 0)
 send_buffered(channel::HadoopDataChannel, delimited::Bool) = send_buffered(channel.iob, get(channel.sock), delimited::Bool)
 
 function buffer_opcode(channel::HadoopDataChannel, opcode::Int8)
-    len = write(channel.iob, hton(uint16(HDATA_VERSION)))
+    hver = @compat UInt16(HDATA_VERSION)
+    len = write(channel.iob, hton(hver))
     len += write(channel.iob, opcode)
 end
 
@@ -344,7 +346,7 @@ function _get(pool::HadoopDataChannelPool, host::AbstractString, port::Integer)
     timediff = _dcpool.keepalivesecs
     while !isempty(free) && (timediff >= _dcpool.keepalivesecs)
         channel,lastusetime = shift!(free)
-        timediff = uint64(time() - lastusetime)
+        timediff = @compat UInt64(time() - lastusetime)
     end
 
     (timediff < _dcpool.keepalivesecs) || (channel = HadoopDataChannel(host, port))
@@ -605,7 +607,7 @@ function read_packet!(reader::HDFSBlockReader, inbuff::Vector{UInt8}, offset::UI
     end
 
     packet_remaining = reader.packet_len - reader.packet_read
-    excess = int64(length(inbuff)+1-offset) - int64(packet_remaining)
+    excess = @compat Int64(length(inbuff)+1-offset) - @compat Int64(packet_remaining)
     (excess >= 0) || return excess
     
     buff = pointer_to_array(pointer(inbuff, offset), packet_remaining)
@@ -897,7 +899,7 @@ function buffer_writeblock(writer::HDFSBlockWriter)
     for fld in (:poolId, :blockId, :generationStamp)
         set_field(exblock, fld, get_field(block.b, fld))
     end
-    set_field(exblock, :numBytes, uint64(0))
+    set_field(exblock, :numBytes, zero(UInt64))
 
     basehdr = BaseHeaderProto()
     set_field(basehdr, :block, exblock)
@@ -921,9 +923,10 @@ function buffer_writeblock(writer::HDFSBlockWriter)
     set_field(writeblock, :targets, targets)
     set_field(writeblock, :source, writer.source_node)
     set_field(writeblock, :stage, OpWriteBlockProto_BlockConstructionStage.PIPELINE_SETUP_CREATE)
-    set_field(writeblock, :pipelineSize, uint32(length(block.locs)))
-    set_field(writeblock, :minBytesRcvd, uint64(0))
-    set_field(writeblock, :maxBytesRcvd, uint64(0))
+    psz = @compat UInt32(length(block.locs))
+    set_field(writeblock, :pipelineSize, psz)
+    set_field(writeblock, :minBytesRcvd, zero(UInt64))
+    set_field(writeblock, :maxBytesRcvd, zero(UInt64))
     set_field(writeblock, :latestGenerationStamp, exblock.generationStamp)
     set_field(writeblock, :requestedChecksum, chksum)
     #logmsg("sending block write message for offset $(block.offset)")
@@ -991,14 +994,14 @@ function prepare_packet(writer::HDFSBlockWriter)
     bytes_in_packet = min(defaults.writePacketSize, nb_available(writer.buffer))
 
     last_pkt = (bytes_in_packet == 0)
-    seq_no = int64(writer.pkt_seq += 1)
+    seq_no = @compat Int64(writer.pkt_seq += 1)
     #logmsg("packet seqno $seq_no with $(bytes_in_packet)/$(defaults.writePacketSize) bytes is last packet: $last_pkt")
 
     pkt_hdr = PacketHeaderProto()
-    set_field(pkt_hdr, :offsetInBlock, int64(writer.total_written))
+    set_field(pkt_hdr, :offsetInBlock, @compat Int64(writer.total_written))
     set_field(pkt_hdr, :seqno, seq_no)
     set_field(pkt_hdr, :lastPacketInBlock, last_pkt)
-    set_field(pkt_hdr, :dataLen, int32(bytes_in_packet))
+    set_field(pkt_hdr, :dataLen, @compat Int32(bytes_in_packet))
 
     writer.total_written += bytes_in_packet
 
@@ -1024,12 +1027,12 @@ function write_packet(writer::HDFSBlockWriter, pkt::PipelinedPacket)
 
     try
         sock = get(channel.sock)
-        pkt_len = uint32(4 + sizeof(pkt.checksums) + sizeof(pkt.bytes))
+        pkt_len = @compat UInt32(4 + sizeof(pkt.checksums) + sizeof(pkt.bytes))
 
         hdr_iob = IOBuffer()
         writeproto(hdr_iob, pkt.hdr)
         hdr_bytes = takebuf_array(hdr_iob)
-        hdr_len = uint16(sizeof(hdr_bytes))
+        hdr_len = @compat UInt16(sizeof(hdr_bytes))
 
         write(sock, hton(pkt_len))
         write(sock, hton(hdr_len))

@@ -166,9 +166,11 @@ function _get_file_info(client::HDFSClient, path::AbstractString)
     isfilled(resp, :fs) ? Nullable{HdfsFileStatusProto}(resp.fs) : Nullable{HdfsFileStatusProto}()
 end
 
-function _get_block_locations(client::HDFSClient, path::AbstractString, offset::UInt64=uint64(0), length::UInt64=uint64(0))
+function _get_block_locations(client::HDFSClient, path::AbstractString, offset::UInt64=zero(UInt64), length::UInt64=zero(UInt64))
     path = abspath(client, path)
-    (length == uint64(0)) && (length = uint64(1024))
+    if length == 0
+        length = @compat UInt64(1024)
+    end
     inp = GetBlockLocationsRequestProto()
     set_field(inp, :src, path)
     set_field(inp, :offset, offset)
@@ -244,8 +246,8 @@ atime(file::HDFSFile) = atime(file.client, file.path)
 atime(client::HDFSClient, path::AbstractString) = atime(stat(client, path))
 atime(fileinfo::HDFSFileInfo) = fileinfo.last_access
 
-hdfs_blocks(file::HDFSFile, offset::UInt64=uint64(0), length::UInt64=uint64(0)) = hdfs_blocks(file.client, file.path, offset, length)
-function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::UInt64=uint64(0), length::UInt64=uint64(0))
+hdfs_blocks(file::HDFSFile, offset::UInt64=zero(UInt64), length::UInt64=zero(UInt64)) = hdfs_blocks(file.client, file.path, offset, length)
+function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::UInt64=zero(UInt64), length::UInt64=zero(UInt64))
     blocks = (UInt64,Array)[]
     _locations = _get_block_locations(client, path, offset, length)
     isnull(_locations) && (return blocks)
@@ -304,8 +306,10 @@ function readdir(client::HDFSClient, path::AbstractString=".", limit::Int=typema
     result
 end
 
-mkdir(file::HDFSFile, create_parents::Bool=false, mode::UInt32=uint32(0o755)) = mkdir(file.client, file.path, create_parents, mode)
-function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=false, mode::UInt32=uint32(0o755))
+const DEFAULT_FOLDER_MODE = @compat UInt32(0o755)
+const DEFAULT_FILE_MODE = @compat UInt32(0o644)
+mkdir(file::HDFSFile, create_parents::Bool=false, mode::UInt32=DEFAULT_FOLDER_MODE) = mkdir(file.client, file.path, create_parents, mode)
+function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=false, mode::UInt32=DEFAULT_FOLDER_MODE)
     path = abspath(client, path)
     inp = MkdirsRequestProto()
     set_field(inp, :src, path)
@@ -355,7 +359,7 @@ function rm(client::HDFSClient, path::AbstractString, recursive::Bool=false)
     resp.result
 end
 
-function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=false, replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644), docomplete::Bool=true)
+function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=false, replication::UInt32=zero(UInt32), blocksz::UInt64=zero(UInt64), mode::UInt32=DEFAULT_FILE_MODE, docomplete::Bool=true)
     path = abspath(client, path)
 
     if (blocksz == 0) || (replication == 0)
@@ -367,7 +371,7 @@ function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=
     perms = FsPermissionProto()
     set_field(perms, :perm, mode)
 
-    createFlag = uint32(overwrite ? CreateFlagProto.OVERWRITE : CreateFlagProto.CREATE)
+    createFlag = @compat UInt32(overwrite ? CreateFlagProto.OVERWRITE : CreateFlagProto.CREATE)
 
     inp = CreateRequestProto()
     set_field(inp, :src, path)
@@ -432,12 +436,12 @@ function renewlease(client::HDFSClient)
     nothing
 end
 
-touch(file::HDFSFile, replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644)) = touch(file.client, file.path, replication, blocksz, mode)
-function touch(client::HDFSClient, path::AbstractString, replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644))
+touch(file::HDFSFile, replication::UInt32=zero(UInt32), blocksz::UInt64=zero(UInt64), mode::UInt32=DEFAULT_FILE_MODE) = touch(file.client, file.path, replication, blocksz, mode)
+function touch(client::HDFSClient, path::AbstractString, replication::UInt32=zero(UInt32), blocksz::UInt64=zero(UInt64), mode::UInt32=DEFAULT_FILE_MODE)
     if exists(client, path)
         inp = SetTimesRequestProto()
         path = abspath(client, path)
-        t = uint64(Base.Dates.datetime2unix(now(Base.Dates.UTC))*1000)
+        t = @compat UInt64(Base.Dates.datetime2unix(now(Base.Dates.UTC))*1000)
         set_field(inp, :src, path)
         set_field(inp, :mtime, t)
         set_field(inp, :atime, t)

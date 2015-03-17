@@ -237,16 +237,16 @@ function launchcontext(cmd::AbstractString,
 end
 
 function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Integer, cores::Integer; 
-        priority::Int32=int32(1), appname::AbstractString="EllyApp", queue::AbstractString="default", apptype::AbstractString="YARN", 
+        priority::Int32=one(Int32), appname::AbstractString="EllyApp", queue::AbstractString="default", apptype::AbstractString="YARN", 
         reuse::Bool=false, unmanaged::Bool=false)
     appid, maxmem, maxcores = _new_app(client)
 
     prio = PriorityProto()
-    set_field(prio, :priority, int32(priority))
+    set_field(prio, :priority, @compat Int32(priority))
 
     res = ResourceProto()
-    set_field(res, :memory, int32(mem))
-    set_field(res, :virtual_cores, int32(cores))
+    set_field(res, :memory, @compat Int32(mem))
+    set_field(res, :virtual_cores, @compat Int32(cores))
 
     asc = ApplicationSubmissionContextProto()
     set_field(asc, :application_id, appid)

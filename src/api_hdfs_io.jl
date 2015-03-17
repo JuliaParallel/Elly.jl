@@ -5,7 +5,7 @@
 Default length (bytes) upto which to pre-fetch block metadata.
 (10 blocks of default size)
 """ ->
-const HDFS_READER_WINDOW_LENGTH = uint64(64*1024*1024*10)
+const HDFS_READER_WINDOW_LENGTH = @compat UInt64(64*1024*1024*10)
 
 @doc doc"""
 # HDFSFileReader
@@ -24,7 +24,7 @@ type HDFSFileReader
     blocks::Nullable{LocatedBlocksProto}    # block metadata around the current fptr (if connected)
     blk_reader::Nullable{HDFSBlockReader}   # current block reader (if connected)
 
-    function HDFSFileReader(client::HDFSClient, path::AbstractString, offset::UInt64=uint64(0), check_crc::Bool=false)
+    function HDFSFileReader(client::HDFSClient, path::AbstractString, offset::UInt64=zero(UInt64), check_crc::Bool=false)
         path = abspath(client, path)
 
         nfile_status = _get_file_info(client, path)
@@ -71,7 +71,7 @@ function seek(reader::HDFSFileReader, n::Integer)
 end
 seekend(reader::HDFSFileReader) = seek(reader, filesize(reader))
 seekstart(reader::HDFSFileReader) = seek(reader, 0)
-skip(reader::HDFSFileReader, n::Integer) = seek(reader, uint64(n+position(reader)))
+skip(reader::HDFSFileReader, n::Integer) = seek(reader, @compat UInt64(n+position(reader)))
 
 _block_has_offset(block::LocatedBlockProto, offset::UInt64, block_sz::UInt64) = (block.offset <= offset < (block.offset + block_sz))
 
@@ -248,7 +248,7 @@ type HDFSFileWriter
     function HDFSFileWriter(client::HDFSClient, path::AbstractString)
         path = abspath(client, path)
         path_exists = exists(client, path)
-        fs = _create_file(client, path, path_exists, uint32(0), uint64(0), uint32(0o644), false)
+        fs = _create_file(client, path, path_exists, zero(UInt32), zero(UInt64), DEFAULT_FILE_MODE, false)
         isnull(fs) && throw(HDFSException("Error openeing $path for write"))
         new(client, path, 0, Nullable{LocatedBlockProto}(), Nullable{HDFSBlockWriter}())
     end
@@ -303,8 +303,8 @@ end
 #
 # File open
 function open(client::HDFSClient, path::AbstractString, rd::Bool, wr::Bool, ff::Bool; 
-                replication::UInt32=uint32(0), blocksz::UInt64=uint64(0), mode::UInt32=uint32(0o644), 
-                offset::UInt64=uint64(0), crc::Bool=false)
+                replication::UInt32=zero(UInt32), blocksz::UInt64=zero(UInt64), mode::UInt32=DEFAULT_FILE_MODE, 
+                offset::UInt64=zero(UInt64), crc::Bool=false)
     if rd
         return HDFSFileReader(client, path, offset, crc)
     elseif wr
@@ -331,7 +331,7 @@ open(file::HDFSFile, open_mode::AbstractString; opts...) = open(file.client, fil
 
 #
 # File copy
-function cp(frompath::Union(HDFSFile,AbstractString), topath::Union(HDFSFile,AbstractString); offset::UInt64=uint64(0), len::UInt64=uint64(0), crc::Bool=false)
+function cp(frompath::Union(HDFSFile,AbstractString), topath::Union(HDFSFile,AbstractString); offset::UInt64=zero(UInt64), len::UInt64=zero(UInt64), crc::Bool=false)
     if isa(frompath, HDFSFile)
         fromfile = open(frompath.client, frompath.path, "r"; offset=offset, crc=crc)
     else
