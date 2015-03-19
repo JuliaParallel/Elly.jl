@@ -93,9 +93,9 @@ end
 function nodes(client::YarnClient, all::Bool=false)
     inp = GetClusterNodesRequestProto()
     if all
-        set_field(inp, :nodeStates, [NodeStateProto.NS_NEW, NodeStateProto.NS_RUNNING, NodeStateProto.NS_UNHEALTHY, NodeStateProto.NS_DECOMMISSIONED, NodeStateProto.NS_LOST, NodeStateProto.NS_REBOOTED])
+        set_field!(inp, :nodeStates, [NodeStateProto.NS_NEW, NodeStateProto.NS_RUNNING, NodeStateProto.NS_UNHEALTHY, NodeStateProto.NS_DECOMMISSIONED, NodeStateProto.NS_LOST, NodeStateProto.NS_REBOOTED])
     else
-        set_field(inp, :nodeStates, [NodeStateProto.NS_RUNNING])
+        set_field!(inp, :nodeStates, [NodeStateProto.NS_RUNNING])
     end
     resp = getClusterNodes(client.stub, client.controller, inp)
     nlist = resp.nodeReports
@@ -229,10 +229,9 @@ function launchcontext(cmd::AbstractString,
                         service_data::Dict{AbstractString,Vector{UInt8}}=Dict{AbstractString,Vector{UInt8}}())
     envproto = [StringStringMapProto(n,v) for (n,v) in env]
     svcdataproto = [StringBytesMapProto(n,v) for (n,v) in service_data]
-    clc = ContainerLaunchContextProto()
-    set_field(clc, :command, AbstractString[cmd])
-    set_field(clc, :environment, envproto)
-    set_field(clc, :service_data, svcdataproto)
+    clc = protobuild(ContainerLaunchContextProto, @compat Dict(:command => AbstractString[cmd],
+                :environment => envproto,
+                :service_data => svcdataproto))
     clc
 end
 
@@ -241,26 +240,20 @@ function submit(client::YarnClient, container_spec::ContainerLaunchContextProto,
         reuse::Bool=false, unmanaged::Bool=false)
     appid, maxmem, maxcores = _new_app(client)
 
-    prio = PriorityProto()
-    set_field(prio, :priority, @compat Int32(priority))
-
-    res = ResourceProto()
-    set_field(res, :memory, @compat Int32(mem))
-    set_field(res, :virtual_cores, @compat Int32(cores))
-
-    asc = ApplicationSubmissionContextProto()
-    set_field(asc, :application_id, appid)
-    set_field(asc, :application_name, appname)
-    set_field(asc, :queue, queue)
-    set_field(asc, :priority, prio)
-    set_field(asc, :unmanaged_am, unmanaged)
-    set_field(asc, :am_container_spec, container_spec)
-    set_field(asc, :resource, res)
-    set_field(asc, :applicationType, apptype)
-    set_field(asc, :keep_containers_across_application_attempts, reuse)
+    prio = protobuild(PriorityProto, @compat Dict(:priority => priority))
+    res = protobuild(ResourceProto, @compat Dict(:memory => mem, :virtual_cores => cores))
+    asc = protobuild(ApplicationSubmissionContextProto, @compat Dict(:application_id => appid,
+                :application_name => appname,
+                :queue => queue,
+                :priority => prio,
+                :unmanaged_am => unmanaged,
+                :am_container_spec => container_spec,
+                :resource => res,
+                :maxAppAttempts => 2,
+                :applicationType => apptype,
+                :keep_containers_across_application_attempts => reuse))
   
-    inp = SubmitApplicationRequestProto()
-    set_field(inp, :application_submission_context, asc)
+    inp = protobuild(SubmitApplicationRequestProto, @compat Dict(:application_submission_context => asc))
 
     submitApplication(client.stub, client.controller, inp)
     YarnApp(client, appid)
@@ -268,8 +261,7 @@ end
 
 function kill(app::YarnApp)
     client = app.client
-    inp = KillApplicationRequestProto()
-    set_field(inp, :application_id, app.appid)
+    inp = protobuild(KillApplicationRequestProto, @compat Dict(:application_id => app.appid))
 
     resp = forceKillApplication(client.stub, client.controller, inp)
     resp.is_kill_completed
@@ -278,8 +270,7 @@ end
 function status(app::YarnApp, refresh::Bool=true)
     if refresh || isnull(app.status)
         client = app.client
-        inp = GetApplicationReportRequestProto()
-        set_field(inp, :application_id, app.appid)
+        inp = protobuild(GetApplicationReportRequestProto, @compat Dict(:application_id => app.appid))
 
         resp = getApplicationReport(client.stub, client.controller, inp) 
         app.status = isfilled(resp.application_report) ?  Nullable(YarnAppStatus(resp.application_report)) : Nullable{YarnAppStatus}()
@@ -290,8 +281,7 @@ end
 function attempts(app::YarnApp, refresh::Bool=true)
     if refresh || isnull(app.attempts)
         client = app.client
-        inp = GetApplicationAttemptsRequestProto()
-        set_field(inp, :application_id, app.appid)
+        inp = protobuild(GetApplicationAttemptsRequestProto, @compat Dict(:application_id => app.appid))
 
         resp = getApplicationAttempts(client.stub, client.controller, inp)
         atmptlist = app.attempts

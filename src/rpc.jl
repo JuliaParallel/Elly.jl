@@ -129,32 +129,26 @@ function buffer_handshake(channel::HadoopRpcChannel)
 end
 
 function buffer_connctx(channel::HadoopRpcChannel)
-    userinfo = UserInformationProto()
-    set_field(userinfo, :effectiveUser, channel.user)
-
-    connctx = IpcConnectionContextProto()
-    set_field(connctx, :userInfo, userinfo)
-    set_field(connctx, :protocol, channel.protocol)
+    userinfo = protobuild(UserInformationProto, @compat Dict(:effectiveUser => channel.user))
+    connctx = protobuild(IpcConnectionContextProto, @compat Dict(:userInfo => userinfo, :protocol => channel.protocol))
 
     buffer_size_delimited(channel.iob, connctx)
 end
 
 function buffer_rpc_reqhdr(channel::HadoopRpcChannel)
-    hdr = RpcRequestHeaderProto()
-    set_field(hdr, :rpcKind, HRPC_PROTOBUFF_TYPE)
-    set_field(hdr, :rpcOp, HRPC_FINAL_PACKET)
-    set_field(hdr, :callId, next_call_id(channel))
-    set_field(hdr, :clientId, channel.clnt_id.data)
-    #set_field(hdr, :retryCount, @compat Int32(-1))
+    hdr = protobuild(RpcRequestHeaderProto, @compat Dict(:rpcKind => HRPC_PROTOBUFF_TYPE,
+                :rpcOp => HRPC_FINAL_PACKET,
+                :callId => next_call_id(channel),
+                #:retryCount => -1,
+                :clientId => channel.clnt_id.data))
 
     buffer_size_delimited(channel.iob, hdr)
 end
 
 function buffer_method_reqhdr(channel::HadoopRpcChannel, method::MethodDescriptor)
-    hdr = RequestHeaderProto()
-    set_field(hdr, :methodName, method.name)
-    set_field(hdr, :declaringClassProtocolName, channel.protocol)
-    set_field(hdr, :clientProtocolVersion, channel.protocol_ver)
+    hdr = protobuild(RequestHeaderProto, @compat Dict(:methodName => method.name,
+                :declaringClassProtocolName => channel.protocol,
+                :clientProtocolVersion => channel.protocol_ver))
 
     buffer_size_delimited(channel.iob, hdr)
 end
@@ -437,26 +431,17 @@ function buffer_readblock(reader::HDFSBlockReader)
 
     token = TokenProto()
     for fld in (:identifier, :password, :kind, :service)
-        set_field(token, fld, get_field(block.blockToken, fld))
+        set_field!(token, fld, get_field(block.blockToken, fld))
     end
 
     exblock = ExtendedBlockProto()
     for fld in (:poolId, :blockId, :generationStamp)
-        set_field(exblock, fld, get_field(block.b, fld))
+        set_field!(exblock, fld, get_field(block.b, fld))
     end
 
-    basehdr = BaseHeaderProto()
-    set_field(basehdr, :block, exblock)
-    set_field(basehdr, :token, token)
-    
-    hdr = ClientOperationHeaderProto()
-    set_field(hdr, :baseHeader, basehdr)
-    set_field(hdr, :clientName, ELLY_CLIENTNAME)
-
-    readblock = OpReadBlockProto()
-    set_field(readblock, :offset, offset)
-    set_field(readblock, :len, len)
-    set_field(readblock, :header, hdr)
+    basehdr = protobuild(BaseHeaderProto, @compat Dict(:block => exblock, :token => token))
+    hdr = protobuild(ClientOperationHeaderProto, @compat Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
+    readblock = protobuild(OpReadBlockProto, @compat Dict(:offset => offset, :len => len, :header => hdr))
     #logmsg("sending block read message for offset $offset len $len")
 
     buffer_size_delimited(channel.iob, readblock)
@@ -464,8 +449,7 @@ end
 
 function buffer_client_read_status(reader::HDFSBlockReader, status::Int32)
     channel = reader.channel
-    read_status = ClientReadStatusProto()
-    set_field(read_status, :status, Status.SUCCESS)
+    read_status = protobuild(ClientReadStatusProto, @compat Dict(:status => Status.SUCCESS))
     buffer_size_delimited(channel.iob, read_status)
 end
 
@@ -892,43 +876,33 @@ function buffer_writeblock(writer::HDFSBlockWriter)
 
     token = TokenProto()
     for fld in (:identifier, :password, :kind, :service)
-        set_field(token, fld, get_field(block.blockToken, fld))
+        set_field!(token, fld, get_field(block.blockToken, fld))
     end
 
     exblock = ExtendedBlockProto()
     for fld in (:poolId, :blockId, :generationStamp)
-        set_field(exblock, fld, get_field(block.b, fld))
+        set_field!(exblock, fld, get_field(block.b, fld))
     end
-    set_field(exblock, :numBytes, zero(UInt64))
+    set_field!(exblock, :numBytes, zero(UInt64))
 
-    basehdr = BaseHeaderProto()
-    set_field(basehdr, :block, exblock)
-    set_field(basehdr, :token, token)
-    
-    hdr = ClientOperationHeaderProto()
-    set_field(hdr, :baseHeader, basehdr)
-    set_field(hdr, :clientName, ELLY_CLIENTNAME)
-
-    chksum = ChecksumProto()
-    set_field(chksum, :_type, defaults.checksumType)
-    set_field(chksum, :bytesPerChecksum, defaults.bytesPerChecksum)
+    basehdr = protobuild(BaseHeaderProto, @compat Dict(:block => exblock, :token => token))
+    hdr = protobuild(ClientOperationHeaderProto, @compat Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
+    chksum = protobuild(ChecksumProto, @compat Dict(:_type => defaults.checksumType, :bytesPerChecksum => defaults.bytesPerChecksum))
 
     targets = DatanodeInfoProto[]
     for loc in block.locs
         (loc.id != writer.source_node.id) && push!(targets, loc)
     end
 
-    writeblock = OpWriteBlockProto()
-    set_field(writeblock, :header, hdr)
-    set_field(writeblock, :targets, targets)
-    set_field(writeblock, :source, writer.source_node)
-    set_field(writeblock, :stage, OpWriteBlockProto_BlockConstructionStage.PIPELINE_SETUP_CREATE)
-    psz = @compat UInt32(length(block.locs))
-    set_field(writeblock, :pipelineSize, psz)
-    set_field(writeblock, :minBytesRcvd, zero(UInt64))
-    set_field(writeblock, :maxBytesRcvd, zero(UInt64))
-    set_field(writeblock, :latestGenerationStamp, exblock.generationStamp)
-    set_field(writeblock, :requestedChecksum, chksum)
+    writeblock = protobuild(OpWriteBlockProto, @compat Dict(:header => hdr,
+                    :targets => targets,
+                    :source => writer.source_node,
+                    :stage => OpWriteBlockProto_BlockConstructionStage.PIPELINE_SETUP_CREATE,
+                    :pipelineSize => length(block.locs),
+                    :minBytesRcvd => 0,
+                    :maxBytesRcvd => 0,
+                    :latestGenerationStamp => exblock.generationStamp,
+                    :requestedChecksum => chksum))
     #logmsg("sending block write message for offset $(block.offset)")
 
     buffer_size_delimited(channel.iob, writeblock)
@@ -997,11 +971,10 @@ function prepare_packet(writer::HDFSBlockWriter)
     seq_no = @compat Int64(writer.pkt_seq += 1)
     #logmsg("packet seqno $seq_no with $(bytes_in_packet)/$(defaults.writePacketSize) bytes is last packet: $last_pkt")
 
-    pkt_hdr = PacketHeaderProto()
-    set_field(pkt_hdr, :offsetInBlock, @compat Int64(writer.total_written))
-    set_field(pkt_hdr, :seqno, seq_no)
-    set_field(pkt_hdr, :lastPacketInBlock, last_pkt)
-    set_field(pkt_hdr, :dataLen, @compat Int32(bytes_in_packet))
+    pkt_hdr = protobuild(PacketHeaderProto, @compat Dict(:offsetInBlock => writer.total_written,
+                    :seqno => seq_no,
+                    :lastPacketInBlock => last_pkt,
+                    :dataLen => bytes_in_packet))
 
     writer.total_written += bytes_in_packet
 
@@ -1067,7 +1040,7 @@ function read_packet_ack(writer::HDFSBlockWriter)
         ackrcvd(pipeline, ack.seqno, ack.status)
 
         exblk = writer.block.b
-        set_field(exblk, :numBytes, pipeline.acked_bytes)
+        set_field!(exblk, :numBytes, pipeline.acked_bytes)
 
         #logmsg("received ack for seqno: $(ack.seqno), status: $(ack.status) bytes acked: $(exblk.numBytes)")
         nothing
