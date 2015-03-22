@@ -6,13 +6,18 @@
 const HRPC_HEADER = "hrpc"
 const HRPC_VERSION = 0x09
 const HRPC_SERVICE_CLASS = 0x00
+
 const HRPC_AUTH_PROTOCOL_NONE = 0x00
+const HRPC_AUTH_PROTOCOL_SIMPLE = 0x80
+const HRPC_AUTH_PROTOCOL_TOKEN = 0x82
+
 const HRPC_PROTOBUFF_TYPE = RpcKindProto.RPC_PROTOCOL_BUFFER
 const HRPC_FINAL_PACKET = RpcRequestHeaderProto_OperationProto.RPC_FINAL_PACKET
 
 const HRPC_PROTOCOLS = Dict(
     :hdfs_client => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",           :ver => @compat UInt64(1)),
-    :yarn_client => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",   :ver => @compat UInt64(1))
+    :yarn_client => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",   :ver => @compat UInt64(1)),
+    :yarn_appmaster => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",   :ver => @compat UInt64(1))
 )
 
 # The call id is set to -3 during initial handshake. Post the handshake it cycles sequentially between 1:typemax(Int32)
@@ -22,7 +27,7 @@ const HRPC_CALL_ID_NORMAL = 0
 @doc doc"""
 HadoopRpcException is thrown on Rpc interaction errors either with namenode or datanode.
 Field `status` contains error code (enum) if received from the connected entity or just ERROR (1) to indicate failure.
-Though HadoopRpcException is used while communicating with both namenodes and datanodes, SUCCESS and ERROR are coded 
+Though HadoopRpcException is used while communicating with both namenodes and datanodes, SUCCESS and ERROR are coded
 with the same values in both cases. Other specific error codes need knowledge of the context to interpret.
 """ ->
 type HadoopRpcException <: Exception
@@ -118,8 +123,8 @@ send_buffered(channel::HadoopRpcChannel, delimited::Bool) = send_buffered(channe
 
 function next_call_id(channel::HadoopRpcChannel)
     id = channel.sent_call_id = channel.call_id
-    channel.call_id = (id == HRPC_CALL_ID_HANDSHAKE) ? HRPC_CALL_ID_NORMAL : 
-                      (id < typemax(Int32)) ? (id + @compat Int32(1)) : 
+    channel.call_id = (id == HRPC_CALL_ID_HANDSHAKE) ? HRPC_CALL_ID_NORMAL :
+                      (id < typemax(Int32)) ? (id + @compat Int32(1)) :
                       HRPC_CALL_ID_NORMAL
     id
 end
@@ -129,7 +134,8 @@ function buffer_handshake(channel::HadoopRpcChannel)
 end
 
 function buffer_connctx(channel::HadoopRpcChannel)
-    userinfo = protobuild(UserInformationProto, @compat Dict(:effectiveUser => channel.user))
+    #userinfo = protobuild(UserInformationProto, @compat Dict(:effectiveUser => channel.user))
+    userinfo = protobuild(UserInformationProto, @compat Dict(:realUser => channel.user))
     connctx = protobuild(IpcConnectionContextProto, @compat Dict(:userInfo => userinfo, :protocol => channel.protocol))
 
     buffer_size_delimited(channel.iob, connctx)
@@ -160,7 +166,7 @@ function connect(channel::HadoopRpcChannel)
     try
         sock = connect(channel.host, channel.port)
         channel.sock = Nullable{TCPSocket}(sock)
- 
+
         begin_send(channel)
         buffer_handshake(channel)
         send_buffered(channel, false)
@@ -400,7 +406,7 @@ type HDFSBlockReader
         #logmsg("creating block reader for offset $offset at $host:$port for length $len")
         new(channel, block, offset, len,
             Nullable{BlockOpResponseProto}(), 0,
-            Nullable{PacketHeaderProto}(), 0, 0, 
+            Nullable{PacketHeaderProto}(), 0, 0,
             0, 0, 0, UInt8[],
             UInt32[], chk_crc)
     end
@@ -593,7 +599,7 @@ function read_packet!(reader::HDFSBlockReader, inbuff::Vector{UInt8}, offset::UI
     packet_remaining = reader.packet_len - reader.packet_read
     excess = @compat Int64(length(inbuff)+1-offset) - @compat Int64(packet_remaining)
     (excess >= 0) || return excess
-    
+
     buff = pointer_to_array(pointer(inbuff, offset), packet_remaining)
 
     try
@@ -637,7 +643,7 @@ end
 @doc doc"""
 WriterPipeline holds all packets of data for a block and provides methods to maintain
 their states. Pipeline `failed` status is set if any of the acks received is a failure.
-Field `acked_bytes` contains the count of bytes successfully sent till an error is 
+Field `acked_bytes` contains the count of bytes successfully sent till an error is
 encountered.
 """ ->
 type WriterPipeline
@@ -749,7 +755,7 @@ type HDFSBlockWriter
         node = node_info.id
         host = node.ipAddr
         port = node.xferPort
-        
+
         channel = _get(_dcpool, host, port)
         #logmsg("creating block writer for offset $(block.offset) at $host:$port")
         writer = new(channel, defaults, block, node_info, PipeBuffer(), 0, 0, WriterPipeline())
@@ -815,8 +821,8 @@ function process_pipeline(writer::HDFSBlockWriter)
     try
         readable_bytes = 0
         while !(failed || flushed)
-            if (nb_available(writer.buffer) < defaults.writePacketSize) && 
-                isempty(pipeline.pkt_prepared) && 
+            if (nb_available(writer.buffer) < defaults.writePacketSize) &&
+                isempty(pipeline.pkt_prepared) &&
                 (isempty(pipeline.pkt_ackwait) || (readable_bytes == 0))
                 wait_pkt(pipeline)
             end

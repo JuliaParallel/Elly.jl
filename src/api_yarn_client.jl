@@ -224,11 +224,17 @@ end
 
 # TODO: support local resources
 # TODO: support tokens
-function launchcontext(cmd::AbstractString, 
-                        env::Dict{AbstractString,AbstractString}=Dict{AbstractString,AbstractString}(),
-                        service_data::Dict{AbstractString,Vector{UInt8}}=Dict{AbstractString,Vector{UInt8}}())
-    envproto = [StringStringMapProto(n,v) for (n,v) in env]
-    svcdataproto = [StringBytesMapProto(n,v) for (n,v) in service_data]
+function launchcontext(cmd::AbstractString, env::Dict=Dict(), service_data::Dict=Dict())
+    envproto = StringStringMapProto[]
+    for (n,v) in env
+        (isa(n, AbstractString) && isa(v, AbstractString)) || throw(ArgumentError("non string environment variable specified: $(typeof(n)) => $(typeof(v))"))
+        push!(envproto, protobuild(StringStringMapProto, @compat Dict(:key => n, :value => v)))
+    end
+    svcdataproto = StringBytesMapProto[]
+    for (n,v) in service_data
+        (isa(n, AbstractString) && isa(v, Vector{UInt8})) || throw(ArgumentError("incompatible service data type specified: $(typeof(n)) => $(typeof(v))"))
+        push!(svcdataproto, protobuild(StringBytesMapProto, @compat Dict(:key => n, :value => v)))
+    end
     clc = protobuild(ContainerLaunchContextProto, @compat Dict(:command => AbstractString[cmd],
                 :environment => envproto,
                 :service_data => svcdataproto))

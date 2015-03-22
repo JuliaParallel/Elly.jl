@@ -23,6 +23,8 @@ export HDFSClient, HDFSFile, HDFSFileInfo,
 
 export YarnClient, YarnNode, YarnAppStatus, YarnAppAttemptStatus, nodecount, nodes, launchcontext, submit, kill, status, attempts
 
+export YarnAppMaster, YarnContainer, YarnContainerStatus, register, unregister, kill, can_schedule_mem, can_schedule_cores
+
 # enable logging only during debugging
 using Logging
 const logger = Logging.configure(level=DEBUG)
@@ -41,6 +43,9 @@ const ELLY_CLIENTNAME = "elly"
 include("rpc.jl")
 include("api_hdfs_base.jl")
 include("api_hdfs_io.jl")
+
+include("envconsts.jl")
 include("api_yarn_client.jl")
+include("api_yarn_appmaster.jl")
 
 end # module
