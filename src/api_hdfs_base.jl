@@ -22,8 +22,8 @@ type HDFSClient
     wd::AbstractString
     server_defaults::Nullable{FsServerDefaultsProto}
 
-    function HDFSClient(host::AbstractString, port::Integer, user::AbstractString)
-        channel = HadoopRpcChannel(host, port, user, :hdfs_client)
+    function HDFSClient(host::AbstractString, port::Integer, user::AbstractString="")
+        channel = HadoopRpcChannel(host, port, UserGroupInformation(user), :hdfs_client)
         controller = HadoopRpcController(false)
         stub = ClientNamenodeProtocolBlockingStub(channel)
 
@@ -32,11 +32,8 @@ type HDFSClient
 end
 
 function show(io::IO, client::HDFSClient)
-    ch = client.channel
-    user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
-    println(io, "HDFSClient: hdfs://$(user_spec)$(ch.host):$(ch.port)/")
-    println(io, "    id: $(ch.clnt_id)")
-    println(io, "    connected: $(isconnected(ch))")
+    print(io, "HDFSClient: hdfs://")
+    show(io, client.channel)
     println(io, "    pwd: $(client.wd)")
     nothing
 end

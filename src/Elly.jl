@@ -40,6 +40,7 @@ using Elly.hadoop.yarn
 
 const ELLY_CLIENTNAME = "elly"
 
+include("ugi.jl")
 include("rpc.jl")
 include("api_hdfs_base.jl")
 include("api_hdfs_io.jl")

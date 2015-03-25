@@ -8,21 +8,24 @@ const HRPC_VERSION = 0x09
 const HRPC_SERVICE_CLASS = 0x00
 
 const HRPC_AUTH_PROTOCOL_NONE = 0x00
-const HRPC_AUTH_PROTOCOL_SIMPLE = 0x80
-const HRPC_AUTH_PROTOCOL_TOKEN = 0x82
+const HRPC_AUTH_PROTOCOL_SASL = 0xdf # -33
+
+const HRPC_AUTH_METHOD_SIMPLE = 0x80
+const HRPC_AUTH_METHOD_TOKEN = 0x82
 
 const HRPC_PROTOBUFF_TYPE = RpcKindProto.RPC_PROTOCOL_BUFFER
 const HRPC_FINAL_PACKET = RpcRequestHeaderProto_OperationProto.RPC_FINAL_PACKET
 
-const HRPC_PROTOCOLS = Dict(
-    :hdfs_client => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",           :ver => @compat UInt64(1)),
-    :yarn_client => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",   :ver => @compat UInt64(1)),
-    :yarn_appmaster => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",   :ver => @compat UInt64(1))
-)
-
 # The call id is set to -3 during initial handshake. Post the handshake it cycles sequentially between 1:typemax(Int32)
-const HRPC_CALL_ID_HANDSHAKE = -3
+const HRPC_CALL_ID_SASL = -33
+const HRPC_CALL_ID_CONNCTX = -3
 const HRPC_CALL_ID_NORMAL = 0
+
+const HRPC_PROTOCOLS = @compat Dict(
+    :hdfs_client    => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",           :ver => @compat(UInt64(1))),
+    :yarn_client    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",   :ver => @compat(UInt64(1))),
+    :yarn_appmaster => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",   :ver => @compat(UInt64(1)))
+)
 
 @doc doc"""
 HadoopRpcException is thrown on Rpc interaction errors either with namenode or datanode.
@@ -100,21 +103,29 @@ end
 type HadoopRpcChannel <: ProtoRpcChannel
     host::AbstractString
     port::Integer
-    protocol::AbstractString
-    protocol_ver::UInt64
+    protocol_attribs::Dict
     call_id::Int32          # see: RpcRequestHeaderProto.callId
     sent_call_id::Int32     # set to the last call id sent for verification purpose
     clnt_id::ASCIIString    # string(Base.Random.uuid4())
-    user::AbstractString
+    ugi::UserGroupInformation
     iob::IOBuffer
     sock::Nullable{TCPSocket}
 
-    function HadoopRpcChannel(host::AbstractString, port::Integer, user::AbstractString, protocol::Symbol)
-        call_id = HRPC_CALL_ID_HANDSHAKE
+    function HadoopRpcChannel(host::AbstractString, port::Integer, ugi::UserGroupInformation, protocol::Symbol)
+        protocol = HRPC_PROTOCOLS[protocol]
+        call_id = HRPC_CALL_ID_CONNCTX
         clnt_id = string(Base.Random.uuid4())[1:16]
-        proto = HRPC_PROTOCOLS[protocol]
-        new(host, port, proto[:id], proto[:ver], call_id, call_id, clnt_id, user, IOBuffer(), Nullable{TCPSocket}())
+        new(host, port, protocol, call_id, call_id, clnt_id, ugi, IOBuffer(), Nullable{TCPSocket}())
     end
+end
+
+function show(io::IO, ch::HadoopRpcChannel)
+    user = username(ch.ugi)
+    user_spec = isempty(user) ? user : "$(user)@"
+    println(io, "$(user_spec)$(ch.host):$(ch.port)/")
+    println(io, "    id: $(ch.clnt_id)")
+    println(io, "    connected: $(isconnected(ch))")
+    nothing
 end
 
 isconnected(channel::HadoopRpcChannel) = !isnull(channel.sock) # && !eof(get(channel.sock))
@@ -123,9 +134,16 @@ send_buffered(channel::HadoopRpcChannel, delimited::Bool) = send_buffered(channe
 
 function next_call_id(channel::HadoopRpcChannel)
     id = channel.sent_call_id = channel.call_id
-    channel.call_id = (id == HRPC_CALL_ID_HANDSHAKE) ? HRPC_CALL_ID_NORMAL :
-                      (id < typemax(Int32)) ? (id + @compat Int32(1)) :
-                      HRPC_CALL_ID_NORMAL
+
+    if id == HRPC_CALL_ID_SASL
+        channel.call_id = HRPC_CALL_ID_CONNCTX
+    elseif id == HRPC_CALL_ID_CONNCTX
+        channel.call_id = HRPC_CALL_ID_NORMAL
+    elseif id < typemax(Int32)
+        channel.call_id = id + @compat(Int32(1))
+    else
+        channel.call_id = HRPC_CALL_ID_NORMAL
+    end
     id
 end
 
@@ -134,9 +152,8 @@ function buffer_handshake(channel::HadoopRpcChannel)
 end
 
 function buffer_connctx(channel::HadoopRpcChannel)
-    #userinfo = protobuild(UserInformationProto, @compat Dict(:effectiveUser => channel.user))
-    userinfo = protobuild(UserInformationProto, @compat Dict(:realUser => channel.user))
-    connctx = protobuild(IpcConnectionContextProto, @compat Dict(:userInfo => userinfo, :protocol => channel.protocol))
+    protocol = channel.protocol_attribs[:id]
+    connctx = protobuild(IpcConnectionContextProto, @compat Dict(:userInfo => channel.ugi.userinfo, :protocol => protocol))
 
     buffer_size_delimited(channel.iob, connctx)
 end
@@ -152,9 +169,11 @@ function buffer_rpc_reqhdr(channel::HadoopRpcChannel)
 end
 
 function buffer_method_reqhdr(channel::HadoopRpcChannel, method::MethodDescriptor)
+    protocol = channel.protocol_attribs[:id]
+    protocol_ver = channel.protocol_attribs[:ver]
     hdr = protobuild(RequestHeaderProto, @compat Dict(:methodName => method.name,
-                :declaringClassProtocolName => channel.protocol,
-                :clientProtocolVersion => channel.protocol_ver))
+                :declaringClassProtocolName => protocol,
+                :clientProtocolVersion => protocol_ver))
 
     buffer_size_delimited(channel.iob, hdr)
 end
@@ -193,7 +212,7 @@ function disconnect(channel::HadoopRpcChannel)
         #logmsg("exception while closing channel socket $ex")
     end
     channel.sock = Nullable{TCPSocket}()
-    channel.call_id = HRPC_CALL_ID_HANDSHAKE
+    channel.call_id = HRPC_CALL_ID_CONNCTX
     channel.clnt_id = string(Base.Random.uuid4())[1:16]
 end
 
@@ -215,7 +234,7 @@ function send_rpc_message(channel::HadoopRpcChannel, controller::HadoopRpcContro
     nothing
 end
 
-function recv_rpc_message(channel::HadoopRpcChannel, controller::HadoopRpcController, resp)
+function recv_rpc_message(channel::HadoopRpcChannel, resp)
     try
         #logmsg("recv rpc message")
         msg_len = ntoh(read(get(channel.sock), UInt32))
@@ -225,7 +244,7 @@ function recv_rpc_message(channel::HadoopRpcChannel, controller::HadoopRpcContro
         resp_hdr = RpcResponseHeaderProto()
         readproto(IOBuffer(hdr_bytes), resp_hdr)
 
-        (resp_hdr.callId == channel.sent_call_id) || throw(HadoopRpcException("unknown callid. received:$(resp_hdr.callId) sent:$(channel.sent_call_id)"))
+        (resp_hdr.callId == reinterpret(UInt32, channel.sent_call_id)) || throw(HadoopRpcException("unknown callid. received:$(resp_hdr.callId) sent:$(channel.sent_call_id). status: $(resp_hdr.status)"))
         (resp_hdr.status == RpcResponseHeaderProto_RpcStatusProto.SUCCESS) || throw(HadoopRpcException(resp_hdr))
 
         if resp_hdr.status == RpcResponseHeaderProto_RpcStatusProto.SUCCESS
@@ -252,7 +271,7 @@ function call_method(channel::HadoopRpcChannel, method::MethodDescriptor, contro
     send_rpc_message(channel, controller, method, params)
     resp_type = get_response_type(method)
     resp = resp_type()
-    recv_rpc_message(channel, controller, resp)
+    recv_rpc_message(channel, resp)
     resp
 end
 

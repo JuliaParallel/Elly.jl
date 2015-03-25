@@ -2,7 +2,7 @@ using Elly
 using Base.Test
 
 function test_hdfs()
-    hdfsclnt = HDFSClient("localhost", 9000, ENV["USER"])
+    hdfsclnt = HDFSClient("localhost", 9000)
 
     println("listing files in root folder...")
     dirtree = readdir(hdfsclnt, "/")

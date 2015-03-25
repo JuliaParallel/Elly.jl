@@ -4,6 +4,10 @@
 # - applicationmaster_protocol.proto
 # - containermanagement_protocol.proto
 
+# In managed mode, the AMRMToken available in file CONTAINER_TOKEN_FILE_ENV_NAME is in Java serialized format (https://apache.googlesource.com/hadoop-common/+/HADOOP-6685/src/java/org/apache/hadoop/security/Credentials.java).
+# Since that is unusable, we are forced to operate only in unmanaged mode, where we get it from the application report.
+
+
 # get container id from AM_CONTAINER_ID_ENV env
 
 # two async callback handlers: RMCallbackHandler, NMCallbackHandler
@@ -39,9 +43,9 @@ type YarnAppMaster
     registration::Nullable{RegisterApplicationMasterResponseProto}
     
 
-    function YarnAppMaster(rmhost::AbstractString, rmport::Integer, user::AbstractString,
+    function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
                 amhost::AbstractString, amport::Integer, amurl::AbstractString)
-        channel = HadoopRpcChannel(rmhost, rmport, user, :yarn_appmaster)
+        channel = HadoopRpcChannel(rmhost, rmport, ugi, :yarn_appmaster)
         controller = HadoopRpcController(false)
         stub = ApplicationMasterProtocolServiceBlockingStub(channel)
 
@@ -52,12 +56,8 @@ type YarnAppMaster
 end
 
 function show(io::IO, client::YarnAppMaster)
-    ch = client.channel
-    user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
-    println(io, "YarnAppMaster: $(user_spec)$(ch.host):$(ch.port)/")
-    println(io, "    id: $(ch.clnt_id)")
-    println(io, "    connected: $(isconnected(ch))")
-    nothing
+    print(io, "YarnAppMaster: ")
+    show(io, client.channel)
 end
 
 function register(yam::YarnAppMaster)

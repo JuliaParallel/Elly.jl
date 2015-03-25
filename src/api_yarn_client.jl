@@ -13,8 +13,8 @@ type YarnClient
     controller::HadoopRpcController
     stub::ApplicationClientProtocolServiceBlockingStub
 
-    function YarnClient(host::AbstractString, port::Integer, user::AbstractString)
-        channel = HadoopRpcChannel(host, port, user, :yarn_client)
+    function YarnClient(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation())
+        channel = HadoopRpcChannel(host, port, ugi, :yarn_client)
         controller = HadoopRpcController(false)
         stub = ApplicationClientProtocolServiceBlockingStub(channel)
 
@@ -23,12 +23,8 @@ type YarnClient
 end
 
 function show(io::IO, client::YarnClient)
-    ch = client.channel
-    user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
-    println(io, "YarnClient: $(user_spec)$(ch.host):$(ch.port)/")
-    println(io, "    id: $(ch.clnt_id)")
-    println(io, "    connected: $(isconnected(ch))")
-    nothing
+    print(io, "YarnClient: ")
+    show(io, client.channel)
 end
 
 @doc doc"""
@@ -145,6 +141,9 @@ function show(io::IO, status::YarnAppStatus)
     end
     nothing
 end
+
+# get am-rm token for an unmanaged app
+am_rm_token(status::YarnAppStatus) = status.report.am_rm_token
 
 
 @doc doc"""
@@ -283,6 +282,9 @@ function status(app::YarnApp, refresh::Bool=true)
     end
     app.status
 end
+
+# get am-rm token for an unmanaged app
+am_rm_token(app::YarnApp) = am_rm_token(get(status(app)))
 
 function attempts(app::YarnApp, refresh::Bool=true)
     if refresh || isnull(app.attempts)
