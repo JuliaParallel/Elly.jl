@@ -5,6 +5,14 @@
 # - application_history_client.proto
 
 @doc doc"""
+# YarnException
+Thrown by Yarn APIs.
+""" ->
+type YarnException <: Exception
+    message::AbstractString
+end
+
+@doc doc"""
 YarnClient holds a connection to the Yarn Resource Manager and provides
 APIs for application clients to interact with Yarn.
 """ ->
@@ -223,20 +231,27 @@ end
 
 # TODO: support local resources
 # TODO: support tokens
-function launchcontext(cmd::AbstractString, env::Dict=Dict(), service_data::Dict=Dict())
-    envproto = StringStringMapProto[]
-    for (n,v) in env
-        (isa(n, AbstractString) && isa(v, AbstractString)) || throw(ArgumentError("non string environment variable specified: $(typeof(n)) => $(typeof(v))"))
-        push!(envproto, protobuild(StringStringMapProto, @compat Dict(:key => n, :value => v)))
+function launchcontext(;cmd::AbstractString="", env::Dict=Dict(), service_data::Dict=Dict())
+    clc = ContainerLaunchContextProto()
+    if !isempty(cmd)
+        set_field!(clc, :command, AbstractString[cmd])
     end
-    svcdataproto = StringBytesMapProto[]
-    for (n,v) in service_data
-        (isa(n, AbstractString) && isa(v, Vector{UInt8})) || throw(ArgumentError("incompatible service data type specified: $(typeof(n)) => $(typeof(v))"))
-        push!(svcdataproto, protobuild(StringBytesMapProto, @compat Dict(:key => n, :value => v)))
+    if !isempty(env)
+        envproto = StringStringMapProto[]
+        for (n,v) in env
+            (isa(n, AbstractString) && isa(v, AbstractString)) || throw(ArgumentError("non string environment variable specified: $(typeof(n)) => $(typeof(v))"))
+            push!(envproto, protobuild(StringStringMapProto, @compat Dict(:key => n, :value => v)))
+        end
+        set_field!(clc, :environment, envproto)
     end
-    clc = protobuild(ContainerLaunchContextProto, @compat Dict(:command => AbstractString[cmd],
-                :environment => envproto,
-                :service_data => svcdataproto))
+    if !isempty(service_data)
+        svcdataproto = StringBytesMapProto[]
+        for (n,v) in service_data
+            (isa(n, AbstractString) && isa(v, Vector{UInt8})) || throw(ArgumentError("incompatible service data type specified: $(typeof(n)) => $(typeof(v))"))
+            push!(svcdataproto, protobuild(StringBytesMapProto, @compat Dict(:key => n, :value => v)))
+        end
+        set_field!(clc, :service_data, servicedataproto)
+    end
     clc
 end
 
@@ -283,8 +298,28 @@ function status(app::YarnApp, refresh::Bool=true)
     app.status
 end
 
+function wait_for_state(app::YarnApp, state::Int32, timeout_secs::Int=60)
+    #logmsg("waiting for application to reach $(APP_STATES[state]) ($state) state")
+    t1 = time() + timeout_secs
+    finalstates = (YarnApplicationStateProto.KILLED, YarnApplicationStateProto.FAILED, YarnApplicationStateProto.FINISHED)
+    isfinalstate = state in finalstates
+    while time() < t1
+        nst = status(app)
+        if !isnull(nst)
+            appstate = get(nst).report.yarn_application_state
+            (appstate == state) && (return true)
+            isfinalstate || ((appstate in finalstates) && (return false))
+        end
+        sleep(1)
+    end
+    false
+end
+
 # get am-rm token for an unmanaged app
-am_rm_token(app::YarnApp) = am_rm_token(get(status(app)))
+function am_rm_token(app::YarnApp)
+    wait_for_state(app, YarnApplicationStateProto.ACCEPTED) || throw(YarnException("Application was not accepted"))
+    am_rm_token(get(status(app)))
+end
 
 function attempts(app::YarnApp, refresh::Bool=true)
     if refresh || isnull(app.attempts)
@@ -301,4 +336,26 @@ function attempts(app::YarnApp, refresh::Bool=true)
         end
     end
     app.attempts
+end
+
+function wait_for_attempt_state(app::YarnApp, attemptid::Int32, state::Int32, timeout_secs::Int=60)
+    #logmsg("waiting for application attempt $attemptid to reach $(ATTEMPT_STATES[state]) ($state) state")
+    t1 = time() + timeout_secs
+    finalstates = (YarnApplicationAttemptStateProto.APP_ATTEMPT_KILLED, YarnApplicationAttemptStateProto.APP_ATTEMPT_FAILED, YarnApplicationAttemptStateProto.APP_ATTEMPT_FINISHED)
+    isfinalstate = state in finalstates
+    while time() < t1
+        atmptlist = attempts(app)
+        for atmpt in atmptlist
+            report = atmpt.report
+            if report.application_attempt_id.attemptId == attemptid
+                atmptstate = report.yarn_application_attempt_state
+                (atmptstate == state) && (return true)
+                isfinalstate || ((atmptstate in finalstates) && (return false))
+                #logmsg("application attempt $attemptid is in state $(ATTEMPT_STATES[atmptstate]) ($atmptstate) state")
+                break
+            end
+        end
+        sleep(1)
+    end
+    false
 end

@@ -39,25 +39,38 @@ type YarnAppMaster
     cores::Int32
 
     queue::AbstractString
+    managed::Bool
     
     registration::Nullable{RegisterApplicationMasterResponseProto}
     
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
-                amhost::AbstractString, amport::Integer, amurl::AbstractString)
+                amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
         channel = HadoopRpcChannel(rmhost, rmport, ugi, :yarn_appmaster)
         controller = HadoopRpcController(false)
         stub = ApplicationMasterProtocolServiceBlockingStub(channel)
 
         new(channel, controller, stub, amhost, amport, amurl, 
-            Int32(0), Int32(0), "", 
-            Nullable{RegisterApplicationMasterResponseProto}())
+            Int32(0), Int32(0), "",
+            true, Nullable{RegisterApplicationMasterResponseProto}())
     end
 end
 
 function show(io::IO, client::YarnAppMaster)
     print(io, "YarnAppMaster: ")
     show(io, client.channel)
+end
+
+function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
+    #logmsg("submitting unmanaged application")
+    clc = launchcontext()
+    app = submit(client, clc, 4096, 1; unmanaged=true)
+    tok = am_rm_token(app)
+    add_token(unmanagedappmaster.channel.ugi, token_alias(unmanagedappmaster.channel), tok)
+    unmanagedappmaster.managed = false
+    register(unmanagedappmaster)
+    wait_for_attempt_state(app, Int32(1), YarnApplicationAttemptStateProto.APP_ATTEMPT_RUNNING) || throw(YarnException("Application attempt could not be launched"))
+    app
 end
 
 function register(yam::YarnAppMaster)

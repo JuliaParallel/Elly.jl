@@ -17,9 +17,9 @@ const HRPC_PROTOBUFF_TYPE = RpcKindProto.RPC_PROTOCOL_BUFFER
 const HRPC_FINAL_PACKET = RpcRequestHeaderProto_OperationProto.RPC_FINAL_PACKET
 
 # The call id is set to -3 during initial handshake. Post the handshake it cycles sequentially between 1:typemax(Int32)
-const HRPC_CALL_ID_SASL = -33
-const HRPC_CALL_ID_CONNCTX = -3
-const HRPC_CALL_ID_NORMAL = 0
+const HRPC_CALL_ID_SASL = @compat Int32(-33)
+const HRPC_CALL_ID_CONNCTX = @compat Int32(-3)
+const HRPC_CALL_ID_NORMAL = @compat Int32(0)
 
 const HRPC_PROTOCOLS = @compat Dict(
     :hdfs_client    => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",           :ver => @compat(UInt64(1))),
@@ -147,8 +147,8 @@ function next_call_id(channel::HadoopRpcChannel)
     id
 end
 
-function buffer_handshake(channel::HadoopRpcChannel)
-    write(channel.iob, [HRPC_HEADER.data, HRPC_VERSION, HRPC_SERVICE_CLASS, HRPC_AUTH_PROTOCOL_NONE;])
+function buffer_handshake(channel::HadoopRpcChannel, authprotocol::UInt8)
+    write(channel.iob, [HRPC_HEADER.data, HRPC_VERSION, HRPC_SERVICE_CLASS, authprotocol;])
 end
 
 function buffer_connctx(channel::HadoopRpcChannel)
@@ -158,15 +158,18 @@ function buffer_connctx(channel::HadoopRpcChannel)
     buffer_size_delimited(channel.iob, connctx)
 end
 
-function buffer_rpc_reqhdr(channel::HadoopRpcChannel)
+function buffer_reqhdr(channel::HadoopRpcChannel, call_id::Int32)
     hdr = protobuild(RpcRequestHeaderProto, @compat Dict(:rpcKind => HRPC_PROTOBUFF_TYPE,
                 :rpcOp => HRPC_FINAL_PACKET,
-                :callId => next_call_id(channel),
+                :callId => call_id,
                 #:retryCount => -1,
                 :clientId => channel.clnt_id.data))
 
     buffer_size_delimited(channel.iob, hdr)
 end
+
+buffer_rpc_reqhdr(channel::HadoopRpcChannel) = buffer_reqhdr(channel, next_call_id(channel))
+buffer_conctx_reqhdr(channel::HadoopRpcChannel) = (channel.sent_call_id = channel.call_id = HRPC_CALL_ID_CONNCTX; buffer_reqhdr(channel, HRPC_CALL_ID_CONNCTX))
 
 function buffer_method_reqhdr(channel::HadoopRpcChannel, method::MethodDescriptor)
     protocol = channel.protocol_attribs[:id]
@@ -186,15 +189,20 @@ function connect(channel::HadoopRpcChannel)
         sock = connect(channel.host, channel.port)
         channel.sock = Nullable{TCPSocket}(sock)
 
-        begin_send(channel)
-        buffer_handshake(channel)
-        send_buffered(channel, false)
+        # negotiate sasl authentication if ugi has appropriate tokens
+        if !conditional_sasl_auth(channel)
+            # else do a simple handshake
+            begin_send(channel)
+            buffer_handshake(channel, HRPC_AUTH_PROTOCOL_NONE)
+            send_buffered(channel, false)
+        end
 
         begin_send(channel)
-        buffer_rpc_reqhdr(channel)
+        buffer_conctx_reqhdr(channel)
         buffer_connctx(channel)
         send_buffered(channel, true)
         #logmsg("connected to HadoopRpcChannel $(channel.host):$(channel.port)")
+        channel.call_id = HRPC_CALL_ID_NORMAL
     catch ex
         #logmsg("exception connecting to $(channel.host):$(channel.port): $ex")
         disconnect(channel)
