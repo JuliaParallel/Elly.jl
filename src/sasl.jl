@@ -95,7 +95,9 @@ function recv_sasl_message(channel::HadoopRpcChannel)
     resp
 end
 
-token_alias(channel::HadoopRpcChannel) = "$(channel.host):$(channel.port)"
+token_alias(host::AbstractString, port::Integer) = "$(host):$(port)"
+token_alias(channel::HadoopRpcChannel) = token_alias(channel.host, channel.port)
+token_alias(nodeid::NodeIdProto) = token_alias(nodeid.host, nodeid.port)
 
 function conditional_sasl_auth(channel::HadoopRpcChannel)
     # select appropriate token from ugi
