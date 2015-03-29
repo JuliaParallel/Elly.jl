@@ -1,4 +1,3 @@
-#
 # Implements the APIs required by an application master to communicate with the resource manager and the node managers.
 # The underlying methods are implementations of the following protobuf services:
 # - applicationmaster_protocol.proto
@@ -7,30 +6,11 @@
 # In managed mode, the AMRMToken available in file CONTAINER_TOKEN_FILE_ENV_NAME is in Java serialized format (https://apache.googlesource.com/hadoop-common/+/HADOOP-6685/src/java/org/apache/hadoop/security/Credentials.java).
 # Since that is unusable, we are forced to operate only in unmanaged mode, where we get it from the application report.
 
-
-# get container id from AM_CONTAINER_ID_ENV env
-
-# two async callback handlers: RMCallbackHandler, NMCallbackHandler
-
-# registerApplicationMaster
-# ContainerRequest setupContainerAskForRM setupContainerAskForRM
-# onContainersAllocated
-# startContainerAsync
-# unregisterApplicationMaster
-
-const YARN_CONTAINER_MEM_DEFAULT = 4096
+const YARN_CONTAINER_MEM_DEFAULT = 128
 const YARN_CONTAINER_CPU_DEFAULT = 1
 const YARN_CONTAINER_LOCATION_DEFAULT = "*"
-const YARN_CONTAINER_DEFAULT_PRIORITY = 1
+const YARN_CONTAINER_PRIORITY_DEFAULT = 1
 const YARN_NM_CONN_KEEPALIVE_SECS = 5*60
-
-type YarnContainer
-    cont::ContainerProto
-end
-
-type YarnContainerStatus
-    status::ContainerStatusProto
-end
 
 @doc doc"""
 YarnNodes holds node information as visible to the application master.
@@ -75,7 +55,7 @@ type RequestPipeline{T}
     end
 end
 
-pending{T}(pipe::RequestPipeline{T}, item::T) = push!(pipe, item)
+pending{T}(pipe::RequestPipeline{T}, item::T) = push!(pipe.pending, item)
 function torequest{T}(pipe::RequestPipeline{T})
     ret = pipe.pending
     if !isempty(ret)
@@ -133,15 +113,22 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
             id = cont.id
             contlist[id] = cont
             push!(active, id)
-            isnull(cballoc) || @async(get(cballoc)(id))
+            #isnull(cballoc) || @async(get(cballoc)(id))
+            logmsg("calling callback for alloc")
+            isnull(cballoc) || get(cballoc)(id)
         end
     end
     if isfilled(arp, :completed_container_statuses)
+        logmsg("have completed containers")
         for contst in arp.completed_container_statuses
             id = contst.container_id
+            logmsg("container $id is finished")
             status[id] = contst
+            logmsg("id in active: $(id in active)")
             (id in active) && pop!(active, id)
-            isnull(cbfinish) || @async(get(cbfinish)(id))
+            #isnull(cbfinish) || @async(get(cbfinish)(id))
+            logmsg("calling callback for finish")
+            isnull(cbfinish) || get(cbfinish)(id)
         end
     end
     nothing
@@ -199,26 +186,40 @@ type YarnAppMaster
     response_id::Int32
     
     registration::Nullable{RegisterApplicationMasterResponseProto}
+    lck::RemoteRef
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
                 amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
         channel = HadoopRpcChannel(rmhost, rmport, ugi, :yarn_appmaster)
         controller = HadoopRpcController(false)
         stub = ApplicationMasterProtocolServiceBlockingStub(channel)
+        lck = RemoteRef()
+        put(lck, 1)
 
         new(channel, controller, stub, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(), YarnContainers(),
             "", true, 1,
-            Nullable{RegisterApplicationMasterResponseProto}())
+            Nullable{RegisterApplicationMasterResponseProto}(), lck)
+    end
+end
+
+macro locked(yam, ex)
+    quote
+        try
+            take!(yam.lck)
+            $(esc(ex))
+        finally
+            put!(yam.lck, 1)
+        end
     end
 end
 
 function show(io::IO, yam::YarnAppMaster)
     print(io, "YarnAppMaster: ")
     show(io, yam.channel)
-    println(io, "    Memory: available:$(yam.available_mem), max:$(yam.max_mem)")
-    println(io, "    Cores: available:$(yam.available_cores), max:$(yam.max_cores)")
+    println(io, "    Memory: available:$(yam.available_mem), max:$(yam.max_mem), can schecule:$(can_schedule_mem(yam))")
+    println(io, "    Cores: available:$(yam.available_cores), max:$(yam.max_cores), can schedule:$(can_schedule_cores(yam))")
     println(io, "    Queue: $(yam.queue)")
     show(io, yam.nodes)
     show(io, yam.containers)
@@ -228,7 +229,7 @@ callback(yam::YarnAppMaster, on_container_alloc::Nullable{Function}, on_containe
     callback(yam.containers, on_container_alloc, on_container_finish)
 
 function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
-    #logmsg("submitting unmanaged application")
+    logmsg("submitting unmanaged application")
     clc = launchcontext()
     app = submit(client, clc, YARN_CONTAINER_MEM_DEFAULT, YARN_CONTAINER_CPU_DEFAULT; unmanaged=true)
     tok = am_rm_token(app)
@@ -250,14 +251,14 @@ function register(yam::YarnAppMaster)
     end
     !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
 
-    resp = registerApplicationMaster(yam.stub, yam.controller, inp)
+    resp = @locked(yam, registerApplicationMaster(yam.stub, yam.controller, inp))
     yam.registration = Nullable(resp)
 
     if isfilled(resp, :maximumCapability)
         yam.max_mem = resp.maximumCapability.memory
         yam.max_cores = resp.maximumCapability.virtual_cores
     end
-    #logmsg("max capability: mem:$(yam.max_mem), cores:$(yam.max_cores)")
+    logmsg("max capability: mem:$(yam.max_mem), cores:$(yam.max_cores)")
     if isfilled(resp, :queue)
         yam.queue = resp.queue
     end
@@ -279,8 +280,8 @@ function _unregister(yam::YarnAppMaster, finalstatus::Int32, diagnostics::Abstra
     inp = protobuild(FinishApplicationMasterRequestProto, @compat Dict(:final_application_status => finalstatus))
     !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
     !isempty(diagnostics) && set_field!(inp, :diagnostics, diagnostics)
-   
-    resp = finishApplicationMaster(yam.stub, yam.controller, inp)
+  
+    resp = @locked(yam, finishApplicationMaster(yam.stub, yam.controller, inp))
     resp.isUnregistered && (yam.registration = Nullable{RegisterApplicationMasterResponseProto}())
     resp.isUnregistered
 end
@@ -293,11 +294,13 @@ container_allocate(yam::YarnAppMaster, numcontainers::Int; opts...) = request_al
 container_release(yam::YarnAppMaster, cids::ContainerIdProto...) = request_release(yam.containers, cids...)
 
 function _update_rm(yam::YarnAppMaster)
-    #logmsg("started processing am-rm messages")
+    logmsg("started processing am-rm messages")
     inp = AllocateRequestProto()
 
     # allocation and release requests
     (alloc_pending,release_pending) = torequest(yam.containers)
+    logmsg("alloc pending: $alloc_pending")
+    logmsg("release pending: $release_pending")
     !isempty(alloc_pending) && set_field!(inp, :ask, alloc_pending)
     !isempty(release_pending) && set_field!(inp, :release, release_pending)
 
@@ -309,7 +312,9 @@ function _update_rm(yam::YarnAppMaster)
     end
     set_field!(inp, :response_id, yam.response_id)
 
-    resp = allocate(yam.stub, yam.controller, inp)
+    logmsg(inp)
+    resp = @locked(yam, allocate(yam.stub, yam.controller, inp))
+    logmsg(resp)
 
     # store/update tokens
     ugi = yam.channel.ugi
@@ -329,21 +334,28 @@ function _update_rm(yam::YarnAppMaster)
     # update node and container status
     update(yam.nodes, resp)
     update(yam.containers, resp)
-    #logmsg("finished processing am-rm messages")
-    #logmsg(yam)
+    logmsg("finished processing am-rm messages")
+    logmsg(yam)
     nothing
 end
 
 function process_am_rm(yam::YarnAppMaster)
-    #logmsg("started am-rm processor task")
+    logmsg("started am-rm processor task")
     stopped = ()->isnull(yam.registration)
     stopwaiting = ()->(haverequests(yam.containers) || isnull(yam.registration))
+    waittime = 10.
     while !stopped()
         t1 = time()
         _update_rm(yam)
-        interval = t1 + 60 - time()
-        (interval > 0) && timedwait(stopwaiting, interval; pollint=1.0)
+        t2 = time()
+        interval = t1 + 60 - t2
+        if interval > 0
+            timedwait(stopwaiting, interval; pollint=5.0)
+            t3 = time()
+            waittime = (waittime*5 + (t3 - t2))/6
+            (waittime < 10) && sleep(10-waittime)
+        end
     end
-    #logmsg("stopped am-rm processor task")
+    logmsg("stopped am-rm processor task")
     nothing
 end
