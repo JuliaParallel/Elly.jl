@@ -22,9 +22,9 @@ const HRPC_CALL_ID_CONNCTX = @compat Int32(-3)
 const HRPC_CALL_ID_NORMAL = @compat Int32(0)
 
 const HRPC_PROTOCOLS = @compat Dict(
-    :hdfs_client    => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",           :ver => @compat(UInt64(1))),
-    :yarn_client    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",   :ver => @compat(UInt64(1))),
-    :yarn_appmaster => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",   :ver => @compat(UInt64(1)))
+    ClientNamenodeProtocolBlockingStub              => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",            :ver => @compat(UInt64(1)), :name => "HDFSClient"),
+    ApplicationClientProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",    :ver => @compat(UInt64(1)), :name => "YarnClient"),
+    ApplicationMasterProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",    :ver => @compat(UInt64(1)), :name => "YarnAppMaster")
 )
 
 @doc doc"""
@@ -111,7 +111,7 @@ type HadoopRpcChannel <: ProtoRpcChannel
     iob::IOBuffer
     sock::Nullable{TCPSocket}
 
-    function HadoopRpcChannel(host::AbstractString, port::Integer, ugi::UserGroupInformation, protocol::Symbol)
+    function HadoopRpcChannel(host::AbstractString, port::Integer, ugi::UserGroupInformation, protocol::DataType)
         protocol = HRPC_PROTOCOLS[protocol]
         call_id = HRPC_CALL_ID_CONNCTX
         clnt_id = string(Base.Random.uuid4())[1:16]
@@ -1083,3 +1083,29 @@ function read_packet_ack(writer::HDFSBlockWriter)
         rethrow(ex)
     end
 end
+
+@doc doc"""
+HadoopRpcProtocol binds a channel and controller with a service protocol implementation.
+Used by actual service implementations.
+""" ->
+type HadoopRpcProtocol{T<:AbstractProtoServiceStub}
+    channel::HadoopRpcChannel
+    controller::HadoopRpcController
+    stub::T
+
+    function HadoopRpcProtocol(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation())
+        channel = HadoopRpcChannel(host, port, ugi, T)
+        controller = HadoopRpcController(false)
+        stub = T(channel)
+
+        new(channel, controller, stub)
+    end
+end
+
+function show{T}(io::IO, client::HadoopRpcProtocol{T})
+    srvcname = (HRPC_PROTOCOLS[T])[:name]
+    print(io, "$(srvcname): ")
+    show(io, client.channel)
+end
+
+set_debug(protocol::HadoopRpcProtocol, debug::Bool) = (protocol.controller.debug = debug)

@@ -12,28 +12,28 @@ type YarnException <: Exception
     message::AbstractString
 end
 
+typealias YarnClientProtocol HadoopRpcProtocol{ApplicationClientProtocolServiceBlockingStub}
+
+for fn in (:getClusterMetrics, :getClusterNodes, :getNewApplication, :submitApplication, :forceKillApplication, :getApplicationReport, :getApplicationAttempts)
+    @eval begin
+       ( hadoop.yarn.$fn)(p::YarnClientProtocol, inp) = (hadoop.yarn.$fn)(p.stub, p.controller, inp)
+    end
+end
+
+
 @doc doc"""
 YarnClient holds a connection to the Yarn Resource Manager and provides
 APIs for application clients to interact with Yarn.
 """ ->
 type YarnClient
-    channel::HadoopRpcChannel
-    controller::HadoopRpcController
-    stub::ApplicationClientProtocolServiceBlockingStub
+    rm_conn::YarnClientProtocol
 
     function YarnClient(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation())
-        channel = HadoopRpcChannel(host, port, ugi, :yarn_client)
-        controller = HadoopRpcController(false)
-        stub = ApplicationClientProtocolServiceBlockingStub(channel)
-
-        new(channel, controller, stub)
+        new(YarnClientProtocol(host, port, ugi))
     end
 end
 
-function show(io::IO, client::YarnClient)
-    print(io, "YarnClient: ")
-    show(io, client.channel)
-end
+show(io::IO, client::YarnClient) = show(io, client.rm_conn)
 
 @doc doc"""
 YarnNode represents a node manager in the yarn cluster and its
@@ -90,7 +90,7 @@ end
 
 function nodecount(client::YarnClient)
     inp = GetClusterMetricsRequestProto()
-    resp = getClusterMetrics(client.stub, client.controller, inp)
+    resp = getClusterMetrics(client.rm_conn, inp)
     isfilled(resp, :cluster_metrics) ? resp.cluster_metrics.num_node_managers : 0
 end
 
@@ -101,7 +101,7 @@ function nodes(client::YarnClient, all::Bool=false)
     else
         set_field!(inp, :nodeStates, [NodeStateProto.NS_RUNNING])
     end
-    resp = getClusterNodes(client.stub, client.controller, inp)
+    resp = getClusterNodes(client.rm_conn, inp)
     nlist = resp.nodeReports
     [YarnNode(n) for n in nlist]
 end
@@ -225,7 +225,7 @@ end
 
 function _new_app(client::YarnClient)
     inp = GetNewApplicationRequestProto()
-    resp = getNewApplication(client.stub, client.controller, inp)
+    resp = getNewApplication(client.rm_conn, inp)
     resp.application_id, resp.maximumCapability.memory, resp.maximumCapability.virtual_cores
 end
 
@@ -275,7 +275,7 @@ function submit(client::YarnClient, container_spec::ContainerLaunchContextProto,
   
     inp = protobuild(SubmitApplicationRequestProto, @compat Dict(:application_submission_context => asc))
 
-    submitApplication(client.stub, client.controller, inp)
+    submitApplication(client.rm_conn, inp)
     YarnApp(client, appid)
 end
 
@@ -283,7 +283,7 @@ function kill(app::YarnApp)
     client = app.client
     inp = protobuild(KillApplicationRequestProto, @compat Dict(:application_id => app.appid))
 
-    resp = forceKillApplication(client.stub, client.controller, inp)
+    resp = forceKillApplication(client.rm_conn, inp)
     resp.is_kill_completed
 end
 
@@ -292,7 +292,7 @@ function status(app::YarnApp, refresh::Bool=true)
         client = app.client
         inp = protobuild(GetApplicationReportRequestProto, @compat Dict(:application_id => app.appid))
 
-        resp = getApplicationReport(client.stub, client.controller, inp) 
+        resp = getApplicationReport(client.rm_conn, inp) 
         app.status = isfilled(resp.application_report) ?  Nullable(YarnAppStatus(resp.application_report)) : Nullable{YarnAppStatus}()
     end
     app.status
@@ -326,7 +326,7 @@ function attempts(app::YarnApp, refresh::Bool=true)
         client = app.client
         inp = protobuild(GetApplicationAttemptsRequestProto, @compat Dict(:application_id => app.appid))
 
-        resp = getApplicationAttempts(client.stub, client.controller, inp)
+        resp = getApplicationAttempts(client.rm_conn, inp)
         atmptlist = app.attempts
         empty!(atmptlist)
         if isfilled(resp.application_attempts)

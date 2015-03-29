@@ -159,15 +159,20 @@ end
 torequest(containers::YarnContainers) = (torequest(containers.alloc_pipeline), torequest(containers.release_pipeline))
 haverequests(containers::YarnContainers) = containers.ndesired != length(containers.active)
 
+typealias YarnAMRMProtocol HadoopRpcProtocol{ApplicationMasterProtocolServiceBlockingStub}
+
+for fn in (:registerApplicationMaster, :finishApplicationMaster, :allocate)
+    @eval begin
+        (hadoop.yarn.$fn)(p::YarnAMRMProtocol, inp) = (hadoop.yarn.$fn)(p.stub, p.controller, inp)
+    end
+end
 
 @doc doc"""
 YarnAppMaster is a skeleton application master. It provides the generic scafolding methods which can be used to create specific
 application masters for different purposes.
 """ ->
 type YarnAppMaster
-    channel::HadoopRpcChannel
-    controller::HadoopRpcController
-    stub::ApplicationMasterProtocolServiceBlockingStub
+    amrm_conn::YarnAMRMProtocol
 
     host::AbstractString
     port::Integer
@@ -190,13 +195,11 @@ type YarnAppMaster
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
                 amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
-        channel = HadoopRpcChannel(rmhost, rmport, ugi, :yarn_appmaster)
-        controller = HadoopRpcController(false)
-        stub = ApplicationMasterProtocolServiceBlockingStub(channel)
+        amrm_conn = YarnAMRMProtocol(rmhost, rmport, ugi)
         lck = RemoteRef()
-        put(lck, 1)
+        put!(lck, 1)
 
-        new(channel, controller, stub, amhost, amport, amurl, 
+        new(amrm_conn, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(), YarnContainers(),
             "", true, 1,
@@ -216,8 +219,7 @@ macro locked(yam, ex)
 end
 
 function show(io::IO, yam::YarnAppMaster)
-    print(io, "YarnAppMaster: ")
-    show(io, yam.channel)
+    show(io, yam.amrm_conn)
     println(io, "    Memory: available:$(yam.available_mem), max:$(yam.max_mem), can schecule:$(can_schedule_mem(yam))")
     println(io, "    Cores: available:$(yam.available_cores), max:$(yam.max_cores), can schedule:$(can_schedule_cores(yam))")
     println(io, "    Queue: $(yam.queue)")
@@ -233,7 +235,8 @@ function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     clc = launchcontext()
     app = submit(client, clc, YARN_CONTAINER_MEM_DEFAULT, YARN_CONTAINER_CPU_DEFAULT; unmanaged=true)
     tok = am_rm_token(app)
-    add_token(unmanagedappmaster.channel.ugi, token_alias(unmanagedappmaster.channel), tok)
+    channel = unmanagedappmaster.amrm_conn.channel
+    add_token(channel.ugi, token_alias(channel), tok)
     unmanagedappmaster.managed = false
     register(unmanagedappmaster)
     wait_for_attempt_state(app, Int32(1), YarnApplicationAttemptStateProto.APP_ATTEMPT_RUNNING) || throw(YarnException("Application attempt could not be launched"))
@@ -251,7 +254,7 @@ function register(yam::YarnAppMaster)
     end
     !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
 
-    resp = @locked(yam, registerApplicationMaster(yam.stub, yam.controller, inp))
+    resp = @locked(yam, registerApplicationMaster(yam.amrm_conn, inp))
     yam.registration = Nullable(resp)
 
     if isfilled(resp, :maximumCapability)
@@ -281,7 +284,7 @@ function _unregister(yam::YarnAppMaster, finalstatus::Int32, diagnostics::Abstra
     !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
     !isempty(diagnostics) && set_field!(inp, :diagnostics, diagnostics)
   
-    resp = @locked(yam, finishApplicationMaster(yam.stub, yam.controller, inp))
+    resp = @locked(yam, finishApplicationMaster(yam.amrm_conn, inp))
     resp.isUnregistered && (yam.registration = Nullable{RegisterApplicationMasterResponseProto}())
     resp.isUnregistered
 end
@@ -313,12 +316,13 @@ function _update_rm(yam::YarnAppMaster)
     set_field!(inp, :response_id, yam.response_id)
 
     logmsg(inp)
-    resp = @locked(yam, allocate(yam.stub, yam.controller, inp))
+    resp = @locked(yam, allocate(yam.amrm_conn, inp))
     logmsg(resp)
 
     # store/update tokens
-    ugi = yam.channel.ugi
-    isfilled(resp, :am_rm_token) && add_token(ugi, token_alias(yam.channel), resp.am_rm_token)
+    channel = yam.amrm_conn.channel
+    ugi = channel.ugi
+    isfilled(resp, :am_rm_token) && add_token(ugi, token_alias(channel), resp.am_rm_token)
     if isfilled(resp, :nm_tokens)
         for nmtok in resp.nm_tokens
             add_token(ugi, token_alias(nmtok.nodeId), nmtok.token)

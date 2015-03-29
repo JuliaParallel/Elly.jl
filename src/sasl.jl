@@ -38,16 +38,16 @@ function digmd5_respond(username::AbstractString, password::AbstractString, dige
     # response=MD5(HA1:nonce:nonceCount:clientNonce:qop:HA2)
     iob = IOBuffer()
     write(iob, username, ':', realm, ':', password)
-    HA1_1 = hex2bytes(Crypto.digest("MD5", bytes2hex(takebuf_array(iob)), is_hex=true))
+    HA1_1 = Crypto.digest("MD5", iob)
 
     write(iob, HA1_1, ':', nonce, ':', cnonce)
-    HA1 = Crypto.digest("MD5", bytes2hex(takebuf_array(iob)), is_hex=true)
+    HA1 = Crypto.digest("MD5", iob)
 
     write(iob, SASL_DIGESTMD5_METHOD, ':', digesturi)
-    HA2 = Crypto.digest("MD5", bytes2hex(takebuf_array(iob)), is_hex=true)
+    HA2 = Crypto.digest("MD5", iob)
 
-    write(iob, HA1, ':', nonce, ':', SASL_DIGESTMD5_NC, ':', cnonce, ':', qop, ':', HA2)
-    response = Crypto.digest("MD5", bytes2hex(takebuf_array(iob)), is_hex=true)
+    write(iob, bytes2hex(HA1), ':', nonce, ':', SASL_DIGESTMD5_NC, ':', cnonce, ':', qop, ':', bytes2hex(HA2))
+    response = Crypto.digest("MD5", iob)
 
     write(iob, "charset=",      SASL_DIGESTMD5_CHARSET, ',',
                "username=",     '"', username, '"',     ',',
@@ -57,7 +57,7 @@ function digmd5_respond(username::AbstractString, password::AbstractString, dige
                "cnonce=",       '"', cnonce, '"',       ',',
                "digest-uri=",   '"', digesturi, '"',    ',',
                "maxbuf=",       SASL_DIGESTMD5_MAXBUF,  ',',
-               "response=",     response,               ',',
+               "response=",     bytes2hex(response),    ',',
                "qop=",          qop)
     takebuf_string(iob)
 end

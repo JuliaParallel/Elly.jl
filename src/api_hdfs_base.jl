@@ -9,6 +9,13 @@ end
 
 
 
+typealias HDFSProtocol HadoopRpcProtocol{ClientNamenodeProtocolBlockingStub}
+
+for fn in (:getListing, :getFileInfo, :getBlockLocations, :getServerDefaults, :getFsStats, :setReplication, :getContentSummary, :mkdirs, :rename2, :rename, :delete, :create, :complete, :addBlock, :renewLease, :setTimes)
+    @eval begin
+        (hadoop.hdfs.$fn)(p::HDFSProtocol, inp) = (hadoop.hdfs.$fn)(p.stub, p.controller, inp)
+    end
+end
 
 @doc doc"""
 # HDFSClient
@@ -16,31 +23,23 @@ A client to the namenode in a HDFS cluster and holds a connection to it.
 It also stores the folder context for using relative paths in APIs that use the client.
 """ ->
 type HDFSClient
-    channel::HadoopRpcChannel
-    controller::HadoopRpcController
-    stub::ClientNamenodeProtocolBlockingStub
+    nn_conn::HDFSProtocol
     wd::AbstractString
     server_defaults::Nullable{FsServerDefaultsProto}
 
-    function HDFSClient(host::AbstractString, port::Integer, user::AbstractString="")
-        channel = HadoopRpcChannel(host, port, UserGroupInformation(user), :hdfs_client)
-        controller = HadoopRpcController(false)
-        stub = ClientNamenodeProtocolBlockingStub(channel)
-
-        new(channel, controller, stub, "/", Nullable{FsServerDefaultsProto}())
+    function HDFSClient(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation())
+        nn_conn = HDFSProtocol(host, port, ugi)
+        new(nn_conn, "/", Nullable{FsServerDefaultsProto}())
     end
 end
 
 function show(io::IO, client::HDFSClient)
-    print(io, "HDFSClient: hdfs://")
-    show(io, client.channel)
+    show(client.nn_conn)
     println(io, "    pwd: $(client.wd)")
     nothing
 end
 
-function set_debug(client::HDFSClient, debug::Bool)
-    client.controller.debug = debug
-end
+set_debug(client::HDFSClient, debug::Bool) = set_debug(client.nn_conn, debug)
 
 abspath(client::HDFSClient, path::AbstractString) = abspath(client.wd, path)
 function cd(client::HDFSClient, path::AbstractString)
@@ -70,7 +69,7 @@ end
 
 function show(io::IO, file::HDFSFile)
     client = file.client
-    ch = client.channel
+    ch = client.nn_conn.channel
     user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
 
     println(io, "HDFSFile: hdfs://$(user_spec)$(ch.host):$(ch.port)$(abspath(client, file.path))")
@@ -130,7 +129,7 @@ function _walkdir(client::HDFSClient, path::AbstractString, process_entry::Funct
         inp = protobuild(GetListingRequestProto, @compat Dict(:src => path,
                     :startAfter => start_after,
                     :needLocation => false))
-        resp = getListing(client.stub, client.controller, inp)
+        resp = getListing(client.nn_conn, inp)
 
         if isfilled(resp, :dirList)
             dir_list = resp.dirList
@@ -157,7 +156,7 @@ end
 function _get_file_info(client::HDFSClient, path::AbstractString)
     path = abspath(client, path)
     inp = protobuild(GetFileInfoRequestProto, @compat Dict(:src => path))
-    resp = getFileInfo(client.stub, client.controller, inp)
+    resp = getFileInfo(client.nn_conn, inp)
     isfilled(resp, :fs) ? Nullable{HdfsFileStatusProto}(resp.fs) : Nullable{HdfsFileStatusProto}()
 end
 
@@ -169,7 +168,7 @@ function _get_block_locations(client::HDFSClient, path::AbstractString, offset::
     inp = protobuild(GetBlockLocationsRequestProto, @compat Dict(:src => path,
                 :offset => offset,
                 :length => length))
-    resp = getBlockLocations(client.stub, client.controller, inp)
+    resp = getBlockLocations(client.nn_conn, inp)
     isfilled(resp, :locations) ? Nullable{LocatedBlocksProto}(resp.locations) : Nullable{LocatedBlocksProto}()
 end
 
@@ -178,7 +177,7 @@ end
 function _get_server_defaults(client::HDFSClient)
     if isnull(client.server_defaults)
         inp = GetServerDefaultsRequestProto()
-        resp = getServerDefaults(client.stub, client.controller, inp)
+        resp = getServerDefaults(client.nn_conn, inp)
         client.server_defaults = Nullable(resp.serverDefaults)
     end
     get(client.server_defaults)
@@ -190,7 +189,7 @@ hdfs_default_replication(client::HDFSClient) = _get_server_defaults(client).repl
 
 #
 # File System Status
-_get_fs_status(client::HDFSClient) = getFsStats(client.stub, client.controller, GetFsStatusRequestProto())
+_get_fs_status(client::HDFSClient) = getFsStats(client.nn_conn, GetFsStatusRequestProto())
 
 hdfs_status(client::HDFSClient) = _as_dict(_get_fs_status(client))
 
@@ -264,7 +263,7 @@ function hdfs_set_replication(client::HDFSClient, path::AbstractString, replicat
     path = abspath(client, path)
     inp = protobuild(SetReplicationRequestProto, @compat Dict(:src => path, :replication => replication))
 
-    resp = setReplication(client.stub, client.controller, inp)
+    resp = setReplication(client.nn_conn, inp)
     resp.result
 end
 
@@ -274,7 +273,7 @@ function _get_content_summary(client::HDFSClient, path::AbstractString)
     path = abspath(client, path)
     inp = protobuild(GetContentSummaryRequestProto, @compat Dict(:path => path))
 
-    resp = getContentSummary(client.stub, client.controller, inp)
+    resp = getContentSummary(client.nn_conn, inp)
     resp.summary
 end
 
@@ -307,7 +306,7 @@ function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=fa
                 :createParent => create_parents,
                 :masked => perms))
 
-    resp = mkdirs(client.stub, client.controller, inp)
+    resp = mkdirs(client.nn_conn, inp)
     resp.result
 end
 
@@ -319,7 +318,7 @@ function mv(client::HDFSClient, src::AbstractString, dst::AbstractString, overwr
                 :dst => dst,
                 :overwriteDest => overwrite))
 
-    rename2(client.stub, client.controller, inp)
+    rename2(client.nn_conn, inp)
     true
 end
 
@@ -330,7 +329,7 @@ function mv(client::HDFSClient, src::AbstractString, dst::AbstractString)
     inp = protobuild(RenameRequestProto, @compat Dict(:src => src,
                 :dst => dst))
 
-    resp = rename(client.stub, client.controller, inp)
+    resp = rename(client.nn_conn, inp)
     resp.result
 end
 
@@ -340,7 +339,7 @@ function rm(client::HDFSClient, path::AbstractString, recursive::Bool=false)
     inp = protobuild(DeleteRequestProto, @compat Dict(:src => path,
                 :recursive => recursive))
 
-    resp = delete(client.stub, client.controller, inp)
+    resp = delete(client.nn_conn, inp)
     resp.result
 end
 
@@ -364,7 +363,7 @@ function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=
                 :replication => replication,
                 :blockSize => blocksz))
 
-    resp = create(client.stub, client.controller, inp)
+    resp = create(client.nn_conn, inp)
     isfilled(resp, :fs) || (return Nullable{HdfsFileStatusProto}())
 
     if docomplete
@@ -384,7 +383,7 @@ function _complete_file(client::HDFSClient, path::AbstractString, last::Nullable
         #logmsg("setting last block as $(get(last))")
     end
 
-    endresp = complete(client.stub, client.controller, endinp)
+    endresp = complete(client.nn_conn, endinp)
     endresp.result
 end
 
@@ -400,7 +399,7 @@ function _add_block(client::HDFSClient, path::AbstractString, previous::Nullable
                 :clientName => ELLY_CLIENTNAME))
     isnull(previous) || set_field!(inp, :previous, get(previous))
 
-    resp = addBlock(client.stub, client.controller, inp)
+    resp = addBlock(client.nn_conn, inp)
     return resp.block
 end
 
@@ -411,7 +410,7 @@ from recovering the lease.
 """ ->
 function renewlease(client::HDFSClient)
     inp = protobuild(RenewLeaseRequestProto, @compat Dict(:clientName => ELLY_CLIENTNAME))
-    renewLease(client.stub, client.controller, inp)
+    renewLease(client.nn_conn, inp)
     nothing
 end
 
@@ -424,7 +423,7 @@ function touch(client::HDFSClient, path::AbstractString, replication::UInt32=zer
                     :mtime => t,
                     :atime => t))
 
-        setTimes(client.stub, client.controller, inp)
+        setTimes(client.nn_conn, inp)
     else
         fs = _create_file(client, path, false, replication, blocksz, mode)
         isnull(fs) && throw(HDFSException("Could not create file $path"))
