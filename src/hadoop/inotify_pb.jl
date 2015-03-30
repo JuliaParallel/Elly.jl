@@ -1,6 +1,7 @@
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
+import Base: hash, isequal, ==
 
 type __enum_EventType <: ProtoEnum
     EVENT_CREATE::Int32
@@ -39,6 +40,9 @@ type EventProto
 end #type EventProto
 const __req_EventProto = Symbol[:_type,:contents]
 meta(t::Type{EventProto}) = meta(t, __req_EventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::EventProto) = ProtoBuf.protohash(v)
+isequal(v1::EventProto, v2::EventProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::EventProto, v2::EventProto) = ProtoBuf.protoeq(v1, v2)
 
 type CreateEventProto
     _type::Int32
@@ -54,6 +58,9 @@ type CreateEventProto
 end #type CreateEventProto
 const __req_CreateEventProto = Symbol[:_type,:path,:ctime,:ownerName,:groupName,:perms]
 meta(t::Type{CreateEventProto}) = meta(t, __req_CreateEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::CreateEventProto) = ProtoBuf.protohash(v)
+isequal(v1::CreateEventProto, v2::CreateEventProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::CreateEventProto, v2::CreateEventProto) = ProtoBuf.protoeq(v1, v2)
 
 type CloseEventProto
     path::AbstractString
@@ -63,6 +70,9 @@ type CloseEventProto
 end #type CloseEventProto
 const __req_CloseEventProto = Symbol[:path,:fileSize,:timestamp]
 meta(t::Type{CloseEventProto}) = meta(t, __req_CloseEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::CloseEventProto) = ProtoBuf.protohash(v)
+isequal(v1::CloseEventProto, v2::CloseEventProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::CloseEventProto, v2::CloseEventProto) = ProtoBuf.protoeq(v1, v2)
 
 type AppendEventProto
     path::AbstractString
@@ -70,6 +80,9 @@ type AppendEventProto
 end #type AppendEventProto
 const __req_AppendEventProto = Symbol[:path]
 meta(t::Type{AppendEventProto}) = meta(t, __req_AppendEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::AppendEventProto) = ProtoBuf.protohash(v)
+isequal(v1::AppendEventProto, v2::AppendEventProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::AppendEventProto, v2::AppendEventProto) = ProtoBuf.protoeq(v1, v2)
 
 type RenameEventProto
     srcPath::AbstractString
@@ -79,6 +92,9 @@ type RenameEventProto
 end #type RenameEventProto
 const __req_RenameEventProto = Symbol[:srcPath,:destPath,:timestamp]
 meta(t::Type{RenameEventProto}) = meta(t, __req_RenameEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::RenameEventProto) = ProtoBuf.protohash(v)
+isequal(v1::RenameEventProto, v2::RenameEventProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::RenameEventProto, v2::RenameEventProto) = ProtoBuf.protoeq(v1, v2)
 
 type MetadataUpdateEventProto
     path::AbstractString
@@ -96,6 +112,9 @@ type MetadataUpdateEventProto
 end #type MetadataUpdateEventProto
 const __req_MetadataUpdateEventProto = Symbol[:path,:_type]
 meta(t::Type{MetadataUpdateEventProto}) = meta(t, __req_MetadataUpdateEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::MetadataUpdateEventProto) = ProtoBuf.protohash(v)
+isequal(v1::MetadataUpdateEventProto, v2::MetadataUpdateEventProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::MetadataUpdateEventProto, v2::MetadataUpdateEventProto) = ProtoBuf.protoeq(v1, v2)
 
 type UnlinkEventProto
     path::AbstractString
@@ -104,6 +123,9 @@ type UnlinkEventProto
 end #type UnlinkEventProto
 const __req_UnlinkEventProto = Symbol[:path,:timestamp]
 meta(t::Type{UnlinkEventProto}) = meta(t, __req_UnlinkEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::UnlinkEventProto) = ProtoBuf.protohash(v)
+isequal(v1::UnlinkEventProto, v2::UnlinkEventProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::UnlinkEventProto, v2::UnlinkEventProto) = ProtoBuf.protoeq(v1, v2)
 
 type EventsListProto
     events::Array{EventProto,1}
@@ -114,5 +136,8 @@ type EventsListProto
 end #type EventsListProto
 const __req_EventsListProto = Symbol[:firstTxid,:lastTxid,:syncTxid]
 meta(t::Type{EventsListProto}) = meta(t, __req_EventsListProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::EventsListProto) = ProtoBuf.protohash(v)
+isequal(v1::EventsListProto, v2::EventsListProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::EventsListProto, v2::EventsListProto) = ProtoBuf.protoeq(v1, v2)
 
 export EventType, INodeType, MetadataUpdateType, EventProto, CreateEventProto, CloseEventProto, AppendEventProto, RenameEventProto, MetadataUpdateEventProto, UnlinkEventProto, EventsListProto

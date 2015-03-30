@@ -9,8 +9,7 @@ Crypto.init()
 
 import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, 
         mv, rm, abspath, cd, pwd, touch, open, nb_available, cp,
-        eof, position, seek, seekend, seekstart, skip, read, write, read!, readbytes, readall, close,
-        hash, isequal, ==
+        eof, position, seek, seekend, seekstart, skip, read, write, read!, readbytes, readall, close
 import ProtoBuf: write_bytes, read_bytes, call_method
 import URIParser: URI
 
@@ -42,40 +41,6 @@ using Elly.hadoop
 using Elly.hadoop.common
 using Elly.hadoop.hdfs
 using Elly.hadoop.yarn
-
-function protohash(v)
-    h = 0
-    for f in fieldnames(v)
-        isfilled(v, f) && (h += hash(getfield(v, f)))
-    end
-    hash(h)
-end
-
-function protoeq{T}(v1::T, v2::T)
-    for f in fieldnames(v1)
-        (isfilled(v1, f) == isfilled(v2, f)) || (return false)
-        if isfilled(v1, f)
-            (getfield(v1,f) == getfield(v2,f)) || (return false)
-        end
-    end
-    true
-end
-
-function protoisequal{T}(v1::T, v2::T)
-    for f in fieldnames(v1)
-        (isfilled(v1, f) == isfilled(v2, f)) || (return false)
-        if isfilled(v1, f)
-            isequal(getfield(v1,f), getfield(v2,f)) || (return false)
-        end
-    end
-    true
-end
-
-for t in (:ApplicationAttemptIdProto, :ApplicationIdProto, :ContainerIdProto, :NodeIdProto)
-    @eval hash(v::$t) = protohash(v)
-    @eval isequal(v1::$t, v2::$t) = protoisequal(v1, v2)
-    @eval ==(v1::$t, v2::$t) = protoeq(v1, v2)
-end
 
 const ELLY_CLIENTNAME = "elly"
 

@@ -17,6 +17,7 @@ echo "Looking for Hadoop sources at ${HADOOP_SRC}"
 if [ $# -gt 2 ]
 then
     PROTOC_PATH=$2
+    PROTOC_PATH=${PROTOC_PATH%%/}
 fi
 
 HADOOP_COMMON_PROTO=${HADOOP_SRC}/hadoop-common-project/hadoop-common/src/main/proto
@@ -46,6 +47,6 @@ done
 echo "Proto files: ${PROTO_FILES}"
 
 echo "Generating Julia sources..."
-protoc ${PROTOC_INCLUDES} --julia_out=${OUT_PATH} ${PROTO_FILES}
+${PROTOC_PATH}protoc ${PROTOC_INCLUDES} --julia_out=${OUT_PATH} ${PROTO_FILES}
 #echo "Generating Java sources..."
 #protoc ${PROTOC_INCLUDES} --java_out=${OUT_PATH} ${PROTO_FILES}

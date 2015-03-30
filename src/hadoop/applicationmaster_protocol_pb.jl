@@ -1,6 +1,7 @@
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
+import Base: hash, isequal, ==
 
 # service methods for ApplicationMasterProtocolService
 const _ApplicationMasterProtocolService_methods = MethodDescriptor[

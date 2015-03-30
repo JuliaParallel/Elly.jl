@@ -2,6 +2,7 @@ using ..common
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
+import Base: hash, isequal, ==
 
 type __enum_SchedulerResourceTypes <: ProtoEnum
     MEMORY::Int32
@@ -24,6 +25,9 @@ type RegisterApplicationMasterRequestProto
     tracking_url::AbstractString
     RegisterApplicationMasterRequestProto() = (o=new(); fillunset(o); o)
 end #type RegisterApplicationMasterRequestProto
+hash(v::RegisterApplicationMasterRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::RegisterApplicationMasterRequestProto, v2::RegisterApplicationMasterRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::RegisterApplicationMasterRequestProto, v2::RegisterApplicationMasterRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type FinishApplicationMasterRequestProto
     diagnostics::AbstractString
@@ -31,6 +35,9 @@ type FinishApplicationMasterRequestProto
     final_application_status::Int32
     FinishApplicationMasterRequestProto() = (o=new(); fillunset(o); o)
 end #type FinishApplicationMasterRequestProto
+hash(v::FinishApplicationMasterRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::FinishApplicationMasterRequestProto, v2::FinishApplicationMasterRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::FinishApplicationMasterRequestProto, v2::FinishApplicationMasterRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type FinishApplicationMasterResponseProto
     isUnregistered::Bool
@@ -38,6 +45,9 @@ type FinishApplicationMasterResponseProto
 end #type FinishApplicationMasterResponseProto
 const __val_FinishApplicationMasterResponseProto = @compat Dict(:isUnregistered => false)
 meta(t::Type{FinishApplicationMasterResponseProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_FinishApplicationMasterResponseProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::FinishApplicationMasterResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::FinishApplicationMasterResponseProto, v2::FinishApplicationMasterResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::FinishApplicationMasterResponseProto, v2::FinishApplicationMasterResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type AllocateRequestProto
     ask::Array{ResourceRequestProto,1}
@@ -48,12 +58,18 @@ type AllocateRequestProto
     increase_request::Array{ContainerResourceIncreaseRequestProto,1}
     AllocateRequestProto() = (o=new(); fillunset(o); o)
 end #type AllocateRequestProto
+hash(v::AllocateRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::AllocateRequestProto, v2::AllocateRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::AllocateRequestProto, v2::AllocateRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type NMTokenProto
     nodeId::NodeIdProto
     token::TokenProto
     NMTokenProto() = (o=new(); fillunset(o); o)
 end #type NMTokenProto
+hash(v::NMTokenProto) = ProtoBuf.protohash(v)
+isequal(v1::NMTokenProto, v2::NMTokenProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::NMTokenProto, v2::NMTokenProto) = ProtoBuf.protoeq(v1, v2)
 
 type RegisterApplicationMasterResponseProto
     maximumCapability::ResourceProto
@@ -65,6 +81,9 @@ type RegisterApplicationMasterResponseProto
     scheduler_resource_types::Array{Int32,1}
     RegisterApplicationMasterResponseProto() = (o=new(); fillunset(o); o)
 end #type RegisterApplicationMasterResponseProto
+hash(v::RegisterApplicationMasterResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::RegisterApplicationMasterResponseProto, v2::RegisterApplicationMasterResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::RegisterApplicationMasterResponseProto, v2::RegisterApplicationMasterResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type AllocateResponseProto
     a_m_command::Int32
@@ -81,40 +100,64 @@ type AllocateResponseProto
     am_rm_token::TokenProto
     AllocateResponseProto() = (o=new(); fillunset(o); o)
 end #type AllocateResponseProto
+hash(v::AllocateResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::AllocateResponseProto, v2::AllocateResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::AllocateResponseProto, v2::AllocateResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetNewApplicationRequestProto
     GetNewApplicationRequestProto() = (o=new(); fillunset(o); o)
 end #type GetNewApplicationRequestProto
+hash(v::GetNewApplicationRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetNewApplicationRequestProto, v2::GetNewApplicationRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetNewApplicationRequestProto, v2::GetNewApplicationRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetNewApplicationResponseProto
     application_id::ApplicationIdProto
     maximumCapability::ResourceProto
     GetNewApplicationResponseProto() = (o=new(); fillunset(o); o)
 end #type GetNewApplicationResponseProto
+hash(v::GetNewApplicationResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetNewApplicationResponseProto, v2::GetNewApplicationResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetNewApplicationResponseProto, v2::GetNewApplicationResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetApplicationReportRequestProto
     application_id::ApplicationIdProto
     GetApplicationReportRequestProto() = (o=new(); fillunset(o); o)
 end #type GetApplicationReportRequestProto
+hash(v::GetApplicationReportRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetApplicationReportRequestProto, v2::GetApplicationReportRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetApplicationReportRequestProto, v2::GetApplicationReportRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetApplicationReportResponseProto
     application_report::ApplicationReportProto
     GetApplicationReportResponseProto() = (o=new(); fillunset(o); o)
 end #type GetApplicationReportResponseProto
+hash(v::GetApplicationReportResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetApplicationReportResponseProto, v2::GetApplicationReportResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetApplicationReportResponseProto, v2::GetApplicationReportResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type SubmitApplicationRequestProto
     application_submission_context::ApplicationSubmissionContextProto
     SubmitApplicationRequestProto() = (o=new(); fillunset(o); o)
 end #type SubmitApplicationRequestProto
+hash(v::SubmitApplicationRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::SubmitApplicationRequestProto, v2::SubmitApplicationRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::SubmitApplicationRequestProto, v2::SubmitApplicationRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type SubmitApplicationResponseProto
     SubmitApplicationResponseProto() = (o=new(); fillunset(o); o)
 end #type SubmitApplicationResponseProto
+hash(v::SubmitApplicationResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::SubmitApplicationResponseProto, v2::SubmitApplicationResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::SubmitApplicationResponseProto, v2::SubmitApplicationResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type KillApplicationRequestProto
     application_id::ApplicationIdProto
     KillApplicationRequestProto() = (o=new(); fillunset(o); o)
 end #type KillApplicationRequestProto
+hash(v::KillApplicationRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::KillApplicationRequestProto, v2::KillApplicationRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::KillApplicationRequestProto, v2::KillApplicationRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type KillApplicationResponseProto
     is_kill_completed::Bool
@@ -122,15 +165,24 @@ type KillApplicationResponseProto
 end #type KillApplicationResponseProto
 const __val_KillApplicationResponseProto = @compat Dict(:is_kill_completed => false)
 meta(t::Type{KillApplicationResponseProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_KillApplicationResponseProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::KillApplicationResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::KillApplicationResponseProto, v2::KillApplicationResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::KillApplicationResponseProto, v2::KillApplicationResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetClusterMetricsRequestProto
     GetClusterMetricsRequestProto() = (o=new(); fillunset(o); o)
 end #type GetClusterMetricsRequestProto
+hash(v::GetClusterMetricsRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetClusterMetricsRequestProto, v2::GetClusterMetricsRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetClusterMetricsRequestProto, v2::GetClusterMetricsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetClusterMetricsResponseProto
     cluster_metrics::YarnClusterMetricsProto
     GetClusterMetricsResponseProto() = (o=new(); fillunset(o); o)
 end #type GetClusterMetricsResponseProto
+hash(v::GetClusterMetricsResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetClusterMetricsResponseProto, v2::GetClusterMetricsResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetClusterMetricsResponseProto, v2::GetClusterMetricsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type MoveApplicationAcrossQueuesRequestProto
     application_id::ApplicationIdProto
@@ -139,10 +191,16 @@ type MoveApplicationAcrossQueuesRequestProto
 end #type MoveApplicationAcrossQueuesRequestProto
 const __req_MoveApplicationAcrossQueuesRequestProto = Symbol[:application_id,:target_queue]
 meta(t::Type{MoveApplicationAcrossQueuesRequestProto}) = meta(t, __req_MoveApplicationAcrossQueuesRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::MoveApplicationAcrossQueuesRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::MoveApplicationAcrossQueuesRequestProto, v2::MoveApplicationAcrossQueuesRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::MoveApplicationAcrossQueuesRequestProto, v2::MoveApplicationAcrossQueuesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type MoveApplicationAcrossQueuesResponseProto
     MoveApplicationAcrossQueuesResponseProto() = (o=new(); fillunset(o); o)
 end #type MoveApplicationAcrossQueuesResponseProto
+hash(v::MoveApplicationAcrossQueuesResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::MoveApplicationAcrossQueuesResponseProto, v2::MoveApplicationAcrossQueuesResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::MoveApplicationAcrossQueuesResponseProto, v2::MoveApplicationAcrossQueuesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetApplicationsRequestProto
     application_types::Array{AbstractString,1}
@@ -160,21 +218,33 @@ type GetApplicationsRequestProto
 end #type GetApplicationsRequestProto
 const __val_GetApplicationsRequestProto = @compat Dict(:scope => ApplicationsRequestScopeProto.ALL)
 meta(t::Type{GetApplicationsRequestProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_GetApplicationsRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::GetApplicationsRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetApplicationsRequestProto, v2::GetApplicationsRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetApplicationsRequestProto, v2::GetApplicationsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetApplicationsResponseProto
     applications::Array{ApplicationReportProto,1}
     GetApplicationsResponseProto() = (o=new(); fillunset(o); o)
 end #type GetApplicationsResponseProto
+hash(v::GetApplicationsResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetApplicationsResponseProto, v2::GetApplicationsResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetApplicationsResponseProto, v2::GetApplicationsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetClusterNodesRequestProto
     nodeStates::Array{Int32,1}
     GetClusterNodesRequestProto() = (o=new(); fillunset(o); o)
 end #type GetClusterNodesRequestProto
+hash(v::GetClusterNodesRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetClusterNodesRequestProto, v2::GetClusterNodesRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetClusterNodesRequestProto, v2::GetClusterNodesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetClusterNodesResponseProto
     nodeReports::Array{NodeReportProto,1}
     GetClusterNodesResponseProto() = (o=new(); fillunset(o); o)
 end #type GetClusterNodesResponseProto
+hash(v::GetClusterNodesResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetClusterNodesResponseProto, v2::GetClusterNodesResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetClusterNodesResponseProto, v2::GetClusterNodesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetQueueInfoRequestProto
     queueName::AbstractString
@@ -183,79 +253,127 @@ type GetQueueInfoRequestProto
     recursive::Bool
     GetQueueInfoRequestProto() = (o=new(); fillunset(o); o)
 end #type GetQueueInfoRequestProto
+hash(v::GetQueueInfoRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetQueueInfoRequestProto, v2::GetQueueInfoRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetQueueInfoRequestProto, v2::GetQueueInfoRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetQueueInfoResponseProto
     queueInfo::QueueInfoProto
     GetQueueInfoResponseProto() = (o=new(); fillunset(o); o)
 end #type GetQueueInfoResponseProto
+hash(v::GetQueueInfoResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetQueueInfoResponseProto, v2::GetQueueInfoResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetQueueInfoResponseProto, v2::GetQueueInfoResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetQueueUserAclsInfoRequestProto
     GetQueueUserAclsInfoRequestProto() = (o=new(); fillunset(o); o)
 end #type GetQueueUserAclsInfoRequestProto
+hash(v::GetQueueUserAclsInfoRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetQueueUserAclsInfoRequestProto, v2::GetQueueUserAclsInfoRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetQueueUserAclsInfoRequestProto, v2::GetQueueUserAclsInfoRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetQueueUserAclsInfoResponseProto
     queueUserAcls::Array{QueueUserACLInfoProto,1}
     GetQueueUserAclsInfoResponseProto() = (o=new(); fillunset(o); o)
 end #type GetQueueUserAclsInfoResponseProto
+hash(v::GetQueueUserAclsInfoResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetQueueUserAclsInfoResponseProto, v2::GetQueueUserAclsInfoResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetQueueUserAclsInfoResponseProto, v2::GetQueueUserAclsInfoResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetNodesToLabelsRequestProto
     GetNodesToLabelsRequestProto() = (o=new(); fillunset(o); o)
 end #type GetNodesToLabelsRequestProto
+hash(v::GetNodesToLabelsRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetNodesToLabelsRequestProto, v2::GetNodesToLabelsRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetNodesToLabelsRequestProto, v2::GetNodesToLabelsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetNodesToLabelsResponseProto
     nodeToLabels::Array{NodeIdToLabelsProto,1}
     GetNodesToLabelsResponseProto() = (o=new(); fillunset(o); o)
 end #type GetNodesToLabelsResponseProto
+hash(v::GetNodesToLabelsResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetNodesToLabelsResponseProto, v2::GetNodesToLabelsResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetNodesToLabelsResponseProto, v2::GetNodesToLabelsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetClusterNodeLabelsRequestProto
     GetClusterNodeLabelsRequestProto() = (o=new(); fillunset(o); o)
 end #type GetClusterNodeLabelsRequestProto
+hash(v::GetClusterNodeLabelsRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetClusterNodeLabelsRequestProto, v2::GetClusterNodeLabelsRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetClusterNodeLabelsRequestProto, v2::GetClusterNodeLabelsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetClusterNodeLabelsResponseProto
     nodeLabels::Array{AbstractString,1}
     GetClusterNodeLabelsResponseProto() = (o=new(); fillunset(o); o)
 end #type GetClusterNodeLabelsResponseProto
+hash(v::GetClusterNodeLabelsResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetClusterNodeLabelsResponseProto, v2::GetClusterNodeLabelsResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetClusterNodeLabelsResponseProto, v2::GetClusterNodeLabelsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type StartContainerRequestProto
     container_launch_context::ContainerLaunchContextProto
     container_token::TokenProto
     StartContainerRequestProto() = (o=new(); fillunset(o); o)
 end #type StartContainerRequestProto
+hash(v::StartContainerRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::StartContainerRequestProto, v2::StartContainerRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StartContainerRequestProto, v2::StartContainerRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type StartContainerResponseProto
     services_meta_data::Array{StringBytesMapProto,1}
     StartContainerResponseProto() = (o=new(); fillunset(o); o)
 end #type StartContainerResponseProto
+hash(v::StartContainerResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::StartContainerResponseProto, v2::StartContainerResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StartContainerResponseProto, v2::StartContainerResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type StopContainerRequestProto
     container_id::ContainerIdProto
     StopContainerRequestProto() = (o=new(); fillunset(o); o)
 end #type StopContainerRequestProto
+hash(v::StopContainerRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::StopContainerRequestProto, v2::StopContainerRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StopContainerRequestProto, v2::StopContainerRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type StopContainerResponseProto
     StopContainerResponseProto() = (o=new(); fillunset(o); o)
 end #type StopContainerResponseProto
+hash(v::StopContainerResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::StopContainerResponseProto, v2::StopContainerResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StopContainerResponseProto, v2::StopContainerResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetContainerStatusRequestProto
     container_id::ContainerIdProto
     GetContainerStatusRequestProto() = (o=new(); fillunset(o); o)
 end #type GetContainerStatusRequestProto
+hash(v::GetContainerStatusRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetContainerStatusRequestProto, v2::GetContainerStatusRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetContainerStatusRequestProto, v2::GetContainerStatusRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetContainerStatusResponseProto
     status::ContainerStatusProto
     GetContainerStatusResponseProto() = (o=new(); fillunset(o); o)
 end #type GetContainerStatusResponseProto
+hash(v::GetContainerStatusResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetContainerStatusResponseProto, v2::GetContainerStatusResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetContainerStatusResponseProto, v2::GetContainerStatusResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type StartContainersRequestProto
     start_container_request::Array{StartContainerRequestProto,1}
     StartContainersRequestProto() = (o=new(); fillunset(o); o)
 end #type StartContainersRequestProto
+hash(v::StartContainersRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::StartContainersRequestProto, v2::StartContainersRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StartContainersRequestProto, v2::StartContainersRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type ContainerExceptionMapProto
     container_id::ContainerIdProto
     exception::SerializedExceptionProto
     ContainerExceptionMapProto() = (o=new(); fillunset(o); o)
 end #type ContainerExceptionMapProto
+hash(v::ContainerExceptionMapProto) = ProtoBuf.protohash(v)
+isequal(v1::ContainerExceptionMapProto, v2::ContainerExceptionMapProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ContainerExceptionMapProto, v2::ContainerExceptionMapProto) = ProtoBuf.protoeq(v1, v2)
 
 type StartContainersResponseProto
     services_meta_data::Array{StringBytesMapProto,1}
@@ -263,97 +381,154 @@ type StartContainersResponseProto
     failed_requests::Array{ContainerExceptionMapProto,1}
     StartContainersResponseProto() = (o=new(); fillunset(o); o)
 end #type StartContainersResponseProto
+hash(v::StartContainersResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::StartContainersResponseProto, v2::StartContainersResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StartContainersResponseProto, v2::StartContainersResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type StopContainersRequestProto
     container_id::Array{ContainerIdProto,1}
     StopContainersRequestProto() = (o=new(); fillunset(o); o)
 end #type StopContainersRequestProto
+hash(v::StopContainersRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::StopContainersRequestProto, v2::StopContainersRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StopContainersRequestProto, v2::StopContainersRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type StopContainersResponseProto
     succeeded_requests::Array{ContainerIdProto,1}
     failed_requests::Array{ContainerExceptionMapProto,1}
     StopContainersResponseProto() = (o=new(); fillunset(o); o)
 end #type StopContainersResponseProto
+hash(v::StopContainersResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::StopContainersResponseProto, v2::StopContainersResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StopContainersResponseProto, v2::StopContainersResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetContainerStatusesRequestProto
     container_id::Array{ContainerIdProto,1}
     GetContainerStatusesRequestProto() = (o=new(); fillunset(o); o)
 end #type GetContainerStatusesRequestProto
+hash(v::GetContainerStatusesRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetContainerStatusesRequestProto, v2::GetContainerStatusesRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetContainerStatusesRequestProto, v2::GetContainerStatusesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetContainerStatusesResponseProto
     status::Array{ContainerStatusProto,1}
     failed_requests::Array{ContainerExceptionMapProto,1}
     GetContainerStatusesResponseProto() = (o=new(); fillunset(o); o)
 end #type GetContainerStatusesResponseProto
+hash(v::GetContainerStatusesResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetContainerStatusesResponseProto, v2::GetContainerStatusesResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetContainerStatusesResponseProto, v2::GetContainerStatusesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetApplicationAttemptReportRequestProto
     application_attempt_id::ApplicationAttemptIdProto
     GetApplicationAttemptReportRequestProto() = (o=new(); fillunset(o); o)
 end #type GetApplicationAttemptReportRequestProto
+hash(v::GetApplicationAttemptReportRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetApplicationAttemptReportRequestProto, v2::GetApplicationAttemptReportRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetApplicationAttemptReportRequestProto, v2::GetApplicationAttemptReportRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetApplicationAttemptReportResponseProto
     application_attempt_report::ApplicationAttemptReportProto
     GetApplicationAttemptReportResponseProto() = (o=new(); fillunset(o); o)
 end #type GetApplicationAttemptReportResponseProto
+hash(v::GetApplicationAttemptReportResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetApplicationAttemptReportResponseProto, v2::GetApplicationAttemptReportResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetApplicationAttemptReportResponseProto, v2::GetApplicationAttemptReportResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetApplicationAttemptsRequestProto
     application_id::ApplicationIdProto
     GetApplicationAttemptsRequestProto() = (o=new(); fillunset(o); o)
 end #type GetApplicationAttemptsRequestProto
+hash(v::GetApplicationAttemptsRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetApplicationAttemptsRequestProto, v2::GetApplicationAttemptsRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetApplicationAttemptsRequestProto, v2::GetApplicationAttemptsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetApplicationAttemptsResponseProto
     application_attempts::Array{ApplicationAttemptReportProto,1}
     GetApplicationAttemptsResponseProto() = (o=new(); fillunset(o); o)
 end #type GetApplicationAttemptsResponseProto
+hash(v::GetApplicationAttemptsResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetApplicationAttemptsResponseProto, v2::GetApplicationAttemptsResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetApplicationAttemptsResponseProto, v2::GetApplicationAttemptsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetContainerReportRequestProto
     container_id::ContainerIdProto
     GetContainerReportRequestProto() = (o=new(); fillunset(o); o)
 end #type GetContainerReportRequestProto
+hash(v::GetContainerReportRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetContainerReportRequestProto, v2::GetContainerReportRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetContainerReportRequestProto, v2::GetContainerReportRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetContainerReportResponseProto
     container_report::ContainerReportProto
     GetContainerReportResponseProto() = (o=new(); fillunset(o); o)
 end #type GetContainerReportResponseProto
+hash(v::GetContainerReportResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetContainerReportResponseProto, v2::GetContainerReportResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetContainerReportResponseProto, v2::GetContainerReportResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetContainersRequestProto
     application_attempt_id::ApplicationAttemptIdProto
     GetContainersRequestProto() = (o=new(); fillunset(o); o)
 end #type GetContainersRequestProto
+hash(v::GetContainersRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetContainersRequestProto, v2::GetContainersRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetContainersRequestProto, v2::GetContainersRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type GetContainersResponseProto
     containers::Array{ContainerReportProto,1}
     GetContainersResponseProto() = (o=new(); fillunset(o); o)
 end #type GetContainersResponseProto
+hash(v::GetContainersResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetContainersResponseProto, v2::GetContainersResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetContainersResponseProto, v2::GetContainersResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type ReservationSubmissionRequestProto
     queue::AbstractString
     reservation_definition::ReservationDefinitionProto
     ReservationSubmissionRequestProto() = (o=new(); fillunset(o); o)
 end #type ReservationSubmissionRequestProto
+hash(v::ReservationSubmissionRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::ReservationSubmissionRequestProto, v2::ReservationSubmissionRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ReservationSubmissionRequestProto, v2::ReservationSubmissionRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type ReservationSubmissionResponseProto
     reservation_id::ReservationIdProto
     ReservationSubmissionResponseProto() = (o=new(); fillunset(o); o)
 end #type ReservationSubmissionResponseProto
+hash(v::ReservationSubmissionResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::ReservationSubmissionResponseProto, v2::ReservationSubmissionResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ReservationSubmissionResponseProto, v2::ReservationSubmissionResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type ReservationUpdateRequestProto
     reservation_definition::ReservationDefinitionProto
     reservation_id::ReservationIdProto
     ReservationUpdateRequestProto() = (o=new(); fillunset(o); o)
 end #type ReservationUpdateRequestProto
+hash(v::ReservationUpdateRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::ReservationUpdateRequestProto, v2::ReservationUpdateRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ReservationUpdateRequestProto, v2::ReservationUpdateRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type ReservationUpdateResponseProto
     ReservationUpdateResponseProto() = (o=new(); fillunset(o); o)
 end #type ReservationUpdateResponseProto
+hash(v::ReservationUpdateResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::ReservationUpdateResponseProto, v2::ReservationUpdateResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ReservationUpdateResponseProto, v2::ReservationUpdateResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 type ReservationDeleteRequestProto
     reservation_id::ReservationIdProto
     ReservationDeleteRequestProto() = (o=new(); fillunset(o); o)
 end #type ReservationDeleteRequestProto
+hash(v::ReservationDeleteRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::ReservationDeleteRequestProto, v2::ReservationDeleteRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ReservationDeleteRequestProto, v2::ReservationDeleteRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 type ReservationDeleteResponseProto
     ReservationDeleteResponseProto() = (o=new(); fillunset(o); o)
 end #type ReservationDeleteResponseProto
+hash(v::ReservationDeleteResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::ReservationDeleteResponseProto, v2::ReservationDeleteResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ReservationDeleteResponseProto, v2::ReservationDeleteResponseProto) = ProtoBuf.protoeq(v1, v2)
 
 export SchedulerResourceTypes, ApplicationsRequestScopeProto, RegisterApplicationMasterRequestProto, RegisterApplicationMasterResponseProto, FinishApplicationMasterRequestProto, FinishApplicationMasterResponseProto, AllocateRequestProto, NMTokenProto, AllocateResponseProto, GetNewApplicationRequestProto, GetNewApplicationResponseProto, GetApplicationReportRequestProto, GetApplicationReportResponseProto, SubmitApplicationRequestProto, SubmitApplicationResponseProto, KillApplicationRequestProto, KillApplicationResponseProto, GetClusterMetricsRequestProto, GetClusterMetricsResponseProto, MoveApplicationAcrossQueuesRequestProto, MoveApplicationAcrossQueuesResponseProto, GetApplicationsRequestProto, GetApplicationsResponseProto, GetClusterNodesRequestProto, GetClusterNodesResponseProto, GetQueueInfoRequestProto, GetQueueInfoResponseProto, GetQueueUserAclsInfoRequestProto, GetQueueUserAclsInfoResponseProto, GetNodesToLabelsRequestProto, GetNodesToLabelsResponseProto, GetClusterNodeLabelsRequestProto, GetClusterNodeLabelsResponseProto, StartContainerRequestProto, StartContainerResponseProto, StopContainerRequestProto, StopContainerResponseProto, GetContainerStatusRequestProto, GetContainerStatusResponseProto, StartContainersRequestProto, ContainerExceptionMapProto, StartContainersResponseProto, StopContainersRequestProto, StopContainersResponseProto, GetContainerStatusesRequestProto, GetContainerStatusesResponseProto, GetApplicationAttemptReportRequestProto, GetApplicationAttemptReportResponseProto, GetApplicationAttemptsRequestProto, GetApplicationAttemptsResponseProto, GetContainerReportRequestProto, GetContainerReportResponseProto, GetContainersRequestProto, GetContainersResponseProto, ReservationSubmissionRequestProto, ReservationSubmissionResponseProto, ReservationUpdateRequestProto, ReservationUpdateResponseProto, ReservationDeleteRequestProto, ReservationDeleteResponseProto

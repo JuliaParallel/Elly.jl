@@ -2,6 +2,7 @@ using ..common
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
+import Base: hash, isequal, ==
 
 # service methods for ApplicationHistoryProtocolService
 const _ApplicationHistoryProtocolService_methods = MethodDescriptor[
