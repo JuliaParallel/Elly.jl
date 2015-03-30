@@ -12,160 +12,6 @@ const YARN_CONTAINER_LOCATION_DEFAULT = "*"
 const YARN_CONTAINER_PRIORITY_DEFAULT = 1
 const YARN_NM_CONN_KEEPALIVE_SECS = 5*60
 
-@doc doc"""
-YarnNodes holds node information as visible to the application master.
-It also caches connection to node masters. Connection are reused if they are required before a set keepalivesecs time.
-""" ->
-type YarnNodes
-    count::Int32
-    status::Dict{NodeIdProto,NodeReportProto}
-    conn::Dict{NodeIdProto,Tuple}
-    keepalivesecs::UInt64
-
-    function YarnNodes()
-        new(0, Dict{NodeIdProto,NodeReportProto}(), Dict{NodeIdProto,Tuple}(), YARN_NM_CONN_KEEPALIVE_SECS)
-    end
-end
-
-function show(io::IO, nodes::YarnNodes)
-    println(io, "Nodes: $(nodes.count) (connected to $(length(nodes.conn)))")
-    nothing
-end
-
-function update(nodes::YarnNodes, arp::AllocateResponseProto)
-    isfilled(arp, :num_cluster_nodes) && (nodes.count = arp.num_cluster_nodes)
-    if isfilled(arp, :updated_nodes)
-        for nrep in arp.updated_nodes
-            nodes.status[nrep.nodeId] = nrep
-        end
-    end
-    nothing
-end
-
-@doc doc"""
-RequestPipeline holds entities while they are requested for from yarn resource manager.
-Application master thread extracts pending items and requests them from RM, whereupon they are moved on to the requested state.
-""" ->
-type RequestPipeline{T}
-    pending::Vector{T}
-    requested::Vector{T}
-
-    function RequestPipeline()
-        new(T[], T[])
-    end
-end
-
-pending{T}(pipe::RequestPipeline{T}, item::T) = push!(pipe.pending, item)
-function torequest{T}(pipe::RequestPipeline{T})
-    ret = pipe.pending
-    if !isempty(ret)
-        append!(pipe.requested, ret)
-        pipe.pending = T[]
-    end
-    ret
-end
-haverequests(pipe::RequestPipeline) = !isempty(pipe.pending)
-
-
-@doc doc"""
-YarnContainers holds all containers related to the application.
-It also holds the allocation and release pipelines that are used by application master for requesting actions from resource manager.
-Also schedules callbacks as tasks when containers are allocated or terminated.
-""" ->
-type YarnContainers
-    containers::Dict{ContainerIdProto,ContainerProto}
-    status::Dict{ContainerIdProto,ContainerStatusProto}
-    active::Set{ContainerIdProto}
-
-    alloc_pipeline::RequestPipeline{ResourceRequestProto}
-    release_pipeline::RequestPipeline{ContainerIdProto}
-    ndesired::Int
-
-    on_container_alloc::Nullable{Function}
-    on_container_finish::Nullable{Function}
-
-    function YarnContainers()
-        new(Dict{ContainerIdProto,ContainerProto}(), Dict{ContainerIdProto,ContainerStatusProto}(), Set{ContainerIdProto}(),
-            RequestPipeline{ResourceRequestProto}(), RequestPipeline{ContainerIdProto}(), 0,
-            Nullable{Function}(), Nullable{Function}())
-    end
-end
-
-function show(io::IO, containers::YarnContainers)
-    println(io, "Containers: $(length(containers.active))/$(length(containers.containers)) active")
-    nothing
-end
-
-function callback(containers::YarnContainers, on_container_alloc::Nullable{Function}, on_container_finish::Nullable{Function})
-    containers.on_container_alloc = on_container_alloc
-    containers.on_container_finish = on_container_finish
-end
-
-function update(containers::YarnContainers, arp::AllocateResponseProto)
-    active = containers.active
-    status = containers.status
-    contlist = containers.containers
-    cballoc = containers.on_container_alloc
-    cbfinish = containers.on_container_finish
-
-    if isfilled(arp, :allocated_containers)
-        for cont in arp.allocated_containers
-            id = cont.id
-            contlist[id] = cont
-            push!(active, id)
-            #isnull(cballoc) || @async(get(cballoc)(id))
-            logmsg("calling callback for alloc")
-            isnull(cballoc) || get(cballoc)(id)
-        end
-    end
-    if isfilled(arp, :completed_container_statuses)
-        logmsg("have completed containers")
-        for contst in arp.completed_container_statuses
-            id = contst.container_id
-            logmsg("container $id is finished")
-            status[id] = contst
-            logmsg("id in active: $(id in active)")
-            (id in active) && pop!(active, id)
-            #isnull(cbfinish) || @async(get(cbfinish)(id))
-            logmsg("calling callback for finish")
-            isnull(cbfinish) || get(cbfinish)(id)
-        end
-    end
-    nothing
-end
-
-function request_alloc(containers::YarnContainers, numcontainers::Int; 
-                    mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cpu::Integer=YARN_CONTAINER_CPU_DEFAULT, 
-                    loc::AbstractString=YARN_CONTAINER_LOCATION_DEFAULT, priority::Integer=YARN_CONTAINER_PRIORITY_DEFAULT)
-    prio = protobuild(PriorityProto, @compat Dict(:priority => priority))
-    capability = protobuild(ResourceProto, @compat Dict(:memory => mem, :virtual_cores => cpu))
-    req = protobuild(ResourceRequestProto, @compat Dict(:priority => prio,
-            :resource_name => loc,
-            :num_containers => numcontainers,
-            :capability => capability))
-    pending(containers.alloc_pipeline, req)
-    containers.ndesired += numcontainers
-    nothing
-end
-
-function request_release(containers::YarnContainers, cids::ContainerIdProto...)
-    for cid in cids
-        pending(containers.release_pipeline, cid)
-    end
-    containers.ndesired -= length(cids)
-    nothing
-end
-
-torequest(containers::YarnContainers) = (torequest(containers.alloc_pipeline), torequest(containers.release_pipeline))
-haverequests(containers::YarnContainers) = containers.ndesired != length(containers.active)
-
-typealias YarnAMRMProtocol HadoopRpcProtocol{ApplicationMasterProtocolServiceBlockingStub}
-
-for fn in (:registerApplicationMaster, :finishApplicationMaster, :allocate)
-    @eval begin
-        (hadoop.yarn.$fn)(p::YarnAMRMProtocol, inp) = (hadoop.yarn.$fn)(p.stub, p.controller, inp)
-    end
-end
 
 @doc doc"""
 YarnAppMaster is a skeleton application master. It provides the generic scafolding methods which can be used to create specific
@@ -201,7 +47,7 @@ type YarnAppMaster
 
         new(amrm_conn, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
-            YarnNodes(), YarnContainers(),
+            YarnNodes(ugi), YarnContainers(),
             "", true, 1,
             Nullable{RegisterApplicationMasterResponseProto}(), lck)
     end
@@ -234,12 +80,19 @@ function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     logmsg("submitting unmanaged application")
     clc = launchcontext()
     app = submit(client, clc, YARN_CONTAINER_MEM_DEFAULT, YARN_CONTAINER_CPU_DEFAULT; unmanaged=true)
+
+    # keep the am_rm token
     tok = am_rm_token(app)
     channel = unmanagedappmaster.amrm_conn.channel
     add_token(channel.ugi, token_alias(channel), tok)
+
+    # register the unmanaged appmaster
     unmanagedappmaster.managed = false
     register(unmanagedappmaster)
     wait_for_attempt_state(app, Int32(1), YarnApplicationAttemptStateProto.APP_ATTEMPT_RUNNING) || throw(YarnException("Application attempt could not be launched"))
+
+    # initialize complete node list for appmaster
+    nodes(client; nodelist=unmanagedappmaster.nodes)
 
     # start the am_rm processing task once the app attempt starts running if it is an unmanaged application master
     @async(process_am_rm(unmanagedappmaster))
@@ -295,6 +148,53 @@ kill(yam::YarnAppMaster, diagnostics::AbstractString="") = _unregister(yam, Fina
 
 container_allocate(yam::YarnAppMaster, numcontainers::Int; opts...) = request_alloc(yam.containers, numcontainers; opts...)
 container_release(yam::YarnAppMaster, cids::ContainerIdProto...) = request_release(yam.containers, cids...)
+
+container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cid], container_spec)
+function container_start(yam::YarnAppMaster, container::ContainerProto, container_spec::ContainerLaunchContextProto)
+    logmsg("starting container $(container)")
+    req = protobuild(StartContainerRequestProto, @compat Dict(:container_launch_context => container_spec, :container_token => container.container_token))
+    inp = protobuild(StartContainersRequestProto, @compat Dict(:start_container_request => [req]))
+
+    nodeid = container.nodeId
+    nm_conn = get_connection(yam.nodes, nodeid)
+    success = false
+    resp = StartContainersResponseProto()
+    try
+        resp = startContainers(nm_conn, inp)
+        success = true
+    finally
+        release_connection(yam.nodes, nodeid, nm_conn, success)
+    end
+    success || throw(YarnException("Error starting container"))
+    isfilled(resp, :succeeded_requests) || throw(YarnException(isfilled(resp,:failed_requests) ? resp.failed_requests[1] : "Error starting container"))
+    cid = resp.succeeded_requests[1]
+    (cid == container.id) || throw(YarnException("Unexpected container id mismatch"))
+    set_busy(yam.containers, cid)
+    cid
+end
+
+container_stop(yam::YarnAppMaster, cid::ContainerIdProto) = container_stop(yam, yam.containers.containers[cid])
+function container_stop(yam::YarnAppMaster, container::ContainerProto)
+    logmsg("stopping container $container")
+
+    inp = protobuild(StopContainersRequestProto, @compat Dict(:container_id => [container.id]))
+    nodeid = container.nodeId
+    nm_conn = get_connection(yam.nodes, nodeid)
+    success = false
+    resp = StopContainersResponseProto()
+    try
+        resp = stopContainers(nm_conn, inp)
+        success = true
+    finally
+        release_connection(yam.nodes, nodeid, nm_conn, success)
+    end
+    success || throw(YarnException("Error stopping container"))
+    isfilled(resp, :succeeded_requests) || throw(YarnException(isfilled(resp,:failed_requests) ? resp.failed_requests[1] : "Error stopping container"))
+    cid = resp.succeeded_requests[1]
+    (cid == container.id) || throw(YarnException("Unexpected container id mismatch"))
+    set_free(yam.containers, cid)
+    cid
+end
 
 function _update_rm(yam::YarnAppMaster)
     logmsg("started processing am-rm messages")

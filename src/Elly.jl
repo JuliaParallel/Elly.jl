@@ -25,9 +25,9 @@ export HDFSClient, HDFSFile, HDFSFileInfo,
         eof, position, seek, seekend, seekstart, skip, nb_available,
         read!, read, write, readbytes, readall, open, close, cp
 
-export YarnClient, YarnNode, YarnAppStatus, YarnAppAttemptStatus, nodecount, nodes, launchcontext, submit, kill, status, attempts, am_rm_token
+export YarnClient, YarnNode, YarnApp, YarnAppStatus, YarnAppAttemptStatus, nodecount, nodes, launchcontext, submit, kill, status, attempts, am_rm_token
 
-export YarnAppMaster, register, unregister, kill, can_schedule_mem, can_schedule_cores, container_allocate, container_release
+export YarnAppMaster, register, unregister, kill, can_schedule_mem, can_schedule_cores, container_allocate, container_release, container_start, container_stop, callback
 
 # enable logging only during debugging
 using Logging
@@ -47,10 +47,12 @@ const ELLY_CLIENTNAME = "elly"
 include("ugi.jl")
 include("rpc.jl")
 include("sasl.jl")
+include("envconsts.jl")
+
 include("api_hdfs_base.jl")
 include("api_hdfs_io.jl")
 
-include("envconsts.jl")
+include("api_yarn_base.jl")
 include("api_yarn_client.jl")
 include("api_yarn_appmaster.jl")
 

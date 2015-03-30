@@ -8,9 +8,7 @@ function test_yarn()
     println("number of yarn nodes: $nnodes")
 
     nlist = nodes(yarnclnt)
-    for n in nlist
-        show(STDOUT, n)
-    end
+    show(STDOUT, nlist)
 end
 
 test_yarn()

@@ -8,7 +8,9 @@ type HDFSException <: Exception
 end
 
 
-
+@doc doc"""
+HDFSProtocol: Hadoop RPC client for namenode protocol.
+""" ->
 typealias HDFSProtocol HadoopRpcProtocol{ClientNamenodeProtocolBlockingStub}
 
 for fn in (:getListing, :getFileInfo, :getBlockLocations, :getServerDefaults, :getFsStats, :setReplication, :getContentSummary, :mkdirs, :rename2, :rename, :delete, :create, :complete, :addBlock, :renewLease, :setTimes)

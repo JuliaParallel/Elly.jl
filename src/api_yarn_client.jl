@@ -5,23 +5,6 @@
 # - application_history_client.proto
 
 @doc doc"""
-# YarnException
-Thrown by Yarn APIs.
-""" ->
-type YarnException <: Exception
-    message::AbstractString
-end
-
-typealias YarnClientProtocol HadoopRpcProtocol{ApplicationClientProtocolServiceBlockingStub}
-
-for fn in (:getClusterMetrics, :getClusterNodes, :getNewApplication, :submitApplication, :forceKillApplication, :getApplicationReport, :getApplicationAttempts)
-    @eval begin
-       ( hadoop.yarn.$fn)(p::YarnClientProtocol, inp) = (hadoop.yarn.$fn)(p.stub, p.controller, inp)
-    end
-end
-
-
-@doc doc"""
 YarnClient holds a connection to the Yarn Resource Manager and provides
 APIs for application clients to interact with Yarn.
 """ ->
@@ -35,66 +18,13 @@ end
 
 show(io::IO, client::YarnClient) = show(io, client.rm_conn)
 
-@doc doc"""
-YarnNode represents a node manager in the yarn cluster and its
-communication address, resource state and run state.
-""" ->
-type YarnNode
-    host::AbstractString
-    port::Int32
-    rack::AbstractString
-    ncontainers::Int32
-    mem::Int32
-    cores::Int32
-    memused::Int32
-    coresused::Int32
-    state::Int32
-    isrunning::Bool
-
-    function YarnNode(node::NodeReportProto)
-        host = node.nodeId.host
-        port = node.nodeId.port
-        rack = node.rackName
-        ncontainers = node.numContainers
-
-        state = node.node_state
-        isrunning = (state == NodeStateProto.NS_RUNNING)
-
-        if isrunning
-            mem = node.capability.memory
-            cores = node.capability.virtual_cores
-
-            memused = node.used.memory
-            coresused = node.used.virtual_cores
-        else
-            mem = cores = memused = coresused = 0
-        end
-
-        new(host, port, rack, ncontainers, mem, cores, memused, coresused, state, isrunning)
-    end
-end
-
-@doc doc"""
-NODE_STATES: enum value to state map. Used for converting state for display.
-""" ->
-const NODE_STATES = [:new, :running, :unhealthy, :decommissioned, :lost, :rebooted]
-
-function show(io::IO, node::YarnNode)
-    println(io, "YarnNode: $(node.rack)/$(node.host):$(node.port) $(NODE_STATES[node.state])")
-    if node.isrunning
-        println(io, "    mem used: $(node.memused)/$(node.mem)")
-        println(io, "    cores used: $(node.coresused)/$(node.cores)")
-    end
-    nothing
-end
-
 function nodecount(client::YarnClient)
     inp = GetClusterMetricsRequestProto()
     resp = getClusterMetrics(client.rm_conn, inp)
     isfilled(resp, :cluster_metrics) ? resp.cluster_metrics.num_node_managers : 0
 end
 
-function nodes(client::YarnClient, all::Bool=false)
+function nodes(client::YarnClient; all::Bool=false, nodelist::YarnNodes=YarnNodes(client.rm_conn.channel.ugi))
     inp = GetClusterNodesRequestProto()
     if all
         set_field!(inp, :nodeStates, [NodeStateProto.NS_NEW, NodeStateProto.NS_RUNNING, NodeStateProto.NS_UNHEALTHY, NodeStateProto.NS_DECOMMISSIONED, NodeStateProto.NS_LOST, NodeStateProto.NS_REBOOTED])
@@ -102,8 +32,8 @@ function nodes(client::YarnClient, all::Bool=false)
         set_field!(inp, :nodeStates, [NodeStateProto.NS_RUNNING])
     end
     resp = getClusterNodes(client.rm_conn, inp)
-    nlist = resp.nodeReports
-    [YarnNode(n) for n in nlist]
+    update(nodelist, resp)
+    nodelist
 end
 
 
@@ -227,32 +157,6 @@ function _new_app(client::YarnClient)
     inp = GetNewApplicationRequestProto()
     resp = getNewApplication(client.rm_conn, inp)
     resp.application_id, resp.maximumCapability.memory, resp.maximumCapability.virtual_cores
-end
-
-# TODO: support local resources
-# TODO: support tokens
-function launchcontext(;cmd::AbstractString="", env::Dict=Dict(), service_data::Dict=Dict())
-    clc = ContainerLaunchContextProto()
-    if !isempty(cmd)
-        set_field!(clc, :command, AbstractString[cmd])
-    end
-    if !isempty(env)
-        envproto = StringStringMapProto[]
-        for (n,v) in env
-            (isa(n, AbstractString) && isa(v, AbstractString)) || throw(ArgumentError("non string environment variable specified: $(typeof(n)) => $(typeof(v))"))
-            push!(envproto, protobuild(StringStringMapProto, @compat Dict(:key => n, :value => v)))
-        end
-        set_field!(clc, :environment, envproto)
-    end
-    if !isempty(service_data)
-        svcdataproto = StringBytesMapProto[]
-        for (n,v) in service_data
-            (isa(n, AbstractString) && isa(v, Vector{UInt8})) || throw(ArgumentError("incompatible service data type specified: $(typeof(n)) => $(typeof(v))"))
-            push!(svcdataproto, protobuild(StringBytesMapProto, @compat Dict(:key => n, :value => v)))
-        end
-        set_field!(clc, :service_data, servicedataproto)
-    end
-    clc
 end
 
 function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Integer, cores::Integer; 

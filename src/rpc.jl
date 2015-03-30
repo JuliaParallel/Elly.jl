@@ -3,28 +3,28 @@
 # - Client - Datanode
 # ref: https://wiki.apache.org/hadoop/HadoopRpc
 
-const HRPC_HEADER = "hrpc"
-const HRPC_VERSION = 0x09
-const HRPC_SERVICE_CLASS = 0x00
+const HRPC_HEADER               = "hrpc"
+const HRPC_VERSION              = 0x09
+const HRPC_SERVICE_CLASS        = 0x00
 
-const HRPC_AUTH_PROTOCOL_NONE = 0x00
-const HRPC_AUTH_PROTOCOL_SASL = 0xdf # -33
+const HRPC_AUTH_PROTOCOL_NONE   = 0x00
+const HRPC_AUTH_PROTOCOL_SASL   = 0xdf # -33
 
-const HRPC_AUTH_METHOD_SIMPLE = 0x80
-const HRPC_AUTH_METHOD_TOKEN = 0x82
+const HRPC_AUTH_METHOD_SIMPLE   = 0x80
+const HRPC_AUTH_METHOD_TOKEN    = 0x82
 
-const HRPC_PROTOBUFF_TYPE = RpcKindProto.RPC_PROTOCOL_BUFFER
-const HRPC_FINAL_PACKET = RpcRequestHeaderProto_OperationProto.RPC_FINAL_PACKET
+const HRPC_PROTOBUFF_TYPE       = RpcKindProto.RPC_PROTOCOL_BUFFER
+const HRPC_FINAL_PACKET         = RpcRequestHeaderProto_OperationProto.RPC_FINAL_PACKET
 
-# The call id is set to -3 during initial handshake. Post the handshake it cycles sequentially between 1:typemax(Int32)
-const HRPC_CALL_ID_SASL = @compat Int32(-33)
-const HRPC_CALL_ID_CONNCTX = @compat Int32(-3)
-const HRPC_CALL_ID_NORMAL = @compat Int32(0)
+const HRPC_CALL_ID_SASL         = @compat Int32(-33)
+const HRPC_CALL_ID_CONNCTX      = @compat Int32(-3)
+const HRPC_CALL_ID_NORMAL       = @compat Int32(0)  # Post the handshake it cycles sequentially between 1:typemax(Int32)
 
 const HRPC_PROTOCOLS = @compat Dict(
     ClientNamenodeProtocolBlockingStub              => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",            :ver => @compat(UInt64(1)), :name => "HDFSClient"),
     ApplicationClientProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",    :ver => @compat(UInt64(1)), :name => "YarnClient"),
-    ApplicationMasterProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",    :ver => @compat(UInt64(1)), :name => "YarnAppMaster")
+    ApplicationMasterProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",    :ver => @compat(UInt64(1)), :name => "YarnAppMaster"),
+    ContainerManagementProtocolServiceBlockingStub  => Dict(:id => "org.apache.hadoop.yarn.api.ContainerManagementProtocolPB",  :ver => @compat(UInt64(1)), :name => "YarnNMClient")
 )
 
 @doc doc"""
