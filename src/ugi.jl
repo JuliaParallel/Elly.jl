@@ -27,3 +27,12 @@ function find_tokens(ugi::UserGroupInformation; alias::AbstractString="", kind::
     end
     result
 end
+
+function show(io::IO, ugi::UserGroupInformation)
+    uinfo = ugi.userinfo
+    print(io, "User:")
+    isfilled(uinfo, :realUser) && print(io, ' ', uinfo.realUser)
+    isfilled(uinfo, :effectiveUser) && print(io, " (", uinfo.effectiveUser, ')')
+    isempty(ugi.tokens) || print(io, " with ", length(ugi.tokens), " tokens")
+    println(io, "")
+end
