@@ -34,8 +34,8 @@ export YarnManager, launch, manage
 
 # enable logging only during debugging
 using Logging
-#const logger = Logging.configure(level=DEBUG)
-const logger = Logging.configure(filename="/tmp/elly$(getpid()).log", level=DEBUG)
+const logger = Logging.configure(level=DEBUG)
+#const logger = Logging.configure(filename="/tmp/elly$(getpid()).log", level=DEBUG)
 logmsg(s) = debug(s)
 #logmsg(s) = nothing
 
