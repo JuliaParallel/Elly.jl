@@ -243,10 +243,12 @@ function _update_rm(yam::YarnAppMaster)
     nothing
 end
 
+haverequests(yam::YarnAppMaster) = haverequests(yam.containers)
+
 function process_am_rm(yam::YarnAppMaster)
     logmsg("started am-rm processor task")
     stopped = ()->isnull(yam.registration)
-    stopwaiting = ()->(haverequests(yam.containers) || isnull(yam.registration))
+    stopwaiting = ()->(haverequests(yam) || isnull(yam.registration))
     waittime = 10.
     while !stopped()
         t1 = time()

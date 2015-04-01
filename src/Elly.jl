@@ -9,7 +9,8 @@ Crypto.init()
 
 import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, 
         mv, rm, abspath, cd, pwd, touch, open, nb_available, cp,
-        eof, position, seek, seekend, seekstart, skip, read, write, read!, readbytes, readall, close
+        eof, position, seek, seekend, seekstart, skip, read, write, read!, readbytes, readall, close,
+        launch, manage
 import ProtoBuf: write_bytes, read_bytes, call_method
 import URIParser: URI
 
@@ -29,10 +30,12 @@ export YarnClient, YarnNode, YarnApp, YarnAppStatus, YarnAppAttemptStatus, nodec
 
 export YarnAppMaster, register, unregister, kill, can_schedule_mem, can_schedule_cores, container_allocate, container_release, container_start, container_stop, callback
 
+export YarnManager, launch, manage
+
 # enable logging only during debugging
 using Logging
 #const logger = Logging.configure(level=DEBUG)
-const logger = Logging.configure(filename="elly.log", level=DEBUG)
+const logger = Logging.configure(filename="/tmp/elly$(getpid()).log", level=DEBUG)
 logmsg(s) = debug(s)
 #logmsg(s) = nothing
 
@@ -55,5 +58,7 @@ include("api_hdfs_io.jl")
 include("api_yarn_base.jl")
 include("api_yarn_client.jl")
 include("api_yarn_appmaster.jl")
+
+include("cluster_manager.jl")
 
 end # module

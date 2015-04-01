@@ -262,6 +262,7 @@ end
 
 function update(containers::YarnContainers, arp::AllocateResponseProto)
     active = containers.active
+    busy = containers.busy
     status = containers.status
     contlist = containers.containers
     cballoc = containers.on_container_alloc
@@ -285,6 +286,7 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
             status[id] = contst
             logmsg("id in active: $(id in active)")
             (id in active) && pop!(active, id)
+            (id in busy) && pop!(busy, id)
             logmsg("calling callback for finish")
             isnull(cbfinish) || @async(get(cbfinish)(id))
             #isnull(cbfinish) || get(cbfinish)(id)

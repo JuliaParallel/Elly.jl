@@ -19,4 +19,4 @@ Only simple authentication is supported as of now.
 
 - [HDFS using Elly](HDFS.md)
 - [Yarn using Elly](YARN.md)
-
+- [Yarn Cluster Manager](YARNCM.md)
