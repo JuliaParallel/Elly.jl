@@ -4,6 +4,8 @@ using Base.Test
 function test_hdfs()
     hdfsclnt = HDFSClient("localhost", 9000)
 
+    exists(hdfsclnt, "/tmp") || mkdir(hdfsclnt, "/tmp")
+
     println("listing files in root folder...")
     dirtree = readdir(hdfsclnt, "/")
     println(dirtree)
@@ -27,20 +29,20 @@ function test_hdfs()
     println("/tmp should be a directory")
     @test isdir(hdfsclnt, "/tmp")
 
-    println("du should be > 0")
-    @test du(hdfsclnt, "/") > 0
+    println("du should be >= 0")
+    @test du(hdfsclnt, "/") >= 0
 
     println("stat /tmp")
     st = stat(hdfsclnt, "/tmp")
     println(st)
     @test st.name == "/tmp"
 
-    println("blocks for /tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
-    blocks = hdfs_blocks(hdfsclnt, "/tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
-    println(blocks)
+    #println("blocks for /tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
+    #blocks = hdfs_blocks(hdfsclnt, "/tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
+    #println(blocks)
 
-    println("setting replication factor for /tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
-    @test hdfs_set_replication(hdfsclnt, "/tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary", 2)
+    #println("setting replication factor for /tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
+    #@test hdfs_set_replication(hdfsclnt, "/tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary", 2)
 end
 
 test_hdfs()

@@ -36,19 +36,12 @@ function digmd5_respond(username::AbstractString, password::AbstractString, dige
     # HA1=MD5(MD5(username:realm:password):nonce:cnonce)
     # HA2=MD5(method:digestURI)
     # response=MD5(HA1:nonce:nonceCount:clientNonce:qop:HA2)
+    HA1_1 = md5(username, ':', realm, ':', password)
+    HA1 = md5(HA1_1, ':', nonce, ':', cnonce)
+    HA2 = md5(SASL_DIGESTMD5_METHOD, ':', digesturi)
+    response = md5(bytes2hex(HA1), ':', nonce, ':', SASL_DIGESTMD5_NC, ':', cnonce, ':', qop, ':', bytes2hex(HA2))
+
     iob = IOBuffer()
-    write(iob, username, ':', realm, ':', password)
-    HA1_1 = Crypto.digest("MD5", iob)
-
-    write(iob, HA1_1, ':', nonce, ':', cnonce)
-    HA1 = Crypto.digest("MD5", iob)
-
-    write(iob, SASL_DIGESTMD5_METHOD, ':', digesturi)
-    HA2 = Crypto.digest("MD5", iob)
-
-    write(iob, bytes2hex(HA1), ':', nonce, ':', SASL_DIGESTMD5_NC, ':', cnonce, ':', qop, ':', bytes2hex(HA2))
-    response = Crypto.digest("MD5", iob)
-
     write(iob, "charset=",      SASL_DIGESTMD5_CHARSET, ',',
                "username=",     '"', username, '"',     ',',
                "realm=",        '"', realm, '"',        ',',

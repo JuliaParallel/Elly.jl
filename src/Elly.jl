@@ -4,8 +4,6 @@ using Compat
 using ProtoBuf
 using URIParser
 using CRC
-using Crypto
-Crypto.init()
 
 import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, 
         mv, rm, abspath, cd, pwd, touch, open, nb_available, cp,
@@ -33,10 +31,10 @@ export YarnAppMaster, register, unregister, kill, can_schedule_mem, can_schedule
 export YarnManager, launch, manage
 
 # enable logging only during debugging
-using Logging
-const logger = Logging.configure(level=DEBUG)
+#using Logging
+#const logger = Logging.configure(level=DEBUG)
 #const logger = Logging.configure(filename="/tmp/elly$(getpid()).log", level=DEBUG)
-logmsg(s) = debug(s)
+#logmsg(s) = debug(s)
 #logmsg(s) = nothing
 
 include("hadoop/hadoop.jl")
@@ -46,6 +44,9 @@ using Elly.hadoop.hdfs
 using Elly.hadoop.yarn
 
 const ELLY_CLIENTNAME = "elly"
+
+include("digest.jl")
+md5init()
 
 include("ugi.jl")
 include("rpc.jl")
