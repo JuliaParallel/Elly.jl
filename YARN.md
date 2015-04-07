@@ -47,8 +47,12 @@ YarnAppMaster: tan@localhost:8030/
     Queue: 
 YarnNodes: 0 (connected to 0)
 Containers: 0/0 active, 0 in use
+````
 
+Applications may register callbacks for container allocation and finish events to be able to start a task on the allocated container or
+read the results.
 
+````
 julia> function on_alloc(cid)
            # probably start container process here
            println("allocated $cid")
@@ -56,7 +60,7 @@ julia> function on_alloc(cid)
 on_alloc (generic function with 1 method)
 
 julia> function on_finish(cid)
-           # ...
+           # release the container or start a new process here
            println("finished $cid")
        end
 on_finish (generic function with 1 method)
