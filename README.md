@@ -1,7 +1,5 @@
 # Elly
 
-[![Build Status](https://travis-ci.org/tanmaykm/Elly.jl.svg?branch=master)](https://travis-ci.org/tanmaykm/Elly.jl)
-
 Elly is a [Hadoop](https://hadoop.apache.org/) HDFS and Yarn client.
 
 - Has a familiar Julia IO API for HDFS files.
