@@ -5,7 +5,7 @@ The sections below show a some simple examples of how to use them. A complete AP
 
 ### YarnClient
 
-A `YarnClient` can be constructed simply by poviding the address of the Yarn Resource Manager and a `UserGroupInformation` object.
+A `YarnClient` can be constructed simply by providing the address of the Yarn Resource Manager and a `UserGroupInformation` object.
 It is generally useful to have a common `UserGroupInformation` object in the application as it holds security tokens provided by Yarn and 
 we often need to pass them while calling methods that need them.
 
