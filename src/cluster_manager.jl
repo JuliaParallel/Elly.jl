@@ -65,13 +65,27 @@ function _container(cid::AbstractString)
     protobuild(ContainerIdProto, @compat Dict(:app_id => appid_proto, :app_attempt_id => app_attempt_id_proto, :id => container_id))
 end
 
+_envdict(envdict::Dict) = envdict
+function _envdict(envhash::Base.EnvHash)
+    envdict = Dict{AbstractString,AbstractString}()
+    for (n,v) in envhash
+        envdict[n] = v
+    end
+    envdict
+end
+
+function _currprocname()
+    ("_" in keys(ENV)) && contains(ENV["_"], "julia") && (return ENV["_"])
+    "julia"
+end
+
 function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Condition)
     #logmsg("YarnManager launch: params: $params")
 
     paramkeys   = keys(params)
-    np          = (:np      in paramkeys)   ? params[:np]       : 1
-    cmd         = (:exename in paramkeys)   ? params[:exename]  : "julia"
-    appenv      = (:env     in paramkeys)   ? params[:env]      : Dict{AbstractString,AbstractString}()
+    np          = (:np      in paramkeys)   ? params[:np]               : 1
+    cmd         = (:exename in paramkeys)   ? params[:exename]          : _currprocname()
+    appenv      = (:env     in paramkeys)   ? _envdict(params[:env])    : Dict{AbstractString,AbstractString}()
 
     stdout_ios = manager.stdout_ios
     (port, server) = listenany(11000)

@@ -39,8 +39,9 @@ type HDFSFileReader
 end
 
 function URI(reader::HDFSFileReader, show_offset::Bool)
-    ch = reader.client.channel
-    user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
+    ch = reader.client.nn_conn.channel
+    user = username(ch.ugi)
+    user_spec = isempty(user) ? user : "$(user)@"
     offset = show_offset ? "#$(reader.fptr)" : ""
     URI("hdfs://$(user_spec)$(ch.host):$(ch.port)$(reader.path)$(offset)")
 end
@@ -255,8 +256,9 @@ type HDFSFileWriter
 end
 
 function URI(writer::HDFSFileWriter, show_offset::Bool)
-    ch = writer.client.channel
-    user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
+    ch = writer.client.nn_conn.channel
+    user = username(ch.ugi)
+    user_spec = isempty(user) ? user : "$(user)@"
     offset = show_offset ? "#$(writer.fptr)" : ""
     URI("hdfs://$(user_spec)$(ch.host):$(ch.port)$(writer.path)$(offset)")
 end
