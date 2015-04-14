@@ -824,7 +824,8 @@ end
 
 function write(writer::HDFSBlockWriter, buff::Vector{UInt8})
     defaults = writer.server_defaults
-    nbytes = min(defaults.blockSize - writer.total_written, length(buff))
+    # write only enough till blockSize
+    nbytes = min(defaults.blockSize - writer.total_written - nb_available(writer.buffer), length(buff))
     if nbytes > 0
         Base.write_sub(writer.buffer, buff, 1, nbytes)
         #logmsg("accumulated $(nbytes)/$(length(buff)) bytes to buffer. accumulated size:$(nb_available(writer.buffer))")
