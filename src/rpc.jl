@@ -822,14 +822,19 @@ function check_write_buffer(writer::HDFSBlockWriter)
     end
 end
 
+# write only enough till blockSize
+_can_write(writer::HDFSBlockWriter, n::Int) = min(writer.server_defaults.blockSize - writer.total_written - nb_available(writer.buffer), n)
+
+function write(writer::HDFSBlockWriter, x::UInt8)
+    nbytes = _can_write(writer, 1)
+    (nbytes > 0) && write(writer.buffer, x)
+    check_write_buffer(writer)
+    nbytes
+end
+
 function write(writer::HDFSBlockWriter, buff::Vector{UInt8})
-    defaults = writer.server_defaults
-    # write only enough till blockSize
-    nbytes = min(defaults.blockSize - writer.total_written - nb_available(writer.buffer), length(buff))
-    if nbytes > 0
-        Base.write_sub(writer.buffer, buff, 1, nbytes)
-        #logmsg("accumulated $(nbytes)/$(length(buff)) bytes to buffer. accumulated size:$(nb_available(writer.buffer))")
-    end
+    nbytes = _can_write(writer, length(buff))
+    (nbytes > 0) && Base.write_sub(writer.buffer, buff, 1, nbytes)
     check_write_buffer(writer)
     nbytes
 end

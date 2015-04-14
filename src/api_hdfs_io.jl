@@ -13,7 +13,7 @@ Provides Julia IO APIs for reading HDFS files.
 Communicates with namenode for file metadata (through HDFSClient)
 and to datanodes for file data (through HDFSBlockReader)
 """ ->
-type HDFSFileReader
+type HDFSFileReader <: IO
     client::HDFSClient
     path::AbstractString
     size::UInt64
@@ -229,6 +229,8 @@ function read!{T}(reader::HDFSFileReader, a::Array{T})
     (remaining > 0) && throw(EOFError())
     a
 end
+const _a = Array(UInt8, 1)
+read(reader::HDFSFileReader, ::Type{UInt8}) = (read!(reader, _a); _a[1])
 readbytes(reader::HDFSFileReader, nb::Integer) = read!(reader, Array(Uint8, nb))
 readall(reader::HDFSFileReader) = readbytes(reader, nb_available(reader))
 
@@ -250,7 +252,7 @@ On close call NameNode.complete to:
     dfs client should start thread to renew leases periodically
 - change file from under construction to complete
 """ ->
-type HDFSFileWriter
+type HDFSFileWriter <: IO
     client::HDFSClient
     path::AbstractString
     fptr::UInt64
@@ -280,27 +282,32 @@ function renewlease(writer::HDFSFileWriter)
     renewlease(writer.client)
 end
 
-function write(writer::HDFSFileWriter, data::Vector{UInt8})
-    if isnull(writer.blk_writer)
-        blk = _add_block(writer.client, writer.path, writer.blk)
-        blk_writer = HDFSBlockWriter(blk, _get_server_defaults(writer.client))
-        writer.blk_writer = Nullable(blk_writer)
-        writer.blk = Nullable(blk)
-    else
-        blk_writer = get(writer.blk_writer)
-    end
-    nbytes = write(blk_writer, data)
-    nbytes_remaining = length(data) - nbytes
-    if nbytes_remaining > 0
-        flush(blk_writer)
-        disconnect(blk_writer, true)
-        writer.blk_writer = Nullable{HDFSBlockWriter}()
+function _write{T<:Union(UInt8,Vector{UInt8})}(writer::HDFSFileWriter, data::T)
+    rem_data = data
+    L = rem_len = length(data)
 
-        remaining = pointer_to_array(pointer(data, nbytes+1), nbytes_remaining)
-        nbytes += write(writer, remaining)
+    while rem_len > 0
+        if isnull(writer.blk_writer)
+            blk = _add_block(writer.client, writer.path, writer.blk)
+            blk_writer = HDFSBlockWriter(blk, _get_server_defaults(writer.client))
+            writer.blk_writer = Nullable(blk_writer)
+            writer.blk = Nullable(blk)
+        else
+            blk_writer = get(writer.blk_writer)
+        end
+
+        rem_len -= write(blk_writer, rem_data)
+        if rem_len > 0
+            flush(blk_writer)
+            disconnect(blk_writer, true)
+            writer.blk_writer = Nullable{HDFSBlockWriter}()
+            (T <: UInt8) || (rem_data = pointer_to_array(pointer(data, L-rem_len+1), rem_len))
+        end
     end
-    nbytes
+    L
 end
+write(writer::HDFSFileWriter, data::UInt8) = _write(writer, data)
+write(writer::HDFSFileWriter, data::Vector{UInt8}) = _write(writer, data)
 
 function close(writer::HDFSFileWriter)
     if !isnull(writer.blk_writer)
