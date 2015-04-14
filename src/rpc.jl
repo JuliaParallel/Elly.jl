@@ -624,7 +624,7 @@ function read_packet!(reader::HDFSBlockReader, inbuff::Vector{UInt8}, offset::UI
     end
 
     packet_remaining = reader.packet_len - reader.packet_read
-    excess = @compat Int64(length(inbuff)+1-offset) - @compat Int64(packet_remaining)
+    excess = @compat(Int64(length(inbuff)+1-offset)) - @compat(Int64(packet_remaining))
     (excess >= 0) || return excess
 
     buff = pointer_to_array(pointer(inbuff, offset), packet_remaining)
@@ -747,7 +747,7 @@ pending(pipeline::WriterPipeline) = (length(pipeline.pkt_prepared) + length(pipe
 # - schedule a block only after block is complete
 # - schedule and manage multiple block streams to different nodes
 # - select data node to write to based on whether it already has an active write to the datanode
-# - maintain a list of IOBuffers and LocatedBlockProtos in HDFSFileWriters that are queued / beging written to, with a max limit beyond which it needs to wait for blocks to be written.
+# - maintain a list of IOBuffers and LocatedBlockProtos in HDFSFileWriters that are queued / being written to, with a max limit beyond which it needs to wait for blocks to be written.
 # - close of HDFSFileWriter should wait for all blocks to be flushed
 # - this can later be tweaked to incorporate node failover
 @doc doc"""

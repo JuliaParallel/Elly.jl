@@ -167,11 +167,11 @@ function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::U
         # read packet from reader
         ret = read_packet!(blk_reader, out, offset)                     # try to read directly into output
         if ret < 0
-            pkt_len = len - ret                                         # bytes in this packet
+            pkt_len = len + UInt64(abs(ret))                            # bytes in this packet
             buff = Array(UInt8, pkt_len)                                # allocate a temporary array
-            #logmsg("allocated temporary array of size $pkt_len")
+            #logmsg("allocated temporary array of size $pkt_len, len:$len, ret:$ret, offset:$offset, bufflen:$(length(buff)), outlen:$(length(out))")
             ret = read_packet!(blk_reader, buff, pkt_len)               # read complete packet
-            copy!(out, offset+1, buff, 1, len)                          # copy len bytes to output
+            copy!(out, offset, buff, 1, len)                            # copy len bytes to output
             Base.write_sub(reader.buffer, buff, len+1, pkt_len-len)     # copy remaining data to buffer
             copylen = len
             len = 0                                                     # we definitely do not need to read any more
@@ -201,10 +201,21 @@ function read!{T}(reader::HDFSFileReader, a::Array{T})
     offset::UInt64 = 1
     # while not eof and remaining to be filled
     while !eof(reader) && (remaining > 0)
+        if (reader.fptr == reader.size)
+            reader.fptr += 1
+            break
+        end
         navlb = nb_available(reader.buffer)
         # if buffer empty, fill buffer
         if navlb == 0
-            nbytes = _read_and_buffer(reader, a, offset, remaining)
+            if (reader.fptr + remaining) > reader.size
+                canread = reader.size - reader.fptr
+                tb = Array(T, Int(canread/sizeof(T)))
+                nbytes = _read_and_buffer(reader, tb, UInt64(1), canread)
+                copy!(a, offset, tb, 1, length(tb))
+            else
+                nbytes = _read_and_buffer(reader, a, offset, remaining)
+            end
         else
             nbytes = min(navlb, remaining)
             #logmsg("reading $nbytes from buffer. navlb:$navlb remaining:$remaining, offset:$offset")

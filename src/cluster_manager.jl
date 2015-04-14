@@ -104,7 +104,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     on_alloc = (cid) -> container_start(manager.am, cid, clc)
     callback(manager.am, Nullable(on_alloc), Nullable{Function}())
 
-    container_allocate(manager.am, np)
+    container_allocate(manager.am, convert(Int, np))
 
     tend = time() + manager.launch_timeout
     while (time() < tend) && !Base.istaskdone(rcv_stdouts)

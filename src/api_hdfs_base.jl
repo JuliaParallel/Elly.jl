@@ -72,7 +72,8 @@ end
 function show(io::IO, file::HDFSFile)
     client = file.client
     ch = client.nn_conn.channel
-    user_spec = isempty(ch.user) ? ch.user : "$(ch.user)@"
+    user = username(ch.ugi)
+    user_spec = isempty(user) ? user : "$(user)@"
 
     println(io, "HDFSFile: hdfs://$(user_spec)$(ch.host):$(ch.port)$(abspath(client, file.path))")
     nothing
