@@ -64,7 +64,7 @@ function seek(reader::HDFSFileReader, n::Integer)
         reuse = false
         if !isnull(reader.blk_reader)
             blk_reader = get(reader.blk_reader)
-            reuse = eof(blk_readder)
+            reuse = eof(blk_reader)
         end
         disconnect(reader, reuse)
     end
@@ -170,7 +170,7 @@ function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::U
             pkt_len = len + UInt64(abs(ret))                            # bytes in this packet
             buff = Array(UInt8, pkt_len)                                # allocate a temporary array
             #logmsg("allocated temporary array of size $pkt_len, len:$len, ret:$ret, offset:$offset, bufflen:$(length(buff)), outlen:$(length(out))")
-            ret = read_packet!(blk_reader, buff, pkt_len)               # read complete packet
+            ret = read_packet!(blk_reader, buff, UInt64(1))             # read complete packet
             copy!(out, offset, buff, 1, len)                            # copy len bytes to output
             Base.write_sub(reader.buffer, buff, len+1, pkt_len-len)     # copy remaining data to buffer
             copylen = len
@@ -220,6 +220,7 @@ function read!{T}(reader::HDFSFileReader, a::Array{T})
             nbytes = min(navlb, remaining)
             #logmsg("reading $nbytes from buffer. navlb:$navlb remaining:$remaining, offset:$offset")
             Base.read_sub(reader.buffer, a, offset, nbytes)
+            reader.fptr += nbytes
         end
         # fill from buffer
         (nbytes == 0) && break
@@ -231,7 +232,7 @@ function read!{T}(reader::HDFSFileReader, a::Array{T})
 end
 const _a = Array(UInt8, 1)
 read(reader::HDFSFileReader, ::Type{UInt8}) = (read!(reader, _a); _a[1])
-readbytes(reader::HDFSFileReader, nb::Integer) = read!(reader, Array(Uint8, nb))
+readbytes(reader::HDFSFileReader, nb::Integer) = read!(reader, Array(UInt8, nb))
 readall(reader::HDFSFileReader) = readbytes(reader, nb_available(reader))
 
 @doc doc"""
