@@ -75,7 +75,11 @@ function _envdict(envhash::Base.EnvHash)
 end
 
 function _currprocname()
+    p = joinpath(Base.JULIA_HOME, Sys.get_process_title())
+    exists(p) && (return p)
+
     ("_" in keys(ENV)) && contains(ENV["_"], "julia") && (return ENV["_"])
+
     "julia"
 end
 
@@ -83,9 +87,13 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     #logmsg("YarnManager launch: params: $params")
 
     paramkeys   = keys(params)
-    np          = (:np      in paramkeys)   ? params[:np]               : 1
-    cmd         = (:exename in paramkeys)   ? params[:exename]          : _currprocname()
-    appenv      = (:env     in paramkeys)   ? _envdict(params[:env])    : Dict{AbstractString,AbstractString}()
+    np          = (:np       in paramkeys)  ? params[:np]               : 1
+    cmd         = (:exename  in paramkeys)  ? params[:exename]          : _currprocname()
+    appenv      = (:env      in paramkeys)  ? _envdict(params[:env])    : Dict{AbstractString,AbstractString}()
+    mem         = (:mem      in paramkeys)  ? params[:mem]              : YARN_CONTAINER_MEM_DEFAULT
+    cpu         = (:cpu      in paramkeys)  ? params[:cpu]              : YARN_CONTAINER_CPU_DEFAULT
+    loc         = (:loc      in paramkeys)  ? params[:loc]              : YARN_CONTAINER_LOCATION_DEFAULT
+    priority    = (:priority in paramkeys)  ? params[:priority]         : YARN_CONTAINER_PRIORITY_DEFAULT
 
     stdout_ios = manager.stdout_ios
     (port, server) = listenany(11000)
@@ -104,7 +112,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     on_alloc = (cid) -> container_start(manager.am, cid, clc)
     callback(manager.am, Nullable(on_alloc), Nullable{Function}())
 
-    container_allocate(manager.am, convert(Int, np))
+    container_allocate(manager.am, convert(Int, np); mem=mem, cpu=cpu, loc=loc, priority=priority)
 
     tend = time() + manager.launch_timeout
     while (time() < tend) && !Base.istaskdone(rcv_stdouts)
