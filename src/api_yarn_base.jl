@@ -295,6 +295,9 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
     nothing
 end
 
+# See Yarn issues related to allocating containers at specific locations:
+# https://issues.apache.org/jira/browse/YARN-2027
+# https://issues.apache.org/jira/browse/YARN-1412
 function request_alloc(containers::YarnContainers, numcontainers::Int; 
                     mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cpu::Integer=YARN_CONTAINER_CPU_DEFAULT, 
                     loc::AbstractString=YARN_CONTAINER_LOCATION_DEFAULT, priority::Integer=YARN_CONTAINER_PRIORITY_DEFAULT)

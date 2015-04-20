@@ -242,10 +242,10 @@ atime(file::HDFSFile) = atime(file.client, file.path)
 atime(client::HDFSClient, path::AbstractString) = atime(stat(client, path))
 atime(fileinfo::HDFSFileInfo) = fileinfo.last_access
 
-hdfs_blocks(file::HDFSFile, offset::UInt64=zero(UInt64), length::UInt64=zero(UInt64)) = hdfs_blocks(file.client, file.path, offset, length)
-function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::UInt64=zero(UInt64), length::UInt64=zero(UInt64))
-    blocks = (UInt64,Array)[]
-    _locations = _get_block_locations(client, path, offset, length)
+hdfs_blocks(file::HDFSFile, offset::Integer=0, length::Integer=typemax(Int)) = hdfs_blocks(file.client, file.path, offset, length)
+function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::Integer=0, length::Integer=typemax(Int))
+    blocks = Tuple{UInt64,Array}[]
+    _locations = _get_block_locations(client, path, UInt64(offset), UInt64(length))
     isnull(_locations) && (return blocks)
     locations = get(_locations)
     for block in locations.blocks
