@@ -8,7 +8,7 @@ using CRC
 import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, 
         mv, rm, abspath, cd, pwd, touch, open, nb_available, cp,
         eof, position, seek, seekend, seekstart, skip, read, write, read!, readbytes, readall, close,
-        launch, manage
+        launch, manage, convert
 import ProtoBuf: write_bytes, read_bytes, call_method
 import URIParser: URI
 
