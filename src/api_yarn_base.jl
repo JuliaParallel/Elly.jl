@@ -170,7 +170,7 @@ function get_connection(nodes::YarnNodes, nodeid::NodeIdProto)
     node.isrunning || throw(YarnException("Yarn node $(nodeid.host):$(nodeid.port) is not running"))
 
     t = time()
-    if nodeid in nodes.conn
+    if nodeid in keys(nodes.conn)
         (conn,lastusetime) = nodes.conn[nodeid]
         (t < (lastusetime + nodes.keepalivesecs)) && (return conn)
         try
