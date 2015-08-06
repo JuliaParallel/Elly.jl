@@ -9,7 +9,7 @@ function digmd5_decode_challenge(challenge::AbstractString)
         end
         comps[n] = v
     end
-    #logmsg("decoded challenge components: $comps")
+    @logmsg("decoded challenge components: $comps")
     comps
 end
 
@@ -73,7 +73,7 @@ end
 buffer_sasl_reqhdr(channel::HadoopRpcChannel) = (channel.sent_call_id = channel.call_id = HRPC_CALL_ID_SASL; buffer_reqhdr(channel, HRPC_CALL_ID_SASL))
 
 function buffer_sasl_message(channel::HadoopRpcChannel, state::Int32, auths::Vector{RpcSaslProto_SaslAuth}=RpcSaslProto_SaslAuth[], token::Vector{UInt8}=UInt8[])
-    #logmsg("buffer SASL message. state:$state, nauths:$(length(auths)), token:$(!isempty(token))")
+    @logmsg("buffer SASL message. state:$state, nauths:$(length(auths)), token:$(!isempty(token))")
     saslmsg = protobuild(RpcSaslProto, @compat Dict(:version => 0, :state => state))
     isempty(auths) || set_field!(saslmsg, :auths, auths)
     isempty(token) || set_field!(saslmsg, :token, token)
@@ -81,10 +81,10 @@ function buffer_sasl_message(channel::HadoopRpcChannel, state::Int32, auths::Vec
 end
 
 function recv_sasl_message(channel::HadoopRpcChannel)
-    #logmsg("recv SASL message")
+    @logmsg("recv SASL message")
     resp = RpcSaslProto()
     recv_rpc_message(channel, resp)
-    #logmsg("received SASL message $resp")
+    @logmsg("received SASL message $resp")
     resp
 end
 
@@ -97,10 +97,10 @@ function conditional_sasl_auth(channel::HadoopRpcChannel)
     tok_alias = token_alias(channel)
     tokens = find_tokens(channel.ugi, alias=tok_alias)
     if isempty(tokens)
-        #logmsg("no token available to authenticate to $tok_alias. skipping")
+        @logmsg("no token available to authenticate to $tok_alias. skipping")
         return false
     end
-    #logmsg("found $(length(tokens)) tokens available to authenticate to $tok_alias. authenticating...")
+    @logmsg("found $(length(tokens)) tokens available to authenticate to $tok_alias. authenticating...")
     token = tokens[1]
     sasl_auth(channel, token)
     true
@@ -121,16 +121,16 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
 
     # check if TOKEN/DIGEST-MD5 is one of the supported methods
     nauths = length(resp.auths)
-    #logmsg("server supports $nauths auths")
+    @logmsg("server supports $nauths auths")
     idx_auth = 0
     for idx in 1:length(resp.auths)
         auth = resp.auths[idx]
-        #logmsg("    $idx: $(auth.method)/$(auth.mechanism)")
+        @logmsg("    $idx: $(auth.method)/$(auth.mechanism)")
         ((auth.method == "TOKEN") && (auth.mechanism == "DIGEST-MD5")) || continue
         idx_auth = idx
     end
     if idx_auth == 0
-        #logmsg("no supported auth method found")
+        @logmsg("no supported auth method found")
         throw(HadoopRpcException("no supported authentication method found"))
     end
     auth = resp.auths[idx_auth]
@@ -139,9 +139,9 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
     protocol = auth.protocol
     serverId = auth.serverId
     challenge = auth.challenge
-    #logmsg("auth.protocol: $protocol, serverId: $serverId, challenge: $challenge")
+    @logmsg("auth.protocol: $protocol, serverId: $serverId, challenge: $challenge")
     response = digmd5_respond(token, auth.protocol, auth.serverId, auth.challenge)
-    #logmsg("response: $response")
+    @logmsg("response: $response")
 
     # send response as a sasl initiate request
     respauth = protobuild(RpcSaslProto_SaslAuth, @compat Dict(:method => auth.method,
@@ -157,7 +157,7 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
 
     # expect a success response
     if resp.state != RpcSaslProto_SaslState.SUCCESS
-        #logmsg("error completing SASL auth. state: $(resp.state). expected state: $(RpcSaslProto_SaslState.SUCCESS)")
+        @logmsg("error completing SASL auth. state: $(resp.state). expected state: $(RpcSaslProto_SaslState.SUCCESS)")
         throw(HadoopRpcException("error completing SASL auth. state: $(resp.state). expected state: $(RpcSaslProto_SaslState.SUCCESS)"))
     end
     nothing

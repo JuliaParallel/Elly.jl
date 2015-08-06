@@ -34,8 +34,13 @@ export YarnManager, launch, manage
 #using Logging
 #const logger = Logging.configure(level=DEBUG)
 #const logger = Logging.configure(filename="/tmp/elly$(getpid()).log", level=DEBUG)
-#logmsg(s) = debug(s)
-#logmsg(s) = nothing
+#macro logmsg(s)
+#    quote
+#        debug($(esc(s)))
+#    end
+#end
+macro logmsg(s)
+end
 
 include("hadoop/hadoop.jl")
 using Elly.hadoop

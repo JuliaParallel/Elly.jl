@@ -13,7 +13,7 @@ immutable YarnManager <: ClusterManager
             params[n] = v
         end
         paramkeys = keys(params)
-        #logmsg("YarnManager constructor: params: $params")
+        @logmsg("YarnManager constructor: params: $params")
         
         user            = (:user            in paramkeys) ? params[:user]           : ""
         rmport          = (:rmport          in paramkeys) ? params[:rmport]         : 8032
@@ -41,7 +41,7 @@ function show(io::IO, yarncm::YarnManager)
 end
 
 function setup_worker(host, port)
-    #logmsg("YarnManager setup_worker: host:$host port:$port for container $(ENV[CONTAINER_ID])")
+    @logmsg("YarnManager setup_worker: host:$host port:$port for container $(ENV[CONTAINER_ID])")
     c = connect(IPv4(host), port)
     Base.wait_connected(c)
     redirect_stdout(c)
@@ -84,7 +84,7 @@ function _currprocname()
 end
 
 function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Condition)
-    #logmsg("YarnManager launch: params: $params")
+    @logmsg("YarnManager launch: params: $params")
 
     paramkeys   = keys(params)
     np          = (:np       in paramkeys)  ? params[:np]               : 1
@@ -107,8 +107,8 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     initargs = "using Elly; Elly.setup_worker($(getipaddr().host), $(port))"
     clc = launchcontext(cmd="$cmd -e '$initargs'", env=appenv)
 
-    #logmsg("YarnManager launch: initargs: $initargs")
-    #logmsg("YarnManager launch: context: $clc")
+    @logmsg("YarnManager launch: initargs: $initargs")
+    @logmsg("YarnManager launch: context: $clc")
     on_alloc = (cid) -> container_start(manager.am, cid, clc)
     callback(manager.am, Nullable(on_alloc), Nullable{Function}())
 
@@ -147,7 +147,7 @@ end
 function manage(manager::YarnManager, id::Integer, config::WorkerConfig, op::Symbol)
     # This function needs to exist, but so far we don't do anything
     if op == :deregister
-        #logmsg("YarnManager manage: id:$id, op:$op, nprocs:$(nprocs())")
+        @logmsg("YarnManager manage: id:$id, op:$op, nprocs:$(nprocs())")
         !manager.keep_connected && (1 == nprocs()) && (@async disconnect(manager))
     end
     nothing

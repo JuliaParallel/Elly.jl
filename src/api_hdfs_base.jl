@@ -386,7 +386,7 @@ function _complete_file(client::HDFSClient, path::AbstractString, last::Nullable
                 :clientName => ELLY_CLIENTNAME))
     if !isnull(last)
         set_field!(endinp, :last, get(last))
-        #logmsg("setting last block as $(get(last))")
+        @logmsg("setting last block as $(get(last))")
     end
 
     endresp = complete(client.nn_conn, endinp)
@@ -395,7 +395,7 @@ end
 
 function _add_block(client::HDFSClient, path::AbstractString, previous::Nullable{LocatedBlockProto}=Nullable{LocatedBlockProto}())
     isnull(previous) && (return _add_block(client, path))
-    #logmsg("adding next block to $(get(previous).b)")
+    @logmsg("adding next block to $(get(previous).b)")
     _add_block(client, path, Nullable(get(previous).b))
 end
 function _add_block(client::HDFSClient, path::AbstractString, previous::Nullable{ExtendedBlockProto}=Nullable{ExtendedBlockProto}())
