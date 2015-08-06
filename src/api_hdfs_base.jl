@@ -65,18 +65,21 @@ end
 function HDFSFile(uristr::AbstractString)
     uri = URI(uristr)
     (uri.schema == "hdfs") || throw(HDFSException("Not a HDFS URI: $uristr"))
-    client = HDFSClient(uri.host, uri.port, uri.userinfo)
-    HDFSFile(client, u.path)
+    client = HDFSClient(uri.host, uri.port, UserGroupInformation(uri.userinfo))
+    HDFSFile(client, uri.path)
 end
 
 function show(io::IO, file::HDFSFile)
+    println(io, "HDFSFile: ", string(convert(URI, file)))
+    nothing
+end
+
+function convert(::Type{URI}, file::HDFSFile)
     client = file.client
     ch = client.nn_conn.channel
     user = username(ch.ugi)
     user_spec = isempty(user) ? user : "$(user)@"
-
-    println(io, "HDFSFile: hdfs://$(user_spec)$(ch.host):$(ch.port)$(abspath(client, file.path))")
-    nothing
+    URI("hdfs://$(user_spec)$(ch.host):$(ch.port)$(abspath(client, file.path))")
 end
 
 @doc doc"""

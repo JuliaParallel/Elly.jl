@@ -368,12 +368,12 @@ end
 const _dcpool = HadoopDataChannelPool(30)
 function _get(pool::HadoopDataChannelPool, host::AbstractString, port::Integer)
     dnid = "$host:$port"
-    free = (dnid in pool.free) ? pool.free[dnid] : HadoopDataChannel[]
+    free = (dnid in keys(pool.free)) ? pool.free[dnid] : HadoopDataChannel[]
 
     timediff = _dcpool.keepalivesecs
     while !isempty(free) && (timediff >= _dcpool.keepalivesecs)
         channel,lastusetime = shift!(free)
-        timediff = @compat UInt64(time() - lastusetime)
+        timediff = round(UInt64, time() - lastusetime)
     end
 
     (timediff < _dcpool.keepalivesecs) || (channel = HadoopDataChannel(host, port))
@@ -390,7 +390,7 @@ function _put(pool::HadoopDataChannelPool, channel::HadoopDataChannel, reuse::Bo
         end
     end
     dnid = "$(channel.host):$(channel.port)"
-    free = dnid in pool.free ? pool.free[dnid] : (pool.free[dnid] = [])
+    free = dnid in keys(pool.free) ? pool.free[dnid] : (pool.free[dnid] = [])
     for (ch,tm) in free
         (object_id(channel) == object_id(ch)) && return
     end
