@@ -64,7 +64,7 @@ end
 
 function HDFSFile(uristr::AbstractString)
     uri = URI(uristr)
-    (uri.schema == "hdfs") || throw(HDFSException("Not a HDFS URI: $uristr"))
+    (uri.scheme == "hdfs") || throw(HDFSException("Not a HDFS URI: $uristr"))
     client = HDFSClient(uri.host, uri.port, UserGroupInformation(uri.userinfo))
     HDFSFile(client, uri.path)
 end
