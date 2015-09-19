@@ -196,7 +196,9 @@ end
 
 #
 # File read
-function read!{T}(reader::HDFSFileReader, a::Array{T})
+read!(reader::Elly.HDFSFileReader, a::Array{UInt8, 1}) = _read!(reader, a)
+read!{T}(reader::HDFSFileReader, a::Array{T}) = _read!(reader, a)
+function _read!{T}(reader::HDFSFileReader, a::Array{T})
     remaining::UInt64 = length(a)*sizeof(T)
     offset::UInt64 = 1
     # while not eof and remaining to be filled
@@ -283,7 +285,7 @@ function renewlease(writer::HDFSFileWriter)
     renewlease(writer.client)
 end
 
-function _write{T<:Union(UInt8,Vector{UInt8})}(writer::HDFSFileWriter, data::T)
+function _write{T<:Union{UInt8,Vector{UInt8}}}(writer::HDFSFileWriter, data::T)
     rem_data = data
     L = rem_len = length(data)
 
@@ -352,7 +354,7 @@ open(file::HDFSFile, open_mode::AbstractString; opts...) = open(file.client, fil
 
 #
 # File copy
-function cp(frompath::Union(HDFSFile,AbstractString), topath::Union(HDFSFile,AbstractString); offset::UInt64=zero(UInt64), len::UInt64=zero(UInt64), crc::Bool=false)
+function cp(frompath::Union{HDFSFile,AbstractString}, topath::Union{HDFSFile,AbstractString}; offset::UInt64=zero(UInt64), len::UInt64=zero(UInt64), crc::Bool=false)
     if isa(frompath, HDFSFile)
         fromfile = open(frompath.client, frompath.path, "r"; offset=offset, crc=crc)
     else

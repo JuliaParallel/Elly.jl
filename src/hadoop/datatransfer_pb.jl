@@ -22,6 +22,13 @@ type __enum_Status <: ProtoEnum
 end #type __enum_Status
 const Status = __enum_Status()
 
+type __enum_ShortCircuitFdResponse <: ProtoEnum
+    DO_NOT_USE_RECEIPT_VERIFICATION::Int32
+    USE_RECEIPT_VERIFICATION::Int32
+    __enum_ShortCircuitFdResponse() = new(0,1)
+end #type __enum_ShortCircuitFdResponse
+const ShortCircuitFdResponse = __enum_ShortCircuitFdResponse()
+
 type __enum_DataTransferEncryptorMessageProto_DataTransferEncryptorStatus <: ProtoEnum
     SUCCESS::Int32
     ERROR_UNKNOWN_KEY::Int32
@@ -140,10 +147,12 @@ type OpWriteBlockProto
     storageType::Int32
     targetStorageTypes::Array{Int32,1}
     allowLazyPersist::Bool
+    pinning::Bool
+    targetPinnings::Array{Bool,1}
     OpWriteBlockProto() = (o=new(); fillunset(o); o)
 end #type OpWriteBlockProto
 const __req_OpWriteBlockProto = Symbol[:header,:stage,:pipelineSize,:minBytesRcvd,:maxBytesRcvd,:latestGenerationStamp,:requestedChecksum]
-const __val_OpWriteBlockProto = @compat Dict(:storageType => StorageTypeProto.DISK, :allowLazyPersist => false)
+const __val_OpWriteBlockProto = @compat Dict(:storageType => StorageTypeProto.DISK, :allowLazyPersist => false, :pinning => false)
 meta(t::Type{OpWriteBlockProto}) = meta(t, __req_OpWriteBlockProto, ProtoBuf.DEF_FNUM, __val_OpWriteBlockProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::OpWriteBlockProto) = ProtoBuf.protohash(v)
 isequal(v1::OpWriteBlockProto, v2::OpWriteBlockProto) = ProtoBuf.protoisequal(v1, v2)
@@ -221,10 +230,12 @@ type OpRequestShortCircuitAccessProto
     header::BaseHeaderProto
     maxVersion::UInt32
     slotId::ShortCircuitShmSlotProto
+    supportsReceiptVerification::Bool
     OpRequestShortCircuitAccessProto() = (o=new(); fillunset(o); o)
 end #type OpRequestShortCircuitAccessProto
 const __req_OpRequestShortCircuitAccessProto = Symbol[:header,:maxVersion]
-meta(t::Type{OpRequestShortCircuitAccessProto}) = meta(t, __req_OpRequestShortCircuitAccessProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_OpRequestShortCircuitAccessProto = @compat Dict(:supportsReceiptVerification => false)
+meta(t::Type{OpRequestShortCircuitAccessProto}) = meta(t, __req_OpRequestShortCircuitAccessProto, ProtoBuf.DEF_FNUM, __val_OpRequestShortCircuitAccessProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::OpRequestShortCircuitAccessProto) = ProtoBuf.protohash(v)
 isequal(v1::OpRequestShortCircuitAccessProto, v2::OpRequestShortCircuitAccessProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::OpRequestShortCircuitAccessProto, v2::OpRequestShortCircuitAccessProto) = ProtoBuf.protoeq(v1, v2)
@@ -292,14 +303,16 @@ isequal(v1::PacketHeaderProto, v2::PacketHeaderProto) = ProtoBuf.protoisequal(v1
 
 type PipelineAckProto
     seqno::Int64
-    status::Array{Int32,1}
+    reply::Array{Int32,1}
     downstreamAckTimeNanos::UInt64
+    flag::Array{UInt32,1}
     PipelineAckProto() = (o=new(); fillunset(o); o)
 end #type PipelineAckProto
 const __req_PipelineAckProto = Symbol[:seqno]
 const __val_PipelineAckProto = @compat Dict(:downstreamAckTimeNanos => 0)
+const __pack_PipelineAckProto = Symbol[:flag]
 const __wtype_PipelineAckProto = @compat Dict(:seqno => :sint64)
-meta(t::Type{PipelineAckProto}) = meta(t, __req_PipelineAckProto, ProtoBuf.DEF_FNUM, __val_PipelineAckProto, true, ProtoBuf.DEF_PACK, __wtype_PipelineAckProto)
+meta(t::Type{PipelineAckProto}) = meta(t, __req_PipelineAckProto, ProtoBuf.DEF_FNUM, __val_PipelineAckProto, true, __pack_PipelineAckProto, __wtype_PipelineAckProto)
 hash(v::PipelineAckProto) = ProtoBuf.protohash(v)
 isequal(v1::PipelineAckProto, v2::PipelineAckProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::PipelineAckProto, v2::PipelineAckProto) = ProtoBuf.protoeq(v1, v2)
@@ -363,4 +376,4 @@ hash(v::BlockOpResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::BlockOpResponseProto, v2::BlockOpResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::BlockOpResponseProto, v2::BlockOpResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-export Status, DataTransferEncryptorMessageProto_DataTransferEncryptorStatus, DataTransferEncryptorMessageProto, BaseHeaderProto, DataTransferTraceInfoProto, ClientOperationHeaderProto, CachingStrategyProto, OpReadBlockProto, ChecksumProto, OpWriteBlockProto_BlockConstructionStage, OpWriteBlockProto, OpTransferBlockProto, OpReplaceBlockProto, OpCopyBlockProto, OpBlockChecksumProto, ShortCircuitShmIdProto, ShortCircuitShmSlotProto, OpRequestShortCircuitAccessProto, ReleaseShortCircuitAccessRequestProto, ReleaseShortCircuitAccessResponseProto, ShortCircuitShmRequestProto, ShortCircuitShmResponseProto, PacketHeaderProto, PipelineAckProto, ReadOpChecksumInfoProto, BlockOpResponseProto, ClientReadStatusProto, DNTransferAckProto, OpBlockChecksumResponseProto
+export Status, ShortCircuitFdResponse, DataTransferEncryptorMessageProto_DataTransferEncryptorStatus, DataTransferEncryptorMessageProto, BaseHeaderProto, DataTransferTraceInfoProto, ClientOperationHeaderProto, CachingStrategyProto, OpReadBlockProto, ChecksumProto, OpWriteBlockProto_BlockConstructionStage, OpWriteBlockProto, OpTransferBlockProto, OpReplaceBlockProto, OpCopyBlockProto, OpBlockChecksumProto, ShortCircuitShmIdProto, ShortCircuitShmSlotProto, OpRequestShortCircuitAccessProto, ReleaseShortCircuitAccessRequestProto, ReleaseShortCircuitAccessResponseProto, ShortCircuitShmRequestProto, ShortCircuitShmResponseProto, PacketHeaderProto, PipelineAckProto, ReadOpChecksumInfoProto, BlockOpResponseProto, ClientReadStatusProto, DNTransferAckProto, OpBlockChecksumResponseProto

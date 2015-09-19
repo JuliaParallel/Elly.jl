@@ -108,11 +108,12 @@ type DatanodeInfoProto
     adminState::Int32
     cacheCapacity::UInt64
     cacheUsed::UInt64
+    lastUpdateMonotonic::UInt64
     DatanodeInfoProto() = (o=new(); fillunset(o); o)
 end #type DatanodeInfoProto
 const __req_DatanodeInfoProto = Symbol[:id]
-const __val_DatanodeInfoProto = @compat Dict(:capacity => 0, :dfsUsed => 0, :remaining => 0, :blockPoolUsed => 0, :lastUpdate => 0, :xceiverCount => 0, :adminState => DatanodeInfoProto_AdminState.NORMAL, :cacheCapacity => 0, :cacheUsed => 0)
-const __fnum_DatanodeInfoProto = Int[1,2,3,4,5,6,7,8,10,11,12]
+const __val_DatanodeInfoProto = @compat Dict(:capacity => 0, :dfsUsed => 0, :remaining => 0, :blockPoolUsed => 0, :lastUpdate => 0, :xceiverCount => 0, :adminState => DatanodeInfoProto_AdminState.NORMAL, :cacheCapacity => 0, :cacheUsed => 0, :lastUpdateMonotonic => 0)
+const __fnum_DatanodeInfoProto = Int[1,2,3,4,5,6,7,8,10,11,12,13]
 meta(t::Type{DatanodeInfoProto}) = meta(t, __req_DatanodeInfoProto, __fnum_DatanodeInfoProto, __val_DatanodeInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::DatanodeInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::DatanodeInfoProto, v2::DatanodeInfoProto) = ProtoBuf.protoisequal(v1, v2)
@@ -163,6 +164,26 @@ hash(v::StorageReportProto) = ProtoBuf.protohash(v)
 isequal(v1::StorageReportProto, v2::StorageReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StorageReportProto, v2::StorageReportProto) = ProtoBuf.protoeq(v1, v2)
 
+type StorageTypeQuotaInfoProto
+    _type::Int32
+    quota::UInt64
+    consumed::UInt64
+    StorageTypeQuotaInfoProto() = (o=new(); fillunset(o); o)
+end #type StorageTypeQuotaInfoProto
+const __req_StorageTypeQuotaInfoProto = Symbol[:_type,:quota,:consumed]
+meta(t::Type{StorageTypeQuotaInfoProto}) = meta(t, __req_StorageTypeQuotaInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::StorageTypeQuotaInfoProto) = ProtoBuf.protohash(v)
+isequal(v1::StorageTypeQuotaInfoProto, v2::StorageTypeQuotaInfoProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StorageTypeQuotaInfoProto, v2::StorageTypeQuotaInfoProto) = ProtoBuf.protoeq(v1, v2)
+
+type StorageTypeQuotaInfosProto
+    typeQuotaInfo::Array{StorageTypeQuotaInfoProto,1}
+    StorageTypeQuotaInfosProto() = (o=new(); fillunset(o); o)
+end #type StorageTypeQuotaInfosProto
+hash(v::StorageTypeQuotaInfosProto) = ProtoBuf.protohash(v)
+isequal(v1::StorageTypeQuotaInfosProto, v2::StorageTypeQuotaInfosProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::StorageTypeQuotaInfosProto, v2::StorageTypeQuotaInfosProto) = ProtoBuf.protoeq(v1, v2)
+
 type ContentSummaryProto
     length::UInt64
     fileCount::UInt64
@@ -170,6 +191,7 @@ type ContentSummaryProto
     quota::UInt64
     spaceConsumed::UInt64
     spaceQuota::UInt64
+    typeQuotaInfos::StorageTypeQuotaInfosProto
     ContentSummaryProto() = (o=new(); fillunset(o); o)
 end #type ContentSummaryProto
 const __req_ContentSummaryProto = Symbol[:length,:fileCount,:directoryCount,:quota,:spaceConsumed,:spaceQuota]
@@ -578,10 +600,12 @@ type NamespaceInfoProto
     blockPoolID::AbstractString
     storageInfo::StorageInfoProto
     softwareVersion::AbstractString
+    capabilities::UInt64
     NamespaceInfoProto() = (o=new(); fillunset(o); o)
 end #type NamespaceInfoProto
 const __req_NamespaceInfoProto = Symbol[:buildVersion,:unused,:blockPoolID,:storageInfo,:softwareVersion]
-meta(t::Type{NamespaceInfoProto}) = meta(t, __req_NamespaceInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_NamespaceInfoProto = @compat Dict(:capabilities => 0)
+meta(t::Type{NamespaceInfoProto}) = meta(t, __req_NamespaceInfoProto, ProtoBuf.DEF_FNUM, __val_NamespaceInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::NamespaceInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::NamespaceInfoProto, v2::NamespaceInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NamespaceInfoProto, v2::NamespaceInfoProto) = ProtoBuf.protoeq(v1, v2)
@@ -615,6 +639,7 @@ isequal(v1::ExportedBlockKeysProto, v2::ExportedBlockKeysProto) = ProtoBuf.proto
 type RecoveringBlockProto
     newGenStamp::UInt64
     block::LocatedBlockProto
+    truncateBlock::BlockProto
     RecoveringBlockProto() = (o=new(); fillunset(o); o)
 end #type RecoveringBlockProto
 const __req_RecoveringBlockProto = Symbol[:newGenStamp,:block]
@@ -665,4 +690,4 @@ hash(v::RollingUpgradeStatusProto) = ProtoBuf.protohash(v)
 isequal(v1::RollingUpgradeStatusProto, v2::RollingUpgradeStatusProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RollingUpgradeStatusProto, v2::RollingUpgradeStatusProto) = ProtoBuf.protoeq(v1, v2)
 
-export StorageTypeProto, CipherSuiteProto, CryptoProtocolVersionProto, ChecksumTypeProto, ReplicaStateProto, ExtendedBlockProto, DatanodeIDProto, DatanodeLocalInfoProto, DatanodeInfosProto, DatanodeInfoProto_AdminState, DatanodeInfoProto, DatanodeStorageProto_StorageState, DatanodeStorageProto, StorageReportProto, ContentSummaryProto, CorruptFileBlocksProto, FsPermissionProto, StorageTypesProto, BlockStoragePolicyProto, StorageUuidsProto, LocatedBlockProto, DataEncryptionKeyProto, FileEncryptionInfoProto, PerFileEncryptionInfoProto, ZoneEncryptionInfoProto, CipherOptionProto, LocatedBlocksProto, HdfsFileStatusProto_FileType, HdfsFileStatusProto, FsServerDefaultsProto, DirectoryListingProto, SnapshottableDirectoryStatusProto, SnapshottableDirectoryListingProto, SnapshotDiffReportEntryProto, SnapshotDiffReportProto, StorageInfoProto, NamenodeRegistrationProto_NamenodeRoleProto, NamenodeRegistrationProto, CheckpointSignatureProto, NamenodeCommandProto_Type, NamenodeCommandProto, CheckpointCommandProto, BlockProto, BlockWithLocationsProto, BlocksWithLocationsProto, RemoteEditLogProto, RemoteEditLogManifestProto, NamespaceInfoProto, BlockKeyProto, ExportedBlockKeysProto, RecoveringBlockProto, VersionRequestProto, VersionResponseProto, SnapshotInfoProto, RollingUpgradeStatusProto
+export StorageTypeProto, CipherSuiteProto, CryptoProtocolVersionProto, ChecksumTypeProto, ReplicaStateProto, ExtendedBlockProto, DatanodeIDProto, DatanodeLocalInfoProto, DatanodeInfosProto, DatanodeInfoProto_AdminState, DatanodeInfoProto, DatanodeStorageProto_StorageState, DatanodeStorageProto, StorageReportProto, ContentSummaryProto, StorageTypeQuotaInfosProto, StorageTypeQuotaInfoProto, CorruptFileBlocksProto, FsPermissionProto, StorageTypesProto, BlockStoragePolicyProto, StorageUuidsProto, LocatedBlockProto, DataEncryptionKeyProto, FileEncryptionInfoProto, PerFileEncryptionInfoProto, ZoneEncryptionInfoProto, CipherOptionProto, LocatedBlocksProto, HdfsFileStatusProto_FileType, HdfsFileStatusProto, FsServerDefaultsProto, DirectoryListingProto, SnapshottableDirectoryStatusProto, SnapshottableDirectoryListingProto, SnapshotDiffReportEntryProto, SnapshotDiffReportProto, StorageInfoProto, NamenodeRegistrationProto_NamenodeRoleProto, NamenodeRegistrationProto, CheckpointSignatureProto, NamenodeCommandProto_Type, NamenodeCommandProto, CheckpointCommandProto, BlockProto, BlockWithLocationsProto, BlocksWithLocationsProto, RemoteEditLogProto, RemoteEditLogManifestProto, NamespaceInfoProto, BlockKeyProto, ExportedBlockKeysProto, RecoveringBlockProto, VersionRequestProto, VersionResponseProto, SnapshotInfoProto, RollingUpgradeStatusProto

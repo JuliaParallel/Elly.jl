@@ -44,6 +44,17 @@ hash(v::EventProto) = ProtoBuf.protohash(v)
 isequal(v1::EventProto, v2::EventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::EventProto, v2::EventProto) = ProtoBuf.protoeq(v1, v2)
 
+type EventBatchProto
+    txid::Int64
+    events::Array{EventProto,1}
+    EventBatchProto() = (o=new(); fillunset(o); o)
+end #type EventBatchProto
+const __req_EventBatchProto = Symbol[:txid]
+meta(t::Type{EventBatchProto}) = meta(t, __req_EventBatchProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::EventBatchProto) = ProtoBuf.protohash(v)
+isequal(v1::EventBatchProto, v2::EventBatchProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::EventBatchProto, v2::EventBatchProto) = ProtoBuf.protoeq(v1, v2)
+
 type CreateEventProto
     _type::Int32
     path::AbstractString
@@ -54,10 +65,12 @@ type CreateEventProto
     replication::Int32
     symlinkTarget::AbstractString
     overwrite::Bool
+    defaultBlockSize::Int64
     CreateEventProto() = (o=new(); fillunset(o); o)
 end #type CreateEventProto
 const __req_CreateEventProto = Symbol[:_type,:path,:ctime,:ownerName,:groupName,:perms]
-meta(t::Type{CreateEventProto}) = meta(t, __req_CreateEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_CreateEventProto = @compat Dict(:defaultBlockSize => 0)
+meta(t::Type{CreateEventProto}) = meta(t, __req_CreateEventProto, ProtoBuf.DEF_FNUM, __val_CreateEventProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::CreateEventProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateEventProto, v2::CreateEventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateEventProto, v2::CreateEventProto) = ProtoBuf.protoeq(v1, v2)
@@ -76,10 +89,12 @@ isequal(v1::CloseEventProto, v2::CloseEventProto) = ProtoBuf.protoisequal(v1, v2
 
 type AppendEventProto
     path::AbstractString
+    newBlock::Bool
     AppendEventProto() = (o=new(); fillunset(o); o)
 end #type AppendEventProto
 const __req_AppendEventProto = Symbol[:path]
-meta(t::Type{AppendEventProto}) = meta(t, __req_AppendEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_AppendEventProto = @compat Dict(:newBlock => false)
+meta(t::Type{AppendEventProto}) = meta(t, __req_AppendEventProto, ProtoBuf.DEF_FNUM, __val_AppendEventProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::AppendEventProto) = ProtoBuf.protohash(v)
 isequal(v1::AppendEventProto, v2::AppendEventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AppendEventProto, v2::AppendEventProto) = ProtoBuf.protoeq(v1, v2)
@@ -132,6 +147,7 @@ type EventsListProto
     firstTxid::Int64
     lastTxid::Int64
     syncTxid::Int64
+    batch::Array{EventBatchProto,1}
     EventsListProto() = (o=new(); fillunset(o); o)
 end #type EventsListProto
 const __req_EventsListProto = Symbol[:firstTxid,:lastTxid,:syncTxid]
@@ -140,4 +156,4 @@ hash(v::EventsListProto) = ProtoBuf.protohash(v)
 isequal(v1::EventsListProto, v2::EventsListProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::EventsListProto, v2::EventsListProto) = ProtoBuf.protoeq(v1, v2)
 
-export EventType, INodeType, MetadataUpdateType, EventProto, CreateEventProto, CloseEventProto, AppendEventProto, RenameEventProto, MetadataUpdateEventProto, UnlinkEventProto, EventsListProto
+export EventType, INodeType, MetadataUpdateType, EventProto, EventBatchProto, CreateEventProto, CloseEventProto, AppendEventProto, RenameEventProto, MetadataUpdateEventProto, UnlinkEventProto, EventsListProto

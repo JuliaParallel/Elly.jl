@@ -9,7 +9,8 @@ type __enum_CreateFlagProto <: ProtoEnum
     OVERWRITE::Int32
     APPEND::Int32
     LAZY_PERSIST::Int32
-    __enum_CreateFlagProto() = new(1,2,4,16)
+    NEW_BLOCK::Int32
+    __enum_CreateFlagProto() = new(1,2,4,16,32)
 end #type __enum_CreateFlagProto
 const CreateFlagProto = __enum_CreateFlagProto()
 
@@ -109,6 +110,7 @@ isequal(v1::CreateResponseProto, v2::CreateResponseProto) = ProtoBuf.protoisequa
 type AppendRequestProto
     src::AbstractString
     clientName::AbstractString
+    flag::UInt32
     AppendRequestProto() = (o=new(); fillunset(o); o)
 end #type AppendRequestProto
 const __req_AppendRequestProto = Symbol[:src,:clientName]
@@ -119,6 +121,7 @@ isequal(v1::AppendRequestProto, v2::AppendRequestProto) = ProtoBuf.protoisequal(
 
 type AppendResponseProto
     block::LocatedBlockProto
+    stat::HdfsFileStatusProto
     AppendResponseProto() = (o=new(); fillunset(o); o)
 end #type AppendResponseProto
 hash(v::AppendResponseProto) = ProtoBuf.protohash(v)
@@ -348,6 +351,28 @@ hash(v::ConcatResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ConcatResponseProto, v2::ConcatResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ConcatResponseProto, v2::ConcatResponseProto) = ProtoBuf.protoeq(v1, v2)
 
+type TruncateRequestProto
+    src::AbstractString
+    newLength::UInt64
+    clientName::AbstractString
+    TruncateRequestProto() = (o=new(); fillunset(o); o)
+end #type TruncateRequestProto
+const __req_TruncateRequestProto = Symbol[:src,:newLength,:clientName]
+meta(t::Type{TruncateRequestProto}) = meta(t, __req_TruncateRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::TruncateRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::TruncateRequestProto, v2::TruncateRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::TruncateRequestProto, v2::TruncateRequestProto) = ProtoBuf.protoeq(v1, v2)
+
+type TruncateResponseProto
+    result::Bool
+    TruncateResponseProto() = (o=new(); fillunset(o); o)
+end #type TruncateResponseProto
+const __req_TruncateResponseProto = Symbol[:result]
+meta(t::Type{TruncateResponseProto}) = meta(t, __req_TruncateResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+hash(v::TruncateResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::TruncateResponseProto, v2::TruncateResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::TruncateResponseProto, v2::TruncateResponseProto) = ProtoBuf.protoeq(v1, v2)
+
 type RenameRequestProto
     src::AbstractString
     dst::AbstractString
@@ -540,6 +565,7 @@ type GetFsStatsResponseProto
     under_replicated::UInt64
     corrupt_blocks::UInt64
     missing_blocks::UInt64
+    missing_repl_one_blocks::UInt64
     GetFsStatsResponseProto() = (o=new(); fillunset(o); o)
 end #type GetFsStatsResponseProto
 const __req_GetFsStatsResponseProto = Symbol[:capacity,:used,:remaining,:under_replicated,:corrupt_blocks,:missing_blocks]
@@ -1100,10 +1126,11 @@ isequal(v1::GetContentSummaryResponseProto, v2::GetContentSummaryResponseProto) 
 type SetQuotaRequestProto
     path::AbstractString
     namespaceQuota::UInt64
-    diskspaceQuota::UInt64
+    storagespaceQuota::UInt64
+    storageType::Int32
     SetQuotaRequestProto() = (o=new(); fillunset(o); o)
 end #type SetQuotaRequestProto
-const __req_SetQuotaRequestProto = Symbol[:path,:namespaceQuota,:diskspaceQuota]
+const __req_SetQuotaRequestProto = Symbol[:path,:namespaceQuota,:storagespaceQuota]
 meta(t::Type{SetQuotaRequestProto}) = meta(t, __req_SetQuotaRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::SetQuotaRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetQuotaRequestProto, v2::SetQuotaRequestProto) = ProtoBuf.protoisequal(v1, v2)
@@ -1433,73 +1460,74 @@ const _ClientNamenodeProtocol_methods = MethodDescriptor[
         MethodDescriptor("complete", 13, CompleteRequestProto, CompleteResponseProto),
         MethodDescriptor("reportBadBlocks", 14, ReportBadBlocksRequestProto, ReportBadBlocksResponseProto),
         MethodDescriptor("concat", 15, ConcatRequestProto, ConcatResponseProto),
-        MethodDescriptor("rename", 16, RenameRequestProto, RenameResponseProto),
-        MethodDescriptor("rename2", 17, Rename2RequestProto, Rename2ResponseProto),
-        MethodDescriptor("delete", 18, DeleteRequestProto, DeleteResponseProto),
-        MethodDescriptor("mkdirs", 19, MkdirsRequestProto, MkdirsResponseProto),
-        MethodDescriptor("getListing", 20, GetListingRequestProto, GetListingResponseProto),
-        MethodDescriptor("renewLease", 21, RenewLeaseRequestProto, RenewLeaseResponseProto),
-        MethodDescriptor("recoverLease", 22, RecoverLeaseRequestProto, RecoverLeaseResponseProto),
-        MethodDescriptor("getFsStats", 23, GetFsStatusRequestProto, GetFsStatsResponseProto),
-        MethodDescriptor("getDatanodeReport", 24, GetDatanodeReportRequestProto, GetDatanodeReportResponseProto),
-        MethodDescriptor("getDatanodeStorageReport", 25, GetDatanodeStorageReportRequestProto, GetDatanodeStorageReportResponseProto),
-        MethodDescriptor("getPreferredBlockSize", 26, GetPreferredBlockSizeRequestProto, GetPreferredBlockSizeResponseProto),
-        MethodDescriptor("setSafeMode", 27, SetSafeModeRequestProto, SetSafeModeResponseProto),
-        MethodDescriptor("saveNamespace", 28, SaveNamespaceRequestProto, SaveNamespaceResponseProto),
-        MethodDescriptor("rollEdits", 29, RollEditsRequestProto, RollEditsResponseProto),
-        MethodDescriptor("restoreFailedStorage", 30, RestoreFailedStorageRequestProto, RestoreFailedStorageResponseProto),
-        MethodDescriptor("refreshNodes", 31, RefreshNodesRequestProto, RefreshNodesResponseProto),
-        MethodDescriptor("finalizeUpgrade", 32, FinalizeUpgradeRequestProto, FinalizeUpgradeResponseProto),
-        MethodDescriptor("rollingUpgrade", 33, RollingUpgradeRequestProto, RollingUpgradeResponseProto),
-        MethodDescriptor("listCorruptFileBlocks", 34, ListCorruptFileBlocksRequestProto, ListCorruptFileBlocksResponseProto),
-        MethodDescriptor("metaSave", 35, MetaSaveRequestProto, MetaSaveResponseProto),
-        MethodDescriptor("getFileInfo", 36, GetFileInfoRequestProto, GetFileInfoResponseProto),
-        MethodDescriptor("addCacheDirective", 37, AddCacheDirectiveRequestProto, AddCacheDirectiveResponseProto),
-        MethodDescriptor("modifyCacheDirective", 38, ModifyCacheDirectiveRequestProto, ModifyCacheDirectiveResponseProto),
-        MethodDescriptor("removeCacheDirective", 39, RemoveCacheDirectiveRequestProto, RemoveCacheDirectiveResponseProto),
-        MethodDescriptor("listCacheDirectives", 40, ListCacheDirectivesRequestProto, ListCacheDirectivesResponseProto),
-        MethodDescriptor("addCachePool", 41, AddCachePoolRequestProto, AddCachePoolResponseProto),
-        MethodDescriptor("modifyCachePool", 42, ModifyCachePoolRequestProto, ModifyCachePoolResponseProto),
-        MethodDescriptor("removeCachePool", 43, RemoveCachePoolRequestProto, RemoveCachePoolResponseProto),
-        MethodDescriptor("listCachePools", 44, ListCachePoolsRequestProto, ListCachePoolsResponseProto),
-        MethodDescriptor("getFileLinkInfo", 45, GetFileLinkInfoRequestProto, GetFileLinkInfoResponseProto),
-        MethodDescriptor("getContentSummary", 46, GetContentSummaryRequestProto, GetContentSummaryResponseProto),
-        MethodDescriptor("setQuota", 47, SetQuotaRequestProto, SetQuotaResponseProto),
-        MethodDescriptor("fsync", 48, FsyncRequestProto, FsyncResponseProto),
-        MethodDescriptor("setTimes", 49, SetTimesRequestProto, SetTimesResponseProto),
-        MethodDescriptor("createSymlink", 50, CreateSymlinkRequestProto, CreateSymlinkResponseProto),
-        MethodDescriptor("getLinkTarget", 51, GetLinkTargetRequestProto, GetLinkTargetResponseProto),
-        MethodDescriptor("updateBlockForPipeline", 52, UpdateBlockForPipelineRequestProto, UpdateBlockForPipelineResponseProto),
-        MethodDescriptor("updatePipeline", 53, UpdatePipelineRequestProto, UpdatePipelineResponseProto),
-        MethodDescriptor("getDelegationToken", 54, GetDelegationTokenRequestProto, GetDelegationTokenResponseProto),
-        MethodDescriptor("renewDelegationToken", 55, RenewDelegationTokenRequestProto, RenewDelegationTokenResponseProto),
-        MethodDescriptor("cancelDelegationToken", 56, CancelDelegationTokenRequestProto, CancelDelegationTokenResponseProto),
-        MethodDescriptor("setBalancerBandwidth", 57, SetBalancerBandwidthRequestProto, SetBalancerBandwidthResponseProto),
-        MethodDescriptor("getDataEncryptionKey", 58, GetDataEncryptionKeyRequestProto, GetDataEncryptionKeyResponseProto),
-        MethodDescriptor("createSnapshot", 59, CreateSnapshotRequestProto, CreateSnapshotResponseProto),
-        MethodDescriptor("renameSnapshot", 60, RenameSnapshotRequestProto, RenameSnapshotResponseProto),
-        MethodDescriptor("allowSnapshot", 61, AllowSnapshotRequestProto, AllowSnapshotResponseProto),
-        MethodDescriptor("disallowSnapshot", 62, DisallowSnapshotRequestProto, DisallowSnapshotResponseProto),
-        MethodDescriptor("getSnapshottableDirListing", 63, GetSnapshottableDirListingRequestProto, GetSnapshottableDirListingResponseProto),
-        MethodDescriptor("deleteSnapshot", 64, DeleteSnapshotRequestProto, DeleteSnapshotResponseProto),
-        MethodDescriptor("getSnapshotDiffReport", 65, GetSnapshotDiffReportRequestProto, GetSnapshotDiffReportResponseProto),
-        MethodDescriptor("isFileClosed", 66, IsFileClosedRequestProto, IsFileClosedResponseProto),
-        MethodDescriptor("modifyAclEntries", 67, ModifyAclEntriesRequestProto, ModifyAclEntriesResponseProto),
-        MethodDescriptor("removeAclEntries", 68, RemoveAclEntriesRequestProto, RemoveAclEntriesResponseProto),
-        MethodDescriptor("removeDefaultAcl", 69, RemoveDefaultAclRequestProto, RemoveDefaultAclResponseProto),
-        MethodDescriptor("removeAcl", 70, RemoveAclRequestProto, RemoveAclResponseProto),
-        MethodDescriptor("setAcl", 71, SetAclRequestProto, SetAclResponseProto),
-        MethodDescriptor("getAclStatus", 72, GetAclStatusRequestProto, GetAclStatusResponseProto),
-        MethodDescriptor("setXAttr", 73, SetXAttrRequestProto, SetXAttrResponseProto),
-        MethodDescriptor("getXAttrs", 74, GetXAttrsRequestProto, GetXAttrsResponseProto),
-        MethodDescriptor("listXAttrs", 75, ListXAttrsRequestProto, ListXAttrsResponseProto),
-        MethodDescriptor("removeXAttr", 76, RemoveXAttrRequestProto, RemoveXAttrResponseProto),
-        MethodDescriptor("checkAccess", 77, CheckAccessRequestProto, CheckAccessResponseProto),
-        MethodDescriptor("createEncryptionZone", 78, CreateEncryptionZoneRequestProto, CreateEncryptionZoneResponseProto),
-        MethodDescriptor("listEncryptionZones", 79, ListEncryptionZonesRequestProto, ListEncryptionZonesResponseProto),
-        MethodDescriptor("getEZForPath", 80, GetEZForPathRequestProto, GetEZForPathResponseProto),
-        MethodDescriptor("getCurrentEditLogTxid", 81, GetCurrentEditLogTxidRequestProto, GetCurrentEditLogTxidResponseProto),
-        MethodDescriptor("getEditsFromTxid", 82, GetEditsFromTxidRequestProto, GetEditsFromTxidResponseProto)
+        MethodDescriptor("truncate", 16, TruncateRequestProto, TruncateResponseProto),
+        MethodDescriptor("rename", 17, RenameRequestProto, RenameResponseProto),
+        MethodDescriptor("rename2", 18, Rename2RequestProto, Rename2ResponseProto),
+        MethodDescriptor("delete", 19, DeleteRequestProto, DeleteResponseProto),
+        MethodDescriptor("mkdirs", 20, MkdirsRequestProto, MkdirsResponseProto),
+        MethodDescriptor("getListing", 21, GetListingRequestProto, GetListingResponseProto),
+        MethodDescriptor("renewLease", 22, RenewLeaseRequestProto, RenewLeaseResponseProto),
+        MethodDescriptor("recoverLease", 23, RecoverLeaseRequestProto, RecoverLeaseResponseProto),
+        MethodDescriptor("getFsStats", 24, GetFsStatusRequestProto, GetFsStatsResponseProto),
+        MethodDescriptor("getDatanodeReport", 25, GetDatanodeReportRequestProto, GetDatanodeReportResponseProto),
+        MethodDescriptor("getDatanodeStorageReport", 26, GetDatanodeStorageReportRequestProto, GetDatanodeStorageReportResponseProto),
+        MethodDescriptor("getPreferredBlockSize", 27, GetPreferredBlockSizeRequestProto, GetPreferredBlockSizeResponseProto),
+        MethodDescriptor("setSafeMode", 28, SetSafeModeRequestProto, SetSafeModeResponseProto),
+        MethodDescriptor("saveNamespace", 29, SaveNamespaceRequestProto, SaveNamespaceResponseProto),
+        MethodDescriptor("rollEdits", 30, RollEditsRequestProto, RollEditsResponseProto),
+        MethodDescriptor("restoreFailedStorage", 31, RestoreFailedStorageRequestProto, RestoreFailedStorageResponseProto),
+        MethodDescriptor("refreshNodes", 32, RefreshNodesRequestProto, RefreshNodesResponseProto),
+        MethodDescriptor("finalizeUpgrade", 33, FinalizeUpgradeRequestProto, FinalizeUpgradeResponseProto),
+        MethodDescriptor("rollingUpgrade", 34, RollingUpgradeRequestProto, RollingUpgradeResponseProto),
+        MethodDescriptor("listCorruptFileBlocks", 35, ListCorruptFileBlocksRequestProto, ListCorruptFileBlocksResponseProto),
+        MethodDescriptor("metaSave", 36, MetaSaveRequestProto, MetaSaveResponseProto),
+        MethodDescriptor("getFileInfo", 37, GetFileInfoRequestProto, GetFileInfoResponseProto),
+        MethodDescriptor("addCacheDirective", 38, AddCacheDirectiveRequestProto, AddCacheDirectiveResponseProto),
+        MethodDescriptor("modifyCacheDirective", 39, ModifyCacheDirectiveRequestProto, ModifyCacheDirectiveResponseProto),
+        MethodDescriptor("removeCacheDirective", 40, RemoveCacheDirectiveRequestProto, RemoveCacheDirectiveResponseProto),
+        MethodDescriptor("listCacheDirectives", 41, ListCacheDirectivesRequestProto, ListCacheDirectivesResponseProto),
+        MethodDescriptor("addCachePool", 42, AddCachePoolRequestProto, AddCachePoolResponseProto),
+        MethodDescriptor("modifyCachePool", 43, ModifyCachePoolRequestProto, ModifyCachePoolResponseProto),
+        MethodDescriptor("removeCachePool", 44, RemoveCachePoolRequestProto, RemoveCachePoolResponseProto),
+        MethodDescriptor("listCachePools", 45, ListCachePoolsRequestProto, ListCachePoolsResponseProto),
+        MethodDescriptor("getFileLinkInfo", 46, GetFileLinkInfoRequestProto, GetFileLinkInfoResponseProto),
+        MethodDescriptor("getContentSummary", 47, GetContentSummaryRequestProto, GetContentSummaryResponseProto),
+        MethodDescriptor("setQuota", 48, SetQuotaRequestProto, SetQuotaResponseProto),
+        MethodDescriptor("fsync", 49, FsyncRequestProto, FsyncResponseProto),
+        MethodDescriptor("setTimes", 50, SetTimesRequestProto, SetTimesResponseProto),
+        MethodDescriptor("createSymlink", 51, CreateSymlinkRequestProto, CreateSymlinkResponseProto),
+        MethodDescriptor("getLinkTarget", 52, GetLinkTargetRequestProto, GetLinkTargetResponseProto),
+        MethodDescriptor("updateBlockForPipeline", 53, UpdateBlockForPipelineRequestProto, UpdateBlockForPipelineResponseProto),
+        MethodDescriptor("updatePipeline", 54, UpdatePipelineRequestProto, UpdatePipelineResponseProto),
+        MethodDescriptor("getDelegationToken", 55, GetDelegationTokenRequestProto, GetDelegationTokenResponseProto),
+        MethodDescriptor("renewDelegationToken", 56, RenewDelegationTokenRequestProto, RenewDelegationTokenResponseProto),
+        MethodDescriptor("cancelDelegationToken", 57, CancelDelegationTokenRequestProto, CancelDelegationTokenResponseProto),
+        MethodDescriptor("setBalancerBandwidth", 58, SetBalancerBandwidthRequestProto, SetBalancerBandwidthResponseProto),
+        MethodDescriptor("getDataEncryptionKey", 59, GetDataEncryptionKeyRequestProto, GetDataEncryptionKeyResponseProto),
+        MethodDescriptor("createSnapshot", 60, CreateSnapshotRequestProto, CreateSnapshotResponseProto),
+        MethodDescriptor("renameSnapshot", 61, RenameSnapshotRequestProto, RenameSnapshotResponseProto),
+        MethodDescriptor("allowSnapshot", 62, AllowSnapshotRequestProto, AllowSnapshotResponseProto),
+        MethodDescriptor("disallowSnapshot", 63, DisallowSnapshotRequestProto, DisallowSnapshotResponseProto),
+        MethodDescriptor("getSnapshottableDirListing", 64, GetSnapshottableDirListingRequestProto, GetSnapshottableDirListingResponseProto),
+        MethodDescriptor("deleteSnapshot", 65, DeleteSnapshotRequestProto, DeleteSnapshotResponseProto),
+        MethodDescriptor("getSnapshotDiffReport", 66, GetSnapshotDiffReportRequestProto, GetSnapshotDiffReportResponseProto),
+        MethodDescriptor("isFileClosed", 67, IsFileClosedRequestProto, IsFileClosedResponseProto),
+        MethodDescriptor("modifyAclEntries", 68, ModifyAclEntriesRequestProto, ModifyAclEntriesResponseProto),
+        MethodDescriptor("removeAclEntries", 69, RemoveAclEntriesRequestProto, RemoveAclEntriesResponseProto),
+        MethodDescriptor("removeDefaultAcl", 70, RemoveDefaultAclRequestProto, RemoveDefaultAclResponseProto),
+        MethodDescriptor("removeAcl", 71, RemoveAclRequestProto, RemoveAclResponseProto),
+        MethodDescriptor("setAcl", 72, SetAclRequestProto, SetAclResponseProto),
+        MethodDescriptor("getAclStatus", 73, GetAclStatusRequestProto, GetAclStatusResponseProto),
+        MethodDescriptor("setXAttr", 74, SetXAttrRequestProto, SetXAttrResponseProto),
+        MethodDescriptor("getXAttrs", 75, GetXAttrsRequestProto, GetXAttrsResponseProto),
+        MethodDescriptor("listXAttrs", 76, ListXAttrsRequestProto, ListXAttrsResponseProto),
+        MethodDescriptor("removeXAttr", 77, RemoveXAttrRequestProto, RemoveXAttrResponseProto),
+        MethodDescriptor("checkAccess", 78, CheckAccessRequestProto, CheckAccessResponseProto),
+        MethodDescriptor("createEncryptionZone", 79, CreateEncryptionZoneRequestProto, CreateEncryptionZoneResponseProto),
+        MethodDescriptor("listEncryptionZones", 80, ListEncryptionZonesRequestProto, ListEncryptionZonesResponseProto),
+        MethodDescriptor("getEZForPath", 81, GetEZForPathRequestProto, GetEZForPathResponseProto),
+        MethodDescriptor("getCurrentEditLogTxid", 82, GetCurrentEditLogTxidRequestProto, GetCurrentEditLogTxidResponseProto),
+        MethodDescriptor("getEditsFromTxid", 83, GetEditsFromTxidRequestProto, GetEditsFromTxidResponseProto)
     ] # const _ClientNamenodeProtocol_methods
 const _ClientNamenodeProtocol_desc = ServiceDescriptor("ClientNamenodeProtocol", 1, _ClientNamenodeProtocol_methods)
 
@@ -1560,205 +1588,208 @@ reportBadBlocks(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcCo
 concat(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ConcatRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[15], controller, inp, done)
 concat(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ConcatRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[15], controller, inp)
 
-rename(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RenameRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[16], controller, inp, done)
-rename(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RenameRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[16], controller, inp)
+truncate(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::TruncateRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[16], controller, inp, done)
+truncate(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::TruncateRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[16], controller, inp)
 
-rename2(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::Rename2RequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[17], controller, inp, done)
-rename2(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::Rename2RequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[17], controller, inp)
+rename(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RenameRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[17], controller, inp, done)
+rename(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RenameRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[17], controller, inp)
 
-delete(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::DeleteRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[18], controller, inp, done)
-delete(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::DeleteRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[18], controller, inp)
+rename2(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::Rename2RequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[18], controller, inp, done)
+rename2(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::Rename2RequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[18], controller, inp)
 
-mkdirs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::MkdirsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[19], controller, inp, done)
-mkdirs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::MkdirsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[19], controller, inp)
+delete(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::DeleteRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[19], controller, inp, done)
+delete(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::DeleteRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[19], controller, inp)
 
-getListing(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetListingRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[20], controller, inp, done)
-getListing(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetListingRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[20], controller, inp)
+mkdirs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::MkdirsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[20], controller, inp, done)
+mkdirs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::MkdirsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[20], controller, inp)
 
-renewLease(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RenewLeaseRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[21], controller, inp, done)
-renewLease(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RenewLeaseRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[21], controller, inp)
+getListing(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetListingRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[21], controller, inp, done)
+getListing(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetListingRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[21], controller, inp)
 
-recoverLease(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RecoverLeaseRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[22], controller, inp, done)
-recoverLease(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RecoverLeaseRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[22], controller, inp)
+renewLease(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RenewLeaseRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[22], controller, inp, done)
+renewLease(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RenewLeaseRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[22], controller, inp)
 
-getFsStats(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetFsStatusRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[23], controller, inp, done)
-getFsStats(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetFsStatusRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[23], controller, inp)
+recoverLease(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RecoverLeaseRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[23], controller, inp, done)
+recoverLease(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RecoverLeaseRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[23], controller, inp)
 
-getDatanodeReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetDatanodeReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[24], controller, inp, done)
-getDatanodeReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetDatanodeReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[24], controller, inp)
+getFsStats(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetFsStatusRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[24], controller, inp, done)
+getFsStats(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetFsStatusRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[24], controller, inp)
 
-getDatanodeStorageReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetDatanodeStorageReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[25], controller, inp, done)
-getDatanodeStorageReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetDatanodeStorageReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[25], controller, inp)
+getDatanodeReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetDatanodeReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[25], controller, inp, done)
+getDatanodeReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetDatanodeReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[25], controller, inp)
 
-getPreferredBlockSize(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetPreferredBlockSizeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[26], controller, inp, done)
-getPreferredBlockSize(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetPreferredBlockSizeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[26], controller, inp)
+getDatanodeStorageReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetDatanodeStorageReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[26], controller, inp, done)
+getDatanodeStorageReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetDatanodeStorageReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[26], controller, inp)
 
-setSafeMode(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetSafeModeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[27], controller, inp, done)
-setSafeMode(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetSafeModeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[27], controller, inp)
+getPreferredBlockSize(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetPreferredBlockSizeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[27], controller, inp, done)
+getPreferredBlockSize(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetPreferredBlockSizeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[27], controller, inp)
 
-saveNamespace(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SaveNamespaceRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[28], controller, inp, done)
-saveNamespace(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SaveNamespaceRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[28], controller, inp)
+setSafeMode(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetSafeModeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[28], controller, inp, done)
+setSafeMode(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetSafeModeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[28], controller, inp)
 
-rollEdits(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RollEditsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[29], controller, inp, done)
-rollEdits(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RollEditsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[29], controller, inp)
+saveNamespace(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SaveNamespaceRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[29], controller, inp, done)
+saveNamespace(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SaveNamespaceRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[29], controller, inp)
 
-restoreFailedStorage(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RestoreFailedStorageRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[30], controller, inp, done)
-restoreFailedStorage(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RestoreFailedStorageRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[30], controller, inp)
+rollEdits(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RollEditsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[30], controller, inp, done)
+rollEdits(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RollEditsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[30], controller, inp)
 
-refreshNodes(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RefreshNodesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[31], controller, inp, done)
-refreshNodes(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RefreshNodesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[31], controller, inp)
+restoreFailedStorage(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RestoreFailedStorageRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[31], controller, inp, done)
+restoreFailedStorage(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RestoreFailedStorageRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[31], controller, inp)
 
-finalizeUpgrade(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::FinalizeUpgradeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[32], controller, inp, done)
-finalizeUpgrade(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::FinalizeUpgradeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[32], controller, inp)
+refreshNodes(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RefreshNodesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[32], controller, inp, done)
+refreshNodes(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RefreshNodesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[32], controller, inp)
 
-rollingUpgrade(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RollingUpgradeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[33], controller, inp, done)
-rollingUpgrade(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RollingUpgradeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[33], controller, inp)
+finalizeUpgrade(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::FinalizeUpgradeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[33], controller, inp, done)
+finalizeUpgrade(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::FinalizeUpgradeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[33], controller, inp)
 
-listCorruptFileBlocks(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListCorruptFileBlocksRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[34], controller, inp, done)
-listCorruptFileBlocks(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListCorruptFileBlocksRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[34], controller, inp)
+rollingUpgrade(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RollingUpgradeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[34], controller, inp, done)
+rollingUpgrade(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RollingUpgradeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[34], controller, inp)
 
-metaSave(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::MetaSaveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[35], controller, inp, done)
-metaSave(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::MetaSaveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[35], controller, inp)
+listCorruptFileBlocks(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListCorruptFileBlocksRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[35], controller, inp, done)
+listCorruptFileBlocks(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListCorruptFileBlocksRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[35], controller, inp)
 
-getFileInfo(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetFileInfoRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[36], controller, inp, done)
-getFileInfo(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetFileInfoRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[36], controller, inp)
+metaSave(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::MetaSaveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[36], controller, inp, done)
+metaSave(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::MetaSaveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[36], controller, inp)
 
-addCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::AddCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[37], controller, inp, done)
-addCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::AddCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[37], controller, inp)
+getFileInfo(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetFileInfoRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[37], controller, inp, done)
+getFileInfo(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetFileInfoRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[37], controller, inp)
 
-modifyCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ModifyCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[38], controller, inp, done)
-modifyCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ModifyCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[38], controller, inp)
+addCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::AddCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[38], controller, inp, done)
+addCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::AddCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[38], controller, inp)
 
-removeCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[39], controller, inp, done)
-removeCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[39], controller, inp)
+modifyCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ModifyCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[39], controller, inp, done)
+modifyCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ModifyCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[39], controller, inp)
 
-listCacheDirectives(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListCacheDirectivesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[40], controller, inp, done)
-listCacheDirectives(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListCacheDirectivesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[40], controller, inp)
+removeCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[40], controller, inp, done)
+removeCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[40], controller, inp)
 
-addCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::AddCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[41], controller, inp, done)
-addCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::AddCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[41], controller, inp)
+listCacheDirectives(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListCacheDirectivesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[41], controller, inp, done)
+listCacheDirectives(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListCacheDirectivesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[41], controller, inp)
 
-modifyCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ModifyCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[42], controller, inp, done)
-modifyCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ModifyCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[42], controller, inp)
+addCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::AddCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[42], controller, inp, done)
+addCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::AddCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[42], controller, inp)
 
-removeCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[43], controller, inp, done)
-removeCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[43], controller, inp)
+modifyCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ModifyCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[43], controller, inp, done)
+modifyCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ModifyCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[43], controller, inp)
 
-listCachePools(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListCachePoolsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[44], controller, inp, done)
-listCachePools(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListCachePoolsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[44], controller, inp)
+removeCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[44], controller, inp, done)
+removeCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[44], controller, inp)
 
-getFileLinkInfo(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetFileLinkInfoRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[45], controller, inp, done)
-getFileLinkInfo(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetFileLinkInfoRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[45], controller, inp)
+listCachePools(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListCachePoolsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[45], controller, inp, done)
+listCachePools(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListCachePoolsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[45], controller, inp)
 
-getContentSummary(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetContentSummaryRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[46], controller, inp, done)
-getContentSummary(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetContentSummaryRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[46], controller, inp)
+getFileLinkInfo(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetFileLinkInfoRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[46], controller, inp, done)
+getFileLinkInfo(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetFileLinkInfoRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[46], controller, inp)
 
-setQuota(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetQuotaRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[47], controller, inp, done)
-setQuota(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetQuotaRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[47], controller, inp)
+getContentSummary(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetContentSummaryRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[47], controller, inp, done)
+getContentSummary(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetContentSummaryRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[47], controller, inp)
 
-fsync(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::FsyncRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[48], controller, inp, done)
-fsync(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::FsyncRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[48], controller, inp)
+setQuota(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetQuotaRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[48], controller, inp, done)
+setQuota(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetQuotaRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[48], controller, inp)
 
-setTimes(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetTimesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[49], controller, inp, done)
-setTimes(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetTimesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[49], controller, inp)
+fsync(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::FsyncRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[49], controller, inp, done)
+fsync(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::FsyncRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[49], controller, inp)
 
-createSymlink(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CreateSymlinkRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[50], controller, inp, done)
-createSymlink(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CreateSymlinkRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[50], controller, inp)
+setTimes(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetTimesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[50], controller, inp, done)
+setTimes(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetTimesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[50], controller, inp)
 
-getLinkTarget(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetLinkTargetRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[51], controller, inp, done)
-getLinkTarget(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetLinkTargetRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[51], controller, inp)
+createSymlink(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CreateSymlinkRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[51], controller, inp, done)
+createSymlink(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CreateSymlinkRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[51], controller, inp)
 
-updateBlockForPipeline(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::UpdateBlockForPipelineRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[52], controller, inp, done)
-updateBlockForPipeline(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::UpdateBlockForPipelineRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[52], controller, inp)
+getLinkTarget(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetLinkTargetRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[52], controller, inp, done)
+getLinkTarget(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetLinkTargetRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[52], controller, inp)
 
-updatePipeline(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::UpdatePipelineRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[53], controller, inp, done)
-updatePipeline(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::UpdatePipelineRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[53], controller, inp)
+updateBlockForPipeline(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::UpdateBlockForPipelineRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[53], controller, inp, done)
+updateBlockForPipeline(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::UpdateBlockForPipelineRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[53], controller, inp)
 
-getDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[54], controller, inp, done)
-getDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[54], controller, inp)
+updatePipeline(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::UpdatePipelineRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[54], controller, inp, done)
+updatePipeline(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::UpdatePipelineRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[54], controller, inp)
 
-renewDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RenewDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[55], controller, inp, done)
-renewDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RenewDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[55], controller, inp)
+getDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[55], controller, inp, done)
+getDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[55], controller, inp)
 
-cancelDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CancelDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[56], controller, inp, done)
-cancelDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CancelDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[56], controller, inp)
+renewDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RenewDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[56], controller, inp, done)
+renewDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RenewDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[56], controller, inp)
 
-setBalancerBandwidth(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetBalancerBandwidthRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[57], controller, inp, done)
-setBalancerBandwidth(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetBalancerBandwidthRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[57], controller, inp)
+cancelDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CancelDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[57], controller, inp, done)
+cancelDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CancelDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[57], controller, inp)
 
-getDataEncryptionKey(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetDataEncryptionKeyRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[58], controller, inp, done)
-getDataEncryptionKey(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetDataEncryptionKeyRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[58], controller, inp)
+setBalancerBandwidth(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetBalancerBandwidthRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[58], controller, inp, done)
+setBalancerBandwidth(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetBalancerBandwidthRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[58], controller, inp)
 
-createSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CreateSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[59], controller, inp, done)
-createSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CreateSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[59], controller, inp)
+getDataEncryptionKey(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetDataEncryptionKeyRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[59], controller, inp, done)
+getDataEncryptionKey(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetDataEncryptionKeyRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[59], controller, inp)
 
-renameSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RenameSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[60], controller, inp, done)
-renameSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RenameSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[60], controller, inp)
+createSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CreateSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[60], controller, inp, done)
+createSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CreateSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[60], controller, inp)
 
-allowSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::AllowSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[61], controller, inp, done)
-allowSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::AllowSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[61], controller, inp)
+renameSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RenameSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[61], controller, inp, done)
+renameSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RenameSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[61], controller, inp)
 
-disallowSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::DisallowSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[62], controller, inp, done)
-disallowSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::DisallowSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[62], controller, inp)
+allowSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::AllowSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[62], controller, inp, done)
+allowSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::AllowSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[62], controller, inp)
 
-getSnapshottableDirListing(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetSnapshottableDirListingRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[63], controller, inp, done)
-getSnapshottableDirListing(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetSnapshottableDirListingRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[63], controller, inp)
+disallowSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::DisallowSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[63], controller, inp, done)
+disallowSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::DisallowSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[63], controller, inp)
 
-deleteSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::DeleteSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[64], controller, inp, done)
-deleteSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::DeleteSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[64], controller, inp)
+getSnapshottableDirListing(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetSnapshottableDirListingRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[64], controller, inp, done)
+getSnapshottableDirListing(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetSnapshottableDirListingRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[64], controller, inp)
 
-getSnapshotDiffReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetSnapshotDiffReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[65], controller, inp, done)
-getSnapshotDiffReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetSnapshotDiffReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[65], controller, inp)
+deleteSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::DeleteSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[65], controller, inp, done)
+deleteSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::DeleteSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[65], controller, inp)
 
-isFileClosed(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::IsFileClosedRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[66], controller, inp, done)
-isFileClosed(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::IsFileClosedRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[66], controller, inp)
+getSnapshotDiffReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetSnapshotDiffReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[66], controller, inp, done)
+getSnapshotDiffReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetSnapshotDiffReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[66], controller, inp)
 
-modifyAclEntries(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ModifyAclEntriesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[67], controller, inp, done)
-modifyAclEntries(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ModifyAclEntriesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[67], controller, inp)
+isFileClosed(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::IsFileClosedRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[67], controller, inp, done)
+isFileClosed(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::IsFileClosedRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[67], controller, inp)
 
-removeAclEntries(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveAclEntriesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[68], controller, inp, done)
-removeAclEntries(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveAclEntriesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[68], controller, inp)
+modifyAclEntries(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ModifyAclEntriesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[68], controller, inp, done)
+modifyAclEntries(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ModifyAclEntriesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[68], controller, inp)
 
-removeDefaultAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveDefaultAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[69], controller, inp, done)
-removeDefaultAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveDefaultAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[69], controller, inp)
+removeAclEntries(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveAclEntriesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[69], controller, inp, done)
+removeAclEntries(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveAclEntriesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[69], controller, inp)
 
-removeAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[70], controller, inp, done)
-removeAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[70], controller, inp)
+removeDefaultAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveDefaultAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[70], controller, inp, done)
+removeDefaultAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveDefaultAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[70], controller, inp)
 
-setAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[71], controller, inp, done)
-setAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[71], controller, inp)
+removeAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[71], controller, inp, done)
+removeAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[71], controller, inp)
 
-getAclStatus(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetAclStatusRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[72], controller, inp, done)
-getAclStatus(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetAclStatusRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[72], controller, inp)
+setAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[72], controller, inp, done)
+setAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[72], controller, inp)
 
-setXAttr(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetXAttrRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[73], controller, inp, done)
-setXAttr(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetXAttrRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[73], controller, inp)
+getAclStatus(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetAclStatusRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[73], controller, inp, done)
+getAclStatus(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetAclStatusRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[73], controller, inp)
 
-getXAttrs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetXAttrsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[74], controller, inp, done)
-getXAttrs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetXAttrsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[74], controller, inp)
+setXAttr(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::SetXAttrRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[74], controller, inp, done)
+setXAttr(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::SetXAttrRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[74], controller, inp)
 
-listXAttrs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListXAttrsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[75], controller, inp, done)
-listXAttrs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListXAttrsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[75], controller, inp)
+getXAttrs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetXAttrsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[75], controller, inp, done)
+getXAttrs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetXAttrsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[75], controller, inp)
 
-removeXAttr(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveXAttrRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[76], controller, inp, done)
-removeXAttr(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveXAttrRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[76], controller, inp)
+listXAttrs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListXAttrsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[76], controller, inp, done)
+listXAttrs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListXAttrsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[76], controller, inp)
 
-checkAccess(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CheckAccessRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[77], controller, inp, done)
-checkAccess(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CheckAccessRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[77], controller, inp)
+removeXAttr(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::RemoveXAttrRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[77], controller, inp, done)
+removeXAttr(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::RemoveXAttrRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[77], controller, inp)
 
-createEncryptionZone(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CreateEncryptionZoneRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[78], controller, inp, done)
-createEncryptionZone(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CreateEncryptionZoneRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[78], controller, inp)
+checkAccess(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CheckAccessRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[78], controller, inp, done)
+checkAccess(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CheckAccessRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[78], controller, inp)
 
-listEncryptionZones(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListEncryptionZonesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[79], controller, inp, done)
-listEncryptionZones(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListEncryptionZonesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[79], controller, inp)
+createEncryptionZone(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::CreateEncryptionZoneRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[79], controller, inp, done)
+createEncryptionZone(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::CreateEncryptionZoneRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[79], controller, inp)
 
-getEZForPath(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetEZForPathRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[80], controller, inp, done)
-getEZForPath(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetEZForPathRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[80], controller, inp)
+listEncryptionZones(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::ListEncryptionZonesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[80], controller, inp, done)
+listEncryptionZones(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::ListEncryptionZonesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[80], controller, inp)
 
-getCurrentEditLogTxid(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetCurrentEditLogTxidRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[81], controller, inp, done)
-getCurrentEditLogTxid(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetCurrentEditLogTxidRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[81], controller, inp)
+getEZForPath(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetEZForPathRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[81], controller, inp, done)
+getEZForPath(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetEZForPathRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[81], controller, inp)
 
-getEditsFromTxid(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetEditsFromTxidRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[82], controller, inp, done)
-getEditsFromTxid(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetEditsFromTxidRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[82], controller, inp)
+getCurrentEditLogTxid(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetCurrentEditLogTxidRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[82], controller, inp, done)
+getCurrentEditLogTxid(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetCurrentEditLogTxidRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[82], controller, inp)
 
-export CreateFlagProto, DatanodeReportTypeProto, SafeModeActionProto, RollingUpgradeActionProto, CacheFlagProto, GetBlockLocationsRequestProto, GetBlockLocationsResponseProto, GetServerDefaultsRequestProto, GetServerDefaultsResponseProto, CreateRequestProto, CreateResponseProto, AppendRequestProto, AppendResponseProto, SetReplicationRequestProto, SetReplicationResponseProto, SetStoragePolicyRequestProto, SetStoragePolicyResponseProto, GetStoragePoliciesRequestProto, GetStoragePoliciesResponseProto, SetPermissionRequestProto, SetPermissionResponseProto, SetOwnerRequestProto, SetOwnerResponseProto, AbandonBlockRequestProto, AbandonBlockResponseProto, AddBlockRequestProto, AddBlockResponseProto, GetAdditionalDatanodeRequestProto, GetAdditionalDatanodeResponseProto, CompleteRequestProto, CompleteResponseProto, ReportBadBlocksRequestProto, ReportBadBlocksResponseProto, ConcatRequestProto, ConcatResponseProto, RenameRequestProto, RenameResponseProto, Rename2RequestProto, Rename2ResponseProto, DeleteRequestProto, DeleteResponseProto, MkdirsRequestProto, MkdirsResponseProto, GetListingRequestProto, GetListingResponseProto, GetSnapshottableDirListingRequestProto, GetSnapshottableDirListingResponseProto, GetSnapshotDiffReportRequestProto, GetSnapshotDiffReportResponseProto, RenewLeaseRequestProto, RenewLeaseResponseProto, RecoverLeaseRequestProto, RecoverLeaseResponseProto, GetFsStatusRequestProto, GetFsStatsResponseProto, GetDatanodeReportRequestProto, GetDatanodeReportResponseProto, GetDatanodeStorageReportRequestProto, DatanodeStorageReportProto, GetDatanodeStorageReportResponseProto, GetPreferredBlockSizeRequestProto, GetPreferredBlockSizeResponseProto, SetSafeModeRequestProto, SetSafeModeResponseProto, SaveNamespaceRequestProto, SaveNamespaceResponseProto, RollEditsRequestProto, RollEditsResponseProto, RestoreFailedStorageRequestProto, RestoreFailedStorageResponseProto, RefreshNodesRequestProto, RefreshNodesResponseProto, FinalizeUpgradeRequestProto, FinalizeUpgradeResponseProto, RollingUpgradeRequestProto, RollingUpgradeInfoProto, RollingUpgradeResponseProto, ListCorruptFileBlocksRequestProto, ListCorruptFileBlocksResponseProto, MetaSaveRequestProto, MetaSaveResponseProto, GetFileInfoRequestProto, GetFileInfoResponseProto, IsFileClosedRequestProto, IsFileClosedResponseProto, CacheDirectiveInfoProto, CacheDirectiveInfoExpirationProto, CacheDirectiveStatsProto, AddCacheDirectiveRequestProto, AddCacheDirectiveResponseProto, ModifyCacheDirectiveRequestProto, ModifyCacheDirectiveResponseProto, RemoveCacheDirectiveRequestProto, RemoveCacheDirectiveResponseProto, ListCacheDirectivesRequestProto, CacheDirectiveEntryProto, ListCacheDirectivesResponseProto, CachePoolInfoProto, CachePoolStatsProto, AddCachePoolRequestProto, AddCachePoolResponseProto, ModifyCachePoolRequestProto, ModifyCachePoolResponseProto, RemoveCachePoolRequestProto, RemoveCachePoolResponseProto, ListCachePoolsRequestProto, ListCachePoolsResponseProto, CachePoolEntryProto, GetFileLinkInfoRequestProto, GetFileLinkInfoResponseProto, GetContentSummaryRequestProto, GetContentSummaryResponseProto, SetQuotaRequestProto, SetQuotaResponseProto, FsyncRequestProto, FsyncResponseProto, SetTimesRequestProto, SetTimesResponseProto, CreateSymlinkRequestProto, CreateSymlinkResponseProto, GetLinkTargetRequestProto, GetLinkTargetResponseProto, UpdateBlockForPipelineRequestProto, UpdateBlockForPipelineResponseProto, UpdatePipelineRequestProto, UpdatePipelineResponseProto, SetBalancerBandwidthRequestProto, SetBalancerBandwidthResponseProto, GetDataEncryptionKeyRequestProto, GetDataEncryptionKeyResponseProto, CreateSnapshotRequestProto, CreateSnapshotResponseProto, RenameSnapshotRequestProto, RenameSnapshotResponseProto, AllowSnapshotRequestProto, AllowSnapshotResponseProto, DisallowSnapshotRequestProto, DisallowSnapshotResponseProto, DeleteSnapshotRequestProto, DeleteSnapshotResponseProto, CheckAccessRequestProto, CheckAccessResponseProto, GetCurrentEditLogTxidRequestProto, GetCurrentEditLogTxidResponseProto, GetEditsFromTxidRequestProto, GetEditsFromTxidResponseProto, ClientNamenodeProtocol, ClientNamenodeProtocolStub, ClientNamenodeProtocolBlockingStub, getBlockLocations, getServerDefaults, create, append, setReplication, setStoragePolicy, getStoragePolicies, setPermission, setOwner, abandonBlock, addBlock, getAdditionalDatanode, complete, reportBadBlocks, concat, rename, rename2, delete, mkdirs, getListing, renewLease, recoverLease, getFsStats, getDatanodeReport, getDatanodeStorageReport, getPreferredBlockSize, setSafeMode, saveNamespace, rollEdits, restoreFailedStorage, refreshNodes, finalizeUpgrade, rollingUpgrade, listCorruptFileBlocks, metaSave, getFileInfo, addCacheDirective, modifyCacheDirective, removeCacheDirective, listCacheDirectives, addCachePool, modifyCachePool, removeCachePool, listCachePools, getFileLinkInfo, getContentSummary, setQuota, fsync, setTimes, createSymlink, getLinkTarget, updateBlockForPipeline, updatePipeline, getDelegationToken, renewDelegationToken, cancelDelegationToken, setBalancerBandwidth, getDataEncryptionKey, createSnapshot, renameSnapshot, allowSnapshot, disallowSnapshot, getSnapshottableDirListing, deleteSnapshot, getSnapshotDiffReport, isFileClosed, modifyAclEntries, removeAclEntries, removeDefaultAcl, removeAcl, setAcl, getAclStatus, setXAttr, getXAttrs, listXAttrs, removeXAttr, checkAccess, createEncryptionZone, listEncryptionZones, getEZForPath, getCurrentEditLogTxid, getEditsFromTxid
+getEditsFromTxid(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::GetEditsFromTxidRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[83], controller, inp, done)
+getEditsFromTxid(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::GetEditsFromTxidRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[83], controller, inp)
+
+export CreateFlagProto, DatanodeReportTypeProto, SafeModeActionProto, RollingUpgradeActionProto, CacheFlagProto, GetBlockLocationsRequestProto, GetBlockLocationsResponseProto, GetServerDefaultsRequestProto, GetServerDefaultsResponseProto, CreateRequestProto, CreateResponseProto, AppendRequestProto, AppendResponseProto, SetReplicationRequestProto, SetReplicationResponseProto, SetStoragePolicyRequestProto, SetStoragePolicyResponseProto, GetStoragePoliciesRequestProto, GetStoragePoliciesResponseProto, SetPermissionRequestProto, SetPermissionResponseProto, SetOwnerRequestProto, SetOwnerResponseProto, AbandonBlockRequestProto, AbandonBlockResponseProto, AddBlockRequestProto, AddBlockResponseProto, GetAdditionalDatanodeRequestProto, GetAdditionalDatanodeResponseProto, CompleteRequestProto, CompleteResponseProto, ReportBadBlocksRequestProto, ReportBadBlocksResponseProto, ConcatRequestProto, ConcatResponseProto, TruncateRequestProto, TruncateResponseProto, RenameRequestProto, RenameResponseProto, Rename2RequestProto, Rename2ResponseProto, DeleteRequestProto, DeleteResponseProto, MkdirsRequestProto, MkdirsResponseProto, GetListingRequestProto, GetListingResponseProto, GetSnapshottableDirListingRequestProto, GetSnapshottableDirListingResponseProto, GetSnapshotDiffReportRequestProto, GetSnapshotDiffReportResponseProto, RenewLeaseRequestProto, RenewLeaseResponseProto, RecoverLeaseRequestProto, RecoverLeaseResponseProto, GetFsStatusRequestProto, GetFsStatsResponseProto, GetDatanodeReportRequestProto, GetDatanodeReportResponseProto, GetDatanodeStorageReportRequestProto, DatanodeStorageReportProto, GetDatanodeStorageReportResponseProto, GetPreferredBlockSizeRequestProto, GetPreferredBlockSizeResponseProto, SetSafeModeRequestProto, SetSafeModeResponseProto, SaveNamespaceRequestProto, SaveNamespaceResponseProto, RollEditsRequestProto, RollEditsResponseProto, RestoreFailedStorageRequestProto, RestoreFailedStorageResponseProto, RefreshNodesRequestProto, RefreshNodesResponseProto, FinalizeUpgradeRequestProto, FinalizeUpgradeResponseProto, RollingUpgradeRequestProto, RollingUpgradeInfoProto, RollingUpgradeResponseProto, ListCorruptFileBlocksRequestProto, ListCorruptFileBlocksResponseProto, MetaSaveRequestProto, MetaSaveResponseProto, GetFileInfoRequestProto, GetFileInfoResponseProto, IsFileClosedRequestProto, IsFileClosedResponseProto, CacheDirectiveInfoProto, CacheDirectiveInfoExpirationProto, CacheDirectiveStatsProto, AddCacheDirectiveRequestProto, AddCacheDirectiveResponseProto, ModifyCacheDirectiveRequestProto, ModifyCacheDirectiveResponseProto, RemoveCacheDirectiveRequestProto, RemoveCacheDirectiveResponseProto, ListCacheDirectivesRequestProto, CacheDirectiveEntryProto, ListCacheDirectivesResponseProto, CachePoolInfoProto, CachePoolStatsProto, AddCachePoolRequestProto, AddCachePoolResponseProto, ModifyCachePoolRequestProto, ModifyCachePoolResponseProto, RemoveCachePoolRequestProto, RemoveCachePoolResponseProto, ListCachePoolsRequestProto, ListCachePoolsResponseProto, CachePoolEntryProto, GetFileLinkInfoRequestProto, GetFileLinkInfoResponseProto, GetContentSummaryRequestProto, GetContentSummaryResponseProto, SetQuotaRequestProto, SetQuotaResponseProto, FsyncRequestProto, FsyncResponseProto, SetTimesRequestProto, SetTimesResponseProto, CreateSymlinkRequestProto, CreateSymlinkResponseProto, GetLinkTargetRequestProto, GetLinkTargetResponseProto, UpdateBlockForPipelineRequestProto, UpdateBlockForPipelineResponseProto, UpdatePipelineRequestProto, UpdatePipelineResponseProto, SetBalancerBandwidthRequestProto, SetBalancerBandwidthResponseProto, GetDataEncryptionKeyRequestProto, GetDataEncryptionKeyResponseProto, CreateSnapshotRequestProto, CreateSnapshotResponseProto, RenameSnapshotRequestProto, RenameSnapshotResponseProto, AllowSnapshotRequestProto, AllowSnapshotResponseProto, DisallowSnapshotRequestProto, DisallowSnapshotResponseProto, DeleteSnapshotRequestProto, DeleteSnapshotResponseProto, CheckAccessRequestProto, CheckAccessResponseProto, GetCurrentEditLogTxidRequestProto, GetCurrentEditLogTxidResponseProto, GetEditsFromTxidRequestProto, GetEditsFromTxidResponseProto, ClientNamenodeProtocol, ClientNamenodeProtocolStub, ClientNamenodeProtocolBlockingStub, getBlockLocations, getServerDefaults, create, append, setReplication, setStoragePolicy, getStoragePolicies, setPermission, setOwner, abandonBlock, addBlock, getAdditionalDatanode, complete, reportBadBlocks, concat, truncate, rename, rename2, delete, mkdirs, getListing, renewLease, recoverLease, getFsStats, getDatanodeReport, getDatanodeStorageReport, getPreferredBlockSize, setSafeMode, saveNamespace, rollEdits, restoreFailedStorage, refreshNodes, finalizeUpgrade, rollingUpgrade, listCorruptFileBlocks, metaSave, getFileInfo, addCacheDirective, modifyCacheDirective, removeCacheDirective, listCacheDirectives, addCachePool, modifyCachePool, removeCachePool, listCachePools, getFileLinkInfo, getContentSummary, setQuota, fsync, setTimes, createSymlink, getLinkTarget, updateBlockForPipeline, updatePipeline, getDelegationToken, renewDelegationToken, cancelDelegationToken, setBalancerBandwidth, getDataEncryptionKey, createSnapshot, renameSnapshot, allowSnapshot, disallowSnapshot, getSnapshottableDirListing, deleteSnapshot, getSnapshotDiffReport, isFileClosed, modifyAclEntries, removeAclEntries, removeDefaultAcl, removeAcl, setAcl, getAclStatus, setXAttr, getXAttrs, listXAttrs, removeXAttr, checkAccess, createEncryptionZone, listEncryptionZones, getEZForPath, getCurrentEditLogTxid, getEditsFromTxid
