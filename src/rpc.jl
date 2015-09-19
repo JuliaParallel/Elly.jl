@@ -129,7 +129,7 @@ function show(io::IO, ch::HadoopRpcChannel)
 end
 
 isconnected(channel::HadoopRpcChannel) = !isnull(channel.sock) && isopen(get(channel.sock))
-begin_send(channel::HadoopRpcChannel) = truncate(channel.iob, 0)
+begin_send(channel::HadoopRpcChannel) = Base.truncate(channel.iob, 0)
 send_buffered(channel::HadoopRpcChannel, delimited::Bool) = send_buffered(channel.iob, get(channel.sock), delimited::Bool)
 
 function next_call_id(channel::HadoopRpcChannel)
@@ -334,7 +334,7 @@ function disconnect(channel::HadoopDataChannel)
 end
 
 isconnected(channel::HadoopDataChannel) = !isnull(channel.sock) && isopen(get(channel.sock))
-begin_send(channel::HadoopDataChannel) = truncate(channel.iob, 0)
+begin_send(channel::HadoopDataChannel) = Base.truncate(channel.iob, 0)
 send_buffered(channel::HadoopDataChannel, delimited::Bool) = send_buffered(channel.iob, get(channel.sock), delimited::Bool)
 
 function buffer_opcode(channel::HadoopDataChannel, opcode::Int8)
@@ -1120,12 +1120,12 @@ function read_packet_ack(writer::HDFSBlockWriter)
         readproto(IOBuffer(data_bytes), ack)
 
         pipeline = writer.pkt_pipeline
-        ackrcvd(pipeline, ack.seqno, ack.status)
+        ackrcvd(pipeline, ack.seqno, ack.reply)
 
         exblk = writer.block.b
         set_field!(exblk, :numBytes, pipeline.acked_bytes)
 
-        @logmsg("received ack for seqno: $(ack.seqno), status: $(ack.status) bytes acked: $(exblk.numBytes)")
+        @logmsg("received ack for seqno: $(ack.seqno), status: $(ack.reply) bytes acked: $(exblk.numBytes)")
         nothing
     catch ex
         @logmsg("exception reading from $(channel.host):$(channel.port): $ex")

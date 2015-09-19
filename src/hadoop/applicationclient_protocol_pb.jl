@@ -27,7 +27,8 @@ const _ApplicationClientProtocolService_methods = MethodDescriptor[
         MethodDescriptor("updateReservation", 19, ReservationUpdateRequestProto, ReservationUpdateResponseProto),
         MethodDescriptor("deleteReservation", 20, ReservationDeleteRequestProto, ReservationDeleteResponseProto),
         MethodDescriptor("getNodeToLabels", 21, GetNodesToLabelsRequestProto, GetNodesToLabelsResponseProto),
-        MethodDescriptor("getClusterNodeLabels", 22, GetClusterNodeLabelsRequestProto, GetClusterNodeLabelsResponseProto)
+        MethodDescriptor("getLabelsToNodes", 22, GetLabelsToNodesRequestProto, GetLabelsToNodesResponseProto),
+        MethodDescriptor("getClusterNodeLabels", 23, GetClusterNodeLabelsRequestProto, GetClusterNodeLabelsResponseProto)
     ] # const _ApplicationClientProtocolService_methods
 const _ApplicationClientProtocolService_desc = ServiceDescriptor("ApplicationClientProtocolService", 1, _ApplicationClientProtocolService_methods)
 
@@ -106,7 +107,10 @@ deleteReservation(stub::ApplicationClientProtocolServiceBlockingStub, controller
 getNodeToLabels(stub::ApplicationClientProtocolServiceStub, controller::ProtoRpcController, inp::GetNodesToLabelsRequestProto, done::Function) = call_method(stub.impl, _ApplicationClientProtocolService_methods[21], controller, inp, done)
 getNodeToLabels(stub::ApplicationClientProtocolServiceBlockingStub, controller::ProtoRpcController, inp::GetNodesToLabelsRequestProto) = call_method(stub.impl, _ApplicationClientProtocolService_methods[21], controller, inp)
 
-getClusterNodeLabels(stub::ApplicationClientProtocolServiceStub, controller::ProtoRpcController, inp::GetClusterNodeLabelsRequestProto, done::Function) = call_method(stub.impl, _ApplicationClientProtocolService_methods[22], controller, inp, done)
-getClusterNodeLabels(stub::ApplicationClientProtocolServiceBlockingStub, controller::ProtoRpcController, inp::GetClusterNodeLabelsRequestProto) = call_method(stub.impl, _ApplicationClientProtocolService_methods[22], controller, inp)
+getLabelsToNodes(stub::ApplicationClientProtocolServiceStub, controller::ProtoRpcController, inp::GetLabelsToNodesRequestProto, done::Function) = call_method(stub.impl, _ApplicationClientProtocolService_methods[22], controller, inp, done)
+getLabelsToNodes(stub::ApplicationClientProtocolServiceBlockingStub, controller::ProtoRpcController, inp::GetLabelsToNodesRequestProto) = call_method(stub.impl, _ApplicationClientProtocolService_methods[22], controller, inp)
 
-export ApplicationClientProtocolService, ApplicationClientProtocolServiceStub, ApplicationClientProtocolServiceBlockingStub, getNewApplication, getApplicationReport, submitApplication, forceKillApplication, getClusterMetrics, getApplications, getClusterNodes, getQueueInfo, getQueueUserAcls, getDelegationToken, renewDelegationToken, cancelDelegationToken, moveApplicationAcrossQueues, getApplicationAttemptReport, getApplicationAttempts, getContainerReport, getContainers, submitReservation, updateReservation, deleteReservation, getNodeToLabels, getClusterNodeLabels
+getClusterNodeLabels(stub::ApplicationClientProtocolServiceStub, controller::ProtoRpcController, inp::GetClusterNodeLabelsRequestProto, done::Function) = call_method(stub.impl, _ApplicationClientProtocolService_methods[23], controller, inp, done)
+getClusterNodeLabels(stub::ApplicationClientProtocolServiceBlockingStub, controller::ProtoRpcController, inp::GetClusterNodeLabelsRequestProto) = call_method(stub.impl, _ApplicationClientProtocolService_methods[23], controller, inp)
+
+export ApplicationClientProtocolService, ApplicationClientProtocolServiceStub, ApplicationClientProtocolServiceBlockingStub, getNewApplication, getApplicationReport, submitApplication, forceKillApplication, getClusterMetrics, getApplications, getClusterNodes, getQueueInfo, getQueueUserAcls, getDelegationToken, renewDelegationToken, cancelDelegationToken, moveApplicationAcrossQueues, getApplicationAttemptReport, getApplicationAttempts, getContainerReport, getContainers, submitReservation, updateReservation, deleteReservation, getNodeToLabels, getLabelsToNodes, getClusterNodeLabels

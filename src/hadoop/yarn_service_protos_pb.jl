@@ -295,6 +295,22 @@ hash(v::GetNodesToLabelsResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetNodesToLabelsResponseProto, v2::GetNodesToLabelsResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetNodesToLabelsResponseProto, v2::GetNodesToLabelsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
+type GetLabelsToNodesRequestProto
+    nodeLabels::Array{AbstractString,1}
+    GetLabelsToNodesRequestProto() = (o=new(); fillunset(o); o)
+end #type GetLabelsToNodesRequestProto
+hash(v::GetLabelsToNodesRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::GetLabelsToNodesRequestProto, v2::GetLabelsToNodesRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetLabelsToNodesRequestProto, v2::GetLabelsToNodesRequestProto) = ProtoBuf.protoeq(v1, v2)
+
+type GetLabelsToNodesResponseProto
+    labelsToNodes::Array{LabelsToNodeIdsProto,1}
+    GetLabelsToNodesResponseProto() = (o=new(); fillunset(o); o)
+end #type GetLabelsToNodesResponseProto
+hash(v::GetLabelsToNodesResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::GetLabelsToNodesResponseProto, v2::GetLabelsToNodesResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::GetLabelsToNodesResponseProto, v2::GetLabelsToNodesResponseProto) = ProtoBuf.protoeq(v1, v2)
+
 type GetClusterNodeLabelsRequestProto
     GetClusterNodeLabelsRequestProto() = (o=new(); fillunset(o); o)
 end #type GetClusterNodeLabelsRequestProto
@@ -483,6 +499,39 @@ hash(v::GetContainersResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetContainersResponseProto, v2::GetContainersResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetContainersResponseProto, v2::GetContainersResponseProto) = ProtoBuf.protoeq(v1, v2)
 
+type UseSharedCacheResourceRequestProto
+    applicationId::ApplicationIdProto
+    resourceKey::AbstractString
+    UseSharedCacheResourceRequestProto() = (o=new(); fillunset(o); o)
+end #type UseSharedCacheResourceRequestProto
+hash(v::UseSharedCacheResourceRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::UseSharedCacheResourceRequestProto, v2::UseSharedCacheResourceRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::UseSharedCacheResourceRequestProto, v2::UseSharedCacheResourceRequestProto) = ProtoBuf.protoeq(v1, v2)
+
+type UseSharedCacheResourceResponseProto
+    path::AbstractString
+    UseSharedCacheResourceResponseProto() = (o=new(); fillunset(o); o)
+end #type UseSharedCacheResourceResponseProto
+hash(v::UseSharedCacheResourceResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::UseSharedCacheResourceResponseProto, v2::UseSharedCacheResourceResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::UseSharedCacheResourceResponseProto, v2::UseSharedCacheResourceResponseProto) = ProtoBuf.protoeq(v1, v2)
+
+type ReleaseSharedCacheResourceRequestProto
+    applicationId::ApplicationIdProto
+    resourceKey::AbstractString
+    ReleaseSharedCacheResourceRequestProto() = (o=new(); fillunset(o); o)
+end #type ReleaseSharedCacheResourceRequestProto
+hash(v::ReleaseSharedCacheResourceRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::ReleaseSharedCacheResourceRequestProto, v2::ReleaseSharedCacheResourceRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ReleaseSharedCacheResourceRequestProto, v2::ReleaseSharedCacheResourceRequestProto) = ProtoBuf.protoeq(v1, v2)
+
+type ReleaseSharedCacheResourceResponseProto
+    ReleaseSharedCacheResourceResponseProto() = (o=new(); fillunset(o); o)
+end #type ReleaseSharedCacheResourceResponseProto
+hash(v::ReleaseSharedCacheResourceResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::ReleaseSharedCacheResourceResponseProto, v2::ReleaseSharedCacheResourceResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::ReleaseSharedCacheResourceResponseProto, v2::ReleaseSharedCacheResourceResponseProto) = ProtoBuf.protoeq(v1, v2)
+
 type ReservationSubmissionRequestProto
     queue::AbstractString
     reservation_definition::ReservationDefinitionProto
@@ -531,4 +580,19 @@ hash(v::ReservationDeleteResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ReservationDeleteResponseProto, v2::ReservationDeleteResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ReservationDeleteResponseProto, v2::ReservationDeleteResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-export SchedulerResourceTypes, ApplicationsRequestScopeProto, RegisterApplicationMasterRequestProto, RegisterApplicationMasterResponseProto, FinishApplicationMasterRequestProto, FinishApplicationMasterResponseProto, AllocateRequestProto, NMTokenProto, AllocateResponseProto, GetNewApplicationRequestProto, GetNewApplicationResponseProto, GetApplicationReportRequestProto, GetApplicationReportResponseProto, SubmitApplicationRequestProto, SubmitApplicationResponseProto, KillApplicationRequestProto, KillApplicationResponseProto, GetClusterMetricsRequestProto, GetClusterMetricsResponseProto, MoveApplicationAcrossQueuesRequestProto, MoveApplicationAcrossQueuesResponseProto, GetApplicationsRequestProto, GetApplicationsResponseProto, GetClusterNodesRequestProto, GetClusterNodesResponseProto, GetQueueInfoRequestProto, GetQueueInfoResponseProto, GetQueueUserAclsInfoRequestProto, GetQueueUserAclsInfoResponseProto, GetNodesToLabelsRequestProto, GetNodesToLabelsResponseProto, GetClusterNodeLabelsRequestProto, GetClusterNodeLabelsResponseProto, StartContainerRequestProto, StartContainerResponseProto, StopContainerRequestProto, StopContainerResponseProto, GetContainerStatusRequestProto, GetContainerStatusResponseProto, StartContainersRequestProto, ContainerExceptionMapProto, StartContainersResponseProto, StopContainersRequestProto, StopContainersResponseProto, GetContainerStatusesRequestProto, GetContainerStatusesResponseProto, GetApplicationAttemptReportRequestProto, GetApplicationAttemptReportResponseProto, GetApplicationAttemptsRequestProto, GetApplicationAttemptsResponseProto, GetContainerReportRequestProto, GetContainerReportResponseProto, GetContainersRequestProto, GetContainersResponseProto, ReservationSubmissionRequestProto, ReservationSubmissionResponseProto, ReservationUpdateRequestProto, ReservationUpdateResponseProto, ReservationDeleteRequestProto, ReservationDeleteResponseProto
+type RunSharedCacheCleanerTaskRequestProto
+    RunSharedCacheCleanerTaskRequestProto() = (o=new(); fillunset(o); o)
+end #type RunSharedCacheCleanerTaskRequestProto
+hash(v::RunSharedCacheCleanerTaskRequestProto) = ProtoBuf.protohash(v)
+isequal(v1::RunSharedCacheCleanerTaskRequestProto, v2::RunSharedCacheCleanerTaskRequestProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::RunSharedCacheCleanerTaskRequestProto, v2::RunSharedCacheCleanerTaskRequestProto) = ProtoBuf.protoeq(v1, v2)
+
+type RunSharedCacheCleanerTaskResponseProto
+    accepted::Bool
+    RunSharedCacheCleanerTaskResponseProto() = (o=new(); fillunset(o); o)
+end #type RunSharedCacheCleanerTaskResponseProto
+hash(v::RunSharedCacheCleanerTaskResponseProto) = ProtoBuf.protohash(v)
+isequal(v1::RunSharedCacheCleanerTaskResponseProto, v2::RunSharedCacheCleanerTaskResponseProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::RunSharedCacheCleanerTaskResponseProto, v2::RunSharedCacheCleanerTaskResponseProto) = ProtoBuf.protoeq(v1, v2)
+
+export SchedulerResourceTypes, ApplicationsRequestScopeProto, RegisterApplicationMasterRequestProto, RegisterApplicationMasterResponseProto, FinishApplicationMasterRequestProto, FinishApplicationMasterResponseProto, AllocateRequestProto, NMTokenProto, AllocateResponseProto, GetNewApplicationRequestProto, GetNewApplicationResponseProto, GetApplicationReportRequestProto, GetApplicationReportResponseProto, SubmitApplicationRequestProto, SubmitApplicationResponseProto, KillApplicationRequestProto, KillApplicationResponseProto, GetClusterMetricsRequestProto, GetClusterMetricsResponseProto, MoveApplicationAcrossQueuesRequestProto, MoveApplicationAcrossQueuesResponseProto, GetApplicationsRequestProto, GetApplicationsResponseProto, GetClusterNodesRequestProto, GetClusterNodesResponseProto, GetQueueInfoRequestProto, GetQueueInfoResponseProto, GetQueueUserAclsInfoRequestProto, GetQueueUserAclsInfoResponseProto, GetNodesToLabelsRequestProto, GetNodesToLabelsResponseProto, GetLabelsToNodesRequestProto, GetLabelsToNodesResponseProto, GetClusterNodeLabelsRequestProto, GetClusterNodeLabelsResponseProto, StartContainerRequestProto, StartContainerResponseProto, StopContainerRequestProto, StopContainerResponseProto, GetContainerStatusRequestProto, GetContainerStatusResponseProto, StartContainersRequestProto, ContainerExceptionMapProto, StartContainersResponseProto, StopContainersRequestProto, StopContainersResponseProto, GetContainerStatusesRequestProto, GetContainerStatusesResponseProto, GetApplicationAttemptReportRequestProto, GetApplicationAttemptReportResponseProto, GetApplicationAttemptsRequestProto, GetApplicationAttemptsResponseProto, GetContainerReportRequestProto, GetContainerReportResponseProto, GetContainersRequestProto, GetContainersResponseProto, UseSharedCacheResourceRequestProto, UseSharedCacheResourceResponseProto, ReleaseSharedCacheResourceRequestProto, ReleaseSharedCacheResourceResponseProto, ReservationSubmissionRequestProto, ReservationSubmissionResponseProto, ReservationUpdateRequestProto, ReservationUpdateResponseProto, ReservationDeleteRequestProto, ReservationDeleteResponseProto, RunSharedCacheCleanerTaskRequestProto, RunSharedCacheCleanerTaskResponseProto

@@ -50,6 +50,7 @@ type AclStatusProto
     group::AbstractString
     sticky::Bool
     entries::Array{AclEntryProto,1}
+    permission::FsPermissionProto
     AclStatusProto() = (o=new(); fillunset(o); o)
 end #type AclStatusProto
 const __req_AclStatusProto = Symbol[:owner,:group,:sticky]

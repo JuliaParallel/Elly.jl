@@ -119,7 +119,7 @@ type __enum_ContainerExitStatusProto <: ProtoEnum
     INVALID::Int32
     ABORTED::Int32
     DISKS_FAILED::Int32
-    __enum_ContainerExitStatusProto() = new(0,-1000,-100,-101)
+    __enum_ContainerExitStatusProto() = new(0,0,0,0)
 end #type __enum_ContainerExitStatusProto
 const ContainerExitStatusProto = __enum_ContainerExitStatusProto()
 
@@ -207,6 +207,7 @@ type LocalResourceProto
     _type::Int32
     visibility::Int32
     pattern::AbstractString
+    should_be_uploaded_to_shared_cache::Bool
     LocalResourceProto() = (o=new(); fillunset(o); o)
 end #type LocalResourceProto
 hash(v::LocalResourceProto) = ProtoBuf.protohash(v)
@@ -302,6 +303,7 @@ type ContainerReportProto
     log_url::AbstractString
     container_exit_status::Int32
     container_state::Int32
+    node_http_address::AbstractString
     ContainerReportProto() = (o=new(); fillunset(o); o)
 end #type ContainerReportProto
 const __val_ContainerReportProto = @compat Dict(:diagnostics_info => "N/A")
@@ -348,6 +350,15 @@ end #type NodeIdToLabelsProto
 hash(v::NodeIdToLabelsProto) = ProtoBuf.protohash(v)
 isequal(v1::NodeIdToLabelsProto, v2::NodeIdToLabelsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NodeIdToLabelsProto, v2::NodeIdToLabelsProto) = ProtoBuf.protoeq(v1, v2)
+
+type LabelsToNodeIdsProto
+    nodeLabels::AbstractString
+    nodeId::Array{NodeIdProto,1}
+    LabelsToNodeIdsProto() = (o=new(); fillunset(o); o)
+end #type LabelsToNodeIdsProto
+hash(v::LabelsToNodeIdsProto) = ProtoBuf.protohash(v)
+isequal(v1::LabelsToNodeIdsProto, v2::LabelsToNodeIdsProto) = ProtoBuf.protoisequal(v1, v2)
+==(v1::LabelsToNodeIdsProto, v2::LabelsToNodeIdsProto) = ProtoBuf.protoeq(v1, v2)
 
 type ResourceRequestProto
     priority::PriorityProto
@@ -418,9 +429,11 @@ isequal(v1::ResourceBlacklistRequestProto, v2::ResourceBlacklistRequestProto) = 
 type LogAggregationContextProto
     include_pattern::AbstractString
     exclude_pattern::AbstractString
+    rolled_logs_include_pattern::AbstractString
+    rolled_logs_exclude_pattern::AbstractString
     LogAggregationContextProto() = (o=new(); fillunset(o); o)
 end #type LogAggregationContextProto
-const __val_LogAggregationContextProto = @compat Dict(:include_pattern => ".*")
+const __val_LogAggregationContextProto = @compat Dict(:include_pattern => ".*", :rolled_logs_exclude_pattern => ".*")
 meta(t::Type{LogAggregationContextProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_LogAggregationContextProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::LogAggregationContextProto) = ProtoBuf.protohash(v)
 isequal(v1::LogAggregationContextProto, v2::LogAggregationContextProto) = ProtoBuf.protoisequal(v1, v2)
@@ -621,4 +634,4 @@ hash(v::ApplicationSubmissionContextProto) = ProtoBuf.protohash(v)
 isequal(v1::ApplicationSubmissionContextProto, v2::ApplicationSubmissionContextProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ApplicationSubmissionContextProto, v2::ApplicationSubmissionContextProto) = ProtoBuf.protoeq(v1, v2)
 
-export ContainerStateProto, YarnApplicationStateProto, YarnApplicationAttemptStateProto, FinalApplicationStatusProto, LocalResourceVisibilityProto, LocalResourceTypeProto, NodeStateProto, AMCommandProto, ApplicationAccessTypeProto, QueueStateProto, QueueACLProto, ReservationRequestInterpreterProto, ContainerExitStatusProto, SerializedExceptionProto, ApplicationIdProto, ApplicationAttemptIdProto, ContainerIdProto, ResourceProto, ResourceOptionProto, NodeResourceMapProto, PriorityProto, ContainerProto, ContainerReportProto, URLProto, LocalResourceProto, ApplicationResourceUsageReportProto, ApplicationReportProto, ApplicationAttemptReportProto, NodeIdProto, NodeReportProto, NodeIdToLabelsProto, ResourceRequestProto, PreemptionMessageProto, StrictPreemptionContractProto, PreemptionContractProto, PreemptionContainerProto, PreemptionResourceRequestProto, ResourceBlacklistRequestProto, ApplicationSubmissionContextProto, LogAggregationContextProto, ApplicationACLMapProto, YarnClusterMetricsProto, QueueInfoProto, QueueUserACLInfoProto, ReservationIdProto, ReservationRequestProto, ReservationRequestsProto, ReservationDefinitionProto, ContainerLaunchContextProto, ContainerStatusProto, ContainerResourceIncreaseRequestProto, ContainerResourceIncreaseProto, ContainerResourceDecreaseProto, StringLocalResourceMapProto, StringStringMapProto, StringBytesMapProto
+export ContainerStateProto, YarnApplicationStateProto, YarnApplicationAttemptStateProto, FinalApplicationStatusProto, LocalResourceVisibilityProto, LocalResourceTypeProto, NodeStateProto, AMCommandProto, ApplicationAccessTypeProto, QueueStateProto, QueueACLProto, ReservationRequestInterpreterProto, ContainerExitStatusProto, SerializedExceptionProto, ApplicationIdProto, ApplicationAttemptIdProto, ContainerIdProto, ResourceProto, ResourceOptionProto, NodeResourceMapProto, PriorityProto, ContainerProto, ContainerReportProto, URLProto, LocalResourceProto, ApplicationResourceUsageReportProto, ApplicationReportProto, ApplicationAttemptReportProto, NodeIdProto, NodeReportProto, NodeIdToLabelsProto, LabelsToNodeIdsProto, ResourceRequestProto, PreemptionMessageProto, StrictPreemptionContractProto, PreemptionContractProto, PreemptionContainerProto, PreemptionResourceRequestProto, ResourceBlacklistRequestProto, ApplicationSubmissionContextProto, LogAggregationContextProto, ApplicationACLMapProto, YarnClusterMetricsProto, QueueInfoProto, QueueUserACLInfoProto, ReservationIdProto, ReservationRequestProto, ReservationRequestsProto, ReservationDefinitionProto, ContainerLaunchContextProto, ContainerStatusProto, ContainerResourceIncreaseRequestProto, ContainerResourceIncreaseProto, ContainerResourceDecreaseProto, StringLocalResourceMapProto, StringStringMapProto, StringBytesMapProto
