@@ -60,9 +60,9 @@ function _container(cid::AbstractString)
     attempt_id = parse(Int32, parts[4])
     container_id = parse(Int64, parts[5])
 
-    appid_proto = protobuild(ApplicationIdProto, @compat Dict(:id => app_id, :cluster_timestamp => cluster_timestamp))
-    app_attempt_id_proto = protobuild(ApplicationAttemptIdProto, @compat Dict(:application_id => appid_proto, :attemptId => attempt_id))
-    protobuild(ContainerIdProto, @compat Dict(:app_id => appid_proto, :app_attempt_id => app_attempt_id_proto, :id => container_id))
+    appid_proto = protobuild(ApplicationIdProto, Dict(:id => app_id, :cluster_timestamp => cluster_timestamp))
+    app_attempt_id_proto = protobuild(ApplicationAttemptIdProto, Dict(:application_id => appid_proto, :attemptId => attempt_id))
+    protobuild(ContainerIdProto, Dict(:app_id => appid_proto, :app_attempt_id => app_attempt_id_proto, :id => container_id))
 end
 
 _envdict(envdict::Dict) = envdict

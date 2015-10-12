@@ -301,9 +301,9 @@ end
 function request_alloc(containers::YarnContainers, numcontainers::Int; 
                     mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cpu::Integer=YARN_CONTAINER_CPU_DEFAULT, 
                     loc::AbstractString=YARN_CONTAINER_LOCATION_DEFAULT, priority::Integer=YARN_CONTAINER_PRIORITY_DEFAULT)
-    prio = protobuild(PriorityProto, @compat Dict(:priority => priority))
-    capability = protobuild(ResourceProto, @compat Dict(:memory => mem, :virtual_cores => cpu))
-    req = protobuild(ResourceRequestProto, @compat Dict(:priority => prio,
+    prio = protobuild(PriorityProto, Dict(:priority => priority))
+    capability = protobuild(ResourceProto, Dict(:memory => mem, :virtual_cores => cpu))
+    req = protobuild(ResourceRequestProto, Dict(:priority => prio,
             :resource_name => loc,
             :num_containers => numcontainers,
             :capability => capability))
@@ -351,7 +351,7 @@ function launchcontext(;cmd::AbstractString="", env::Dict=Dict(), service_data::
         envproto = StringStringMapProto[]
         for (n,v) in env
             (isa(n, AbstractString) && isa(v, AbstractString)) || throw(ArgumentError("non string environment variable specified: $(typeof(n)) => $(typeof(v))"))
-            push!(envproto, protobuild(StringStringMapProto, @compat Dict(:key => n, :value => v)))
+            push!(envproto, protobuild(StringStringMapProto, Dict(:key => n, :value => v)))
         end
         set_field!(clc, :environment, envproto)
     end
@@ -359,7 +359,7 @@ function launchcontext(;cmd::AbstractString="", env::Dict=Dict(), service_data::
         svcdataproto = StringBytesMapProto[]
         for (n,v) in service_data
             (isa(n, AbstractString) && isa(v, Vector{UInt8})) || throw(ArgumentError("incompatible service data type specified: $(typeof(n)) => $(typeof(v))"))
-            push!(svcdataproto, protobuild(StringBytesMapProto, @compat Dict(:key => n, :value => v)))
+            push!(svcdataproto, protobuild(StringBytesMapProto, Dict(:key => n, :value => v)))
         end
         set_field!(clc, :service_data, servicedataproto)
     end

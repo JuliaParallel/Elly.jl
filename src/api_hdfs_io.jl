@@ -5,7 +5,7 @@
 Default length (bytes) upto which to pre-fetch block metadata.
 (10 blocks of default size)
 """ ->
-const HDFS_READER_WINDOW_LENGTH = @compat UInt64(64*1024*1024*10)
+const HDFS_READER_WINDOW_LENGTH = UInt64(64*1024*1024*10)
 
 @doc doc"""
 # HDFSFileReader
@@ -72,7 +72,7 @@ function seek(reader::HDFSFileReader, n::Integer)
 end
 seekend(reader::HDFSFileReader) = seek(reader, filesize(reader))
 seekstart(reader::HDFSFileReader) = seek(reader, 0)
-skip(reader::HDFSFileReader, n::Integer) = seek(reader, @compat UInt64(n+position(reader)))
+skip(reader::HDFSFileReader, n::Integer) = seek(reader, UInt64(n+position(reader)))
 
 _block_has_offset(block::LocatedBlockProto, offset::UInt64, block_sz::UInt64) = (block.offset <= offset < (block.offset + block_sz))
 
