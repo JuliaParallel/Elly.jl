@@ -30,6 +30,14 @@ export YarnAppMaster, register, unregister, kill, can_schedule_mem, can_schedule
 
 export YarnManager, launch, manage
 
+if VERSION < v"0.5.0-"
+typealias Lock RemoteRef
+makelock() = RemoteRef()
+else
+typealias Lock Channel
+makelock() = Channel{Int}(1)
+end
+
 # enable logging only during debugging
 #using Logging
 #const logger = Logging.configure(level=DEBUG)

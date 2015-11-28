@@ -37,12 +37,12 @@ type YarnAppMaster
     response_id::Int32
     
     registration::Nullable{RegisterApplicationMasterResponseProto}
-    lck::RemoteRef
+    lck::Lock
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
                 amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
         amrm_conn = YarnAMRMProtocol(rmhost, rmport, ugi)
-        lck = RemoteRef()
+        lck = makelock()
         put!(lck, 1)
 
         new(amrm_conn, amhost, amport, amurl, 
