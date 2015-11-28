@@ -4,7 +4,7 @@ type UserGroupInformation
     tokens::Dict{AbstractString,TokenProto}
     function UserGroupInformation(username::AbstractString="")
         isempty(username) && (username = ENV["USER"])
-        userinfo = protobuild(UserInformationProto, @compat Dict(:realUser => username))
+        userinfo = protobuild(UserInformationProto, Dict(:realUser => username))
         new(userinfo, Dict{AbstractString,TokenProto}())
     end
 end

@@ -37,12 +37,12 @@ type YarnAppMaster
     response_id::Int32
     
     registration::Nullable{RegisterApplicationMasterResponseProto}
-    lck::RemoteRef
+    lck::Lock
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
                 amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
         amrm_conn = YarnAMRMProtocol(rmhost, rmport, ugi)
-        lck = RemoteRef()
+        lck = makelock()
         put!(lck, 1)
 
         new(amrm_conn, amhost, amport, amurl, 
@@ -133,7 +133,7 @@ function can_schedule(yam::YarnAppMaster, restype::Int32)
 end
 
 function _unregister(yam::YarnAppMaster, finalstatus::Int32, diagnostics::AbstractString)
-    inp = protobuild(FinishApplicationMasterRequestProto, @compat Dict(:final_application_status => finalstatus))
+    inp = protobuild(FinishApplicationMasterRequestProto, Dict(:final_application_status => finalstatus))
     !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
     !isempty(diagnostics) && set_field!(inp, :diagnostics, diagnostics)
   
@@ -152,8 +152,8 @@ container_release(yam::YarnAppMaster, cids::ContainerIdProto...) = request_relea
 container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cid], container_spec)
 function container_start(yam::YarnAppMaster, container::ContainerProto, container_spec::ContainerLaunchContextProto)
     @logmsg("starting container $(container)")
-    req = protobuild(StartContainerRequestProto, @compat Dict(:container_launch_context => container_spec, :container_token => container.container_token))
-    inp = protobuild(StartContainersRequestProto, @compat Dict(:start_container_request => [req]))
+    req = protobuild(StartContainerRequestProto, Dict(:container_launch_context => container_spec, :container_token => container.container_token))
+    inp = protobuild(StartContainersRequestProto, Dict(:start_container_request => [req]))
 
     nodeid = container.nodeId
     nm_conn = get_connection(yam.nodes, nodeid)
@@ -177,7 +177,7 @@ container_stop(yam::YarnAppMaster, cid::ContainerIdProto) = container_stop(yam, 
 function container_stop(yam::YarnAppMaster, container::ContainerProto)
     @logmsg("stopping container $container")
 
-    inp = protobuild(StopContainersRequestProto, @compat Dict(:container_id => [container.id]))
+    inp = protobuild(StopContainersRequestProto, Dict(:container_id => [container.id]))
     nodeid = container.nodeId
     nm_conn = get_connection(yam.nodes, nodeid)
     success = false

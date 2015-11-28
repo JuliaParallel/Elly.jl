@@ -16,15 +16,15 @@ const HRPC_AUTH_METHOD_TOKEN    = 0x82
 const HRPC_PROTOBUFF_TYPE       = RpcKindProto.RPC_PROTOCOL_BUFFER
 const HRPC_FINAL_PACKET         = RpcRequestHeaderProto_OperationProto.RPC_FINAL_PACKET
 
-const HRPC_CALL_ID_SASL         = @compat Int32(-33)
-const HRPC_CALL_ID_CONNCTX      = @compat Int32(-3)
-const HRPC_CALL_ID_NORMAL       = @compat Int32(0)  # Post the handshake it cycles sequentially between 1:typemax(Int32)
+const HRPC_CALL_ID_SASL         = Int32(-33)
+const HRPC_CALL_ID_CONNCTX      = Int32(-3)
+const HRPC_CALL_ID_NORMAL       = Int32(0)  # Post the handshake it cycles sequentially between 1:typemax(Int32)
 
-const HRPC_PROTOCOLS = @compat Dict(
-    ClientNamenodeProtocolBlockingStub              => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",            :ver => @compat(UInt64(1)), :name => "HDFSClient"),
-    ApplicationClientProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",    :ver => @compat(UInt64(1)), :name => "YarnClient"),
-    ApplicationMasterProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",    :ver => @compat(UInt64(1)), :name => "YarnAppMaster"),
-    ContainerManagementProtocolServiceBlockingStub  => Dict(:id => "org.apache.hadoop.yarn.api.ContainerManagementProtocolPB",  :ver => @compat(UInt64(1)), :name => "YarnNMClient")
+const HRPC_PROTOCOLS = Dict(
+    ClientNamenodeProtocolBlockingStub              => Dict(:id => "org.apache.hadoop.hdfs.protocol.ClientProtocol",            :ver => UInt64(1), :name => "HDFSClient"),
+    ApplicationClientProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationClientProtocolPB",    :ver => UInt64(1), :name => "YarnClient"),
+    ApplicationMasterProtocolServiceBlockingStub    => Dict(:id => "org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB",    :ver => UInt64(1), :name => "YarnAppMaster"),
+    ContainerManagementProtocolServiceBlockingStub  => Dict(:id => "org.apache.hadoop.yarn.api.ContainerManagementProtocolPB",  :ver => UInt64(1), :name => "YarnNMClient")
 )
 
 @doc doc"""
@@ -74,7 +74,7 @@ function send_buffered(buff::IOBuffer, sock::TCPSocket, delimited::Bool)
     data = takebuf_array(buff)
     len::UInt32 = 0
     if delimited
-        datalen = @compat UInt32(length(data))
+        datalen = UInt32(length(data))
         len = write(sock, hton(datalen))
     end
     len += write(sock, data)
@@ -140,7 +140,7 @@ function next_call_id(channel::HadoopRpcChannel)
     elseif id == HRPC_CALL_ID_CONNCTX
         channel.call_id = HRPC_CALL_ID_NORMAL
     elseif id < typemax(Int32)
-        channel.call_id = id + @compat(Int32(1))
+        channel.call_id = id + Int32(1)
     else
         channel.call_id = HRPC_CALL_ID_NORMAL
     end
@@ -153,13 +153,13 @@ end
 
 function buffer_connctx(channel::HadoopRpcChannel)
     protocol = channel.protocol_attribs[:id]
-    connctx = protobuild(IpcConnectionContextProto, @compat Dict(:userInfo => channel.ugi.userinfo, :protocol => protocol))
+    connctx = protobuild(IpcConnectionContextProto, Dict(:userInfo => channel.ugi.userinfo, :protocol => protocol))
 
     buffer_size_delimited(channel.iob, connctx)
 end
 
 function buffer_reqhdr(channel::HadoopRpcChannel, call_id::Int32)
-    hdr = protobuild(RpcRequestHeaderProto, @compat Dict(:rpcKind => HRPC_PROTOBUFF_TYPE,
+    hdr = protobuild(RpcRequestHeaderProto, Dict(:rpcKind => HRPC_PROTOBUFF_TYPE,
                 :rpcOp => HRPC_FINAL_PACKET,
                 :callId => call_id,
                 #:retryCount => -1,
@@ -174,7 +174,7 @@ buffer_conctx_reqhdr(channel::HadoopRpcChannel) = (channel.sent_call_id = channe
 function buffer_method_reqhdr(channel::HadoopRpcChannel, method::MethodDescriptor)
     protocol = channel.protocol_attribs[:id]
     protocol_ver = channel.protocol_attribs[:ver]
-    hdr = protobuild(RequestHeaderProto, @compat Dict(:methodName => method.name,
+    hdr = protobuild(RequestHeaderProto, Dict(:methodName => method.name,
                 :declaringClassProtocolName => protocol,
                 :clientProtocolVersion => protocol_ver))
 
@@ -256,7 +256,7 @@ function recv_rpc_message(channel::HadoopRpcChannel, resp)
         (resp_hdr.status == RpcResponseHeaderProto_RpcStatusProto.SUCCESS) || throw(HadoopRpcException(resp_hdr))
 
         if resp_hdr.status == RpcResponseHeaderProto_RpcStatusProto.SUCCESS
-            hdr_len = @compat UInt32(length(hdr_bytes))
+            hdr_len = UInt32(length(hdr_bytes))
             hdr_len += _len_uleb(hdr_len)
             if msg_len > hdr_len
                 data_bytes = read_bytes(get(channel.sock))
@@ -288,14 +288,14 @@ end
 # Hadoop Data Channel. Base type for communicating with data nodes.
 
 # Opcodes
-const HDATA_VERSION             = @compat Int16(28)
-const HDATA_WRITE_BLOCK         = @compat Int8(80)
-const HDATA_READ_BLOCK          = @compat Int8(81)
-const HDATA_READ_METADATA       = @compat Int8(82)
-const HDATA_REPLACE_BLOCK       = @compat Int8(83)
-const HDATA_COPY_BLOCK          = @compat Int8(84)
-const HDATA_BLOCK_CHECKSUM      = @compat Int8(85)
-const HDATA_TRANSFER_BLOCK      = @compat Int8(86)
+const HDATA_VERSION             = Int16(28)
+const HDATA_WRITE_BLOCK         = Int8(80)
+const HDATA_READ_BLOCK          = Int8(81)
+const HDATA_READ_METADATA       = Int8(82)
+const HDATA_REPLACE_BLOCK       = Int8(83)
+const HDATA_COPY_BLOCK          = Int8(84)
+const HDATA_BLOCK_CHECKSUM      = Int8(85)
+const HDATA_TRANSFER_BLOCK      = Int8(86)
 
 @doc doc"""
 HadoopDataChannel is the connection to a datanode.
@@ -338,7 +338,7 @@ begin_send(channel::HadoopDataChannel) = Base.truncate(channel.iob, 0)
 send_buffered(channel::HadoopDataChannel, delimited::Bool) = send_buffered(channel.iob, get(channel.sock), delimited::Bool)
 
 function buffer_opcode(channel::HadoopDataChannel, opcode::Int8)
-    hver = @compat UInt16(HDATA_VERSION)
+    hver = UInt16(HDATA_VERSION)
     len = write(channel.iob, hton(hver))
     len += write(channel.iob, opcode)
 end
@@ -477,9 +477,9 @@ function buffer_readblock(reader::HDFSBlockReader)
         set_field!(exblock, fld, get_field(block.b, fld))
     end
 
-    basehdr = protobuild(BaseHeaderProto, @compat Dict(:block => exblock, :token => token))
-    hdr = protobuild(ClientOperationHeaderProto, @compat Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
-    readblock = protobuild(OpReadBlockProto, @compat Dict(:offset => offset, :len => len, :header => hdr))
+    basehdr = protobuild(BaseHeaderProto, Dict(:block => exblock, :token => token))
+    hdr = protobuild(ClientOperationHeaderProto, Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
+    readblock = protobuild(OpReadBlockProto, Dict(:offset => offset, :len => len, :header => hdr))
     @logmsg("sending block read message for offset $offset len $len")
 
     buffer_size_delimited(channel.iob, readblock)
@@ -487,7 +487,7 @@ end
 
 function buffer_client_read_status(reader::HDFSBlockReader, status::Int32)
     channel = reader.channel
-    read_status = protobuild(ClientReadStatusProto, @compat Dict(:status => status))
+    read_status = protobuild(ClientReadStatusProto, Dict(:status => status))
     buffer_size_delimited(channel.iob, read_status)
 end
 
@@ -646,7 +646,7 @@ function read_packet!(reader::HDFSBlockReader, inbuff::Vector{UInt8}, offset::UI
     end
 
     packet_remaining = reader.packet_len - reader.packet_read
-    excess = @compat(Int64(length(inbuff)+1-offset)) - @compat(Int64(packet_remaining))
+    excess = Int64(length(inbuff)+1-offset) - Int64(packet_remaining)
     (excess >= 0) || return excess
 
     buff = pointer_to_array(pointer(inbuff, offset), packet_remaining)
@@ -968,16 +968,16 @@ function buffer_writeblock(writer::HDFSBlockWriter)
     end
     set_field!(exblock, :numBytes, zero(UInt64))
 
-    basehdr = protobuild(BaseHeaderProto, @compat Dict(:block => exblock, :token => token))
-    hdr = protobuild(ClientOperationHeaderProto, @compat Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
-    chksum = protobuild(ChecksumProto, @compat Dict(:_type => defaults.checksumType, :bytesPerChecksum => defaults.bytesPerChecksum))
+    basehdr = protobuild(BaseHeaderProto, Dict(:block => exblock, :token => token))
+    hdr = protobuild(ClientOperationHeaderProto, Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
+    chksum = protobuild(ChecksumProto, Dict(:_type => defaults.checksumType, :bytesPerChecksum => defaults.bytesPerChecksum))
 
     targets = DatanodeInfoProto[]
     for loc in block.locs
         (loc.id != writer.source_node.id) && push!(targets, loc)
     end
 
-    writeblock = protobuild(OpWriteBlockProto, @compat Dict(:header => hdr,
+    writeblock = protobuild(OpWriteBlockProto, Dict(:header => hdr,
                     :targets => targets,
                     :source => writer.source_node,
                     :stage => OpWriteBlockProto_BlockConstructionStage.PIPELINE_SETUP_CREATE,
@@ -1051,10 +1051,10 @@ function prepare_packet(writer::HDFSBlockWriter)
     bytes_in_packet = min(defaults.writePacketSize, nb_available(writer.buffer))
 
     last_pkt = (bytes_in_packet == 0)
-    seq_no = @compat Int64(writer.pkt_seq += 1)
+    seq_no = Int64(writer.pkt_seq += 1)
     @logmsg("packet seqno $seq_no with $(bytes_in_packet)/$(defaults.writePacketSize) bytes is last packet: $last_pkt")
 
-    pkt_hdr = protobuild(PacketHeaderProto, @compat Dict(:offsetInBlock => writer.total_written,
+    pkt_hdr = protobuild(PacketHeaderProto, Dict(:offsetInBlock => writer.total_written,
                     :seqno => seq_no,
                     :lastPacketInBlock => last_pkt,
                     :dataLen => bytes_in_packet))
@@ -1083,12 +1083,12 @@ function write_packet(writer::HDFSBlockWriter, pkt::PipelinedPacket)
 
     try
         sock = get(channel.sock)
-        pkt_len = @compat UInt32(4 + sizeof(pkt.checksums) + sizeof(pkt.bytes))
+        pkt_len = UInt32(4 + sizeof(pkt.checksums) + sizeof(pkt.bytes))
 
         hdr_iob = IOBuffer()
         writeproto(hdr_iob, pkt.hdr)
         hdr_bytes = takebuf_array(hdr_iob)
-        hdr_len = @compat UInt16(sizeof(hdr_bytes))
+        hdr_len = UInt16(sizeof(hdr_bytes))
 
         write(sock, hton(pkt_len))
         write(sock, hton(hdr_len))

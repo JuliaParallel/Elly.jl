@@ -164,9 +164,9 @@ function submit(client::YarnClient, container_spec::ContainerLaunchContextProto,
         reuse::Bool=false, unmanaged::Bool=false)
     appid, maxmem, maxcores = _new_app(client)
 
-    prio = protobuild(PriorityProto, @compat Dict(:priority => priority))
-    res = protobuild(ResourceProto, @compat Dict(:memory => mem, :virtual_cores => cores))
-    asc = protobuild(ApplicationSubmissionContextProto, @compat Dict(:application_id => appid,
+    prio = protobuild(PriorityProto, Dict(:priority => priority))
+    res = protobuild(ResourceProto, Dict(:memory => mem, :virtual_cores => cores))
+    asc = protobuild(ApplicationSubmissionContextProto, Dict(:application_id => appid,
                 :application_name => appname,
                 :queue => queue,
                 :priority => prio,
@@ -177,7 +177,7 @@ function submit(client::YarnClient, container_spec::ContainerLaunchContextProto,
                 :applicationType => apptype,
                 :keep_containers_across_application_attempts => reuse))
   
-    inp = protobuild(SubmitApplicationRequestProto, @compat Dict(:application_submission_context => asc))
+    inp = protobuild(SubmitApplicationRequestProto, Dict(:application_submission_context => asc))
 
     submitApplication(client.rm_conn, inp)
     YarnApp(client, appid)
@@ -185,7 +185,7 @@ end
 
 function kill(app::YarnApp)
     client = app.client
-    inp = protobuild(KillApplicationRequestProto, @compat Dict(:application_id => app.appid))
+    inp = protobuild(KillApplicationRequestProto, Dict(:application_id => app.appid))
 
     resp = forceKillApplication(client.rm_conn, inp)
     resp.is_kill_completed
@@ -194,7 +194,7 @@ end
 function status(app::YarnApp, refresh::Bool=true)
     if refresh || isnull(app.status)
         client = app.client
-        inp = protobuild(GetApplicationReportRequestProto, @compat Dict(:application_id => app.appid))
+        inp = protobuild(GetApplicationReportRequestProto, Dict(:application_id => app.appid))
 
         resp = getApplicationReport(client.rm_conn, inp) 
         app.status = isfilled(resp.application_report) ?  Nullable(YarnAppStatus(resp.application_report)) : Nullable{YarnAppStatus}()
@@ -228,7 +228,7 @@ end
 function attempts(app::YarnApp, refresh::Bool=true)
     if refresh || isnull(app.attempts)
         client = app.client
-        inp = protobuild(GetApplicationAttemptsRequestProto, @compat Dict(:application_id => app.appid))
+        inp = protobuild(GetApplicationAttemptsRequestProto, Dict(:application_id => app.appid))
 
         resp = getApplicationAttempts(client.rm_conn, inp)
         atmptlist = app.attempts
