@@ -393,12 +393,12 @@ function _complete_file(client::HDFSClient, path::AbstractString, last::Nullable
     endresp.result
 end
 
-function _add_block(client::HDFSClient, path::AbstractString, previous::Nullable{LocatedBlockProto}=Nullable{LocatedBlockProto}())
+function _add_block{T<:LocatedBlockProto}(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}())
     isnull(previous) && (return _add_block(client, path))
     @logmsg("adding next block to $(get(previous).b)")
-    _add_block(client, path, Nullable(get(previous).b))
+    _add_block(ExtendedBlockProto, client, path, Nullable(get(previous).b))
 end
-function _add_block(client::HDFSClient, path::AbstractString, previous::Nullable{ExtendedBlockProto}=Nullable{ExtendedBlockProto}())
+function _add_block{T<:ExtendedBlockProto}(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}())
     path = abspath(client, path)
 
     inp = protobuild(AddBlockRequestProto, Dict(:src => path,

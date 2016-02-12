@@ -110,7 +110,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     @logmsg("YarnManager launch: initargs: $initargs")
     @logmsg("YarnManager launch: context: $clc")
     on_alloc = (cid) -> container_start(manager.am, cid, clc)
-    callback(manager.am, Nullable(on_alloc), Nullable{Function}())
+    callback(manager.am, Nullable{Function}(on_alloc), Nullable{Function}())
 
     container_allocate(manager.am, convert(Int, np); mem=mem, cpu=cpu, loc=loc, priority=priority)
 

@@ -196,8 +196,9 @@ end
 
 #
 # File read
-read!(reader::Elly.HDFSFileReader, a::Array{UInt8, 1}) = _read!(reader, a)
-read!{T}(reader::HDFSFileReader, a::Array{T}) = _read!(reader, a)
+#read!(reader::Elly.HDFSFileReader, a::Array{UInt8}) = _read!(reader, a)
+read!(reader::Elly.HDFSFileReader, a::Array{UInt8,1}) = _read!(reader, a)
+#read!{T}(reader::HDFSFileReader, a::Array{T}) = _read!(reader, a)
 function _read!{T}(reader::HDFSFileReader, a::Array{T})
     remaining::UInt64 = length(a)*sizeof(T)
     offset::UInt64 = 1
@@ -291,7 +292,7 @@ function _write{T<:Union{UInt8,Vector{UInt8}}}(writer::HDFSFileWriter, data::T)
 
     while rem_len > 0
         if isnull(writer.blk_writer)
-            blk = _add_block(writer.client, writer.path, writer.blk)
+            blk = _add_block(LocatedBlockProto, writer.client, writer.path, writer.blk)
             blk_writer = HDFSBlockWriter(blk, _get_server_defaults(writer.client))
             writer.blk_writer = Nullable(blk_writer)
             writer.blk = Nullable(blk)
