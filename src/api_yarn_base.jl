@@ -129,9 +129,10 @@ type YarnNodes
     conn::Dict{NodeIdProto,Tuple}
     ugi::UserGroupInformation
     keepalivesecs::UInt64
+    lck::ReentrantLock
 
     function YarnNodes(ugi::UserGroupInformation)
-        new(0, Dict{NodeIdProto,YarnNode}(), Dict{NodeIdProto,Tuple}(), ugi, YARN_NM_CONN_KEEPALIVE_SECS)
+        new(0, Dict{NodeIdProto,YarnNode}(), Dict{NodeIdProto,Tuple}(), ugi, YARN_NM_CONN_KEEPALIVE_SECS, ReentrantLock())
     end
 end
 
@@ -164,36 +165,64 @@ function update(nodes::YarnNodes, gcnrp::GetClusterNodesResponseProto)
     nothing
 end
 
+function _new_or_existing_conn(nodes::YarnNodes, nodeid::NodeIdProto)
+    lock(nodes.lck)
+    try
+        t = time()
+        (conn,lastusetime,lck) = (nodeid in keys(nodes.conn)) ? nodes.conn[nodeid] : (YarnAMNMProtocol(nodeid.host, nodeid.port, nodes.ugi), t, ReentrantLock())
+        if t > (lastusetime + nodes.keepalivesecs)
+            try
+                disconnect(conn.channel)
+            finally
+                conn = YarnAMNMProtocol(nodeid.host, nodeid.port, nodes.ugi)
+                lastusetime = t
+            end
+        end
+        nodes.conn[nodeid] = (conn, lastusetime, lck)
+        return (conn, lastusetime, lck)
+    finally
+        unlock(nodes.lck)
+    end
+end
+
 function get_connection(nodes::YarnNodes, nodeid::NodeIdProto)
     (nodeid in keys(nodes.status)) || throw(YarnException("Unknown Yarn node: $(nodeid.host):$(nodeid.port)"))
     node = nodes.status[nodeid]
     node.isrunning || throw(YarnException("Yarn node $(nodeid.host):$(nodeid.port) is not running"))
 
-    t = time()
-    if nodeid in keys(nodes.conn)
-        (conn,lastusetime) = nodes.conn[nodeid]
-        (t < (lastusetime + nodes.keepalivesecs)) && (return conn)
-        try
-            disconnect(conn.channel)
-        finally
-            delete!(nodes.conn, nodeid)
-        end
-    end
-        
-    conn = YarnAMNMProtocol(nodeid.host, nodeid.port, nodes.ugi)
-    nodes.conn[nodeid] = (conn, t)
+    conn, lastusetime, lck = _new_or_existing_conn(nodes, nodeid)
+    # lock the connection to mark in use
+    lock(lck)
     conn
 end
 
 function release_connection(nodes::YarnNodes, nodeid::NodeIdProto, conn::YarnAMNMProtocol, reuse::Bool)
-    if reuse
-        nodes.conn[nodeid] = (conn, time())
-    else
-        try
-            disconnect(conn.channel)
-        finally
-            delete!(nodes.conn, nodeid)
+    lock(nodes.lck)
+    try
+        # disconnect if we don't want to reuse the connection
+        if !reuse
+            try
+                disconnect(conn.channel)
+            end
         end
+
+        if nodeid in keys(nodes.conn)
+            # release the lock if it's an existing connection
+            (conn_old, lastusetime, lck) = nodes.conn[nodeid]
+            (conn === conn_old) && unlock(lck)
+            if reuse
+                nodes.conn[nodeid] = (conn, time(), lck)
+            else
+                delete!(nodes.conn, nodeid)
+            end
+        else
+            # add connection to cache for reuse
+            if reuse
+                nodes.conn[nodeid] = (conn, time(), ReentrantLock())
+            end
+        end
+    finally
+        unlock(nodes.lck)
     end
     nothing
 end
