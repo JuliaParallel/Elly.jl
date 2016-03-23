@@ -304,6 +304,7 @@ end
 
 const DEFAULT_FOLDER_MODE = UInt32(0o755)
 const DEFAULT_FILE_MODE = UInt32(0o644)
+mkdir(file::HDFSFile, mode::UInt32) = mkdir(file, false, mode)
 mkdir(file::HDFSFile, create_parents::Bool=false, mode::UInt32=DEFAULT_FOLDER_MODE) = mkdir(file.client, file.path, create_parents, mode)
 function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=false, mode::UInt32=DEFAULT_FOLDER_MODE)
     path = abspath(client, path)
@@ -315,6 +316,9 @@ function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=fa
     resp = mkdirs(client.nn_conn, inp)
     resp.result
 end
+
+mkpath(file::HDFSFile, mode::UInt32=DEFAULT_FOLDER_MODE) = mkdir(file, true, mode)
+dirname(file::HDFSFile) = HDFSFile(file.client, dirname(file.path))
 
 mv(src::HDFSFile, dst::AbstractString, overwrite::Bool) = mv(src.client, src.path, dst, overwrite)
 function mv(client::HDFSClient, src::AbstractString, dst::AbstractString, overwrite::Bool)
@@ -348,6 +352,8 @@ function rm(client::HDFSClient, path::AbstractString, recursive::Bool=false)
     resp = delete(client.nn_conn, inp)
     resp.result
 end
+
+joinpath(hdfsfile::HDFSFile, parts...) = HDFSFile(hdfsfile.client, joinpath(hdfsfile.path, parts...))
 
 function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=false, replication::UInt32=zero(UInt32), blocksz::UInt64=zero(UInt64), mode::UInt32=DEFAULT_FILE_MODE, docomplete::Bool=true)
     path = abspath(client, path)
@@ -394,7 +400,7 @@ function _complete_file(client::HDFSClient, path::AbstractString, last::Nullable
 end
 
 function _add_block{T<:LocatedBlockProto}(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}())
-    isnull(previous) && (return _add_block(client, path))
+    isnull(previous) && (return _add_block(ExtendedBlockProto, client, path))
     @logmsg("adding next block to $(get(previous).b)")
     _add_block(ExtendedBlockProto, client, path, Nullable(get(previous).b))
 end
