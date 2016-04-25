@@ -283,7 +283,7 @@ function show(io::IO, containers::YarnContainers)
     nothing
 end
 
-function callback(containers::YarnContainers, on_container_alloc::Nullable{Function}, on_container_finish::Nullable{Function})
+function callback(containers::YarnContainers, on_container_alloc::Nullable, on_container_finish::Nullable)
     containers.on_container_alloc = on_container_alloc
     containers.on_container_finish = on_container_finish
     nothing

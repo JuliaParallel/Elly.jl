@@ -73,7 +73,7 @@ function show(io::IO, yam::YarnAppMaster)
     show(io, yam.containers)
 end
 
-callback(yam::YarnAppMaster, on_container_alloc::Nullable{Function}, on_container_finish::Nullable{Function}) = 
+callback(yam::YarnAppMaster, on_container_alloc::Nullable, on_container_finish::Nullable) = 
     callback(yam.containers, on_container_alloc, on_container_finish)
 
 function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)

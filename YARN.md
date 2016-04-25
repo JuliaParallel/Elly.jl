@@ -53,40 +53,49 @@ Applications may register callbacks for container allocation and finish events t
 read the results.
 
 ````
+julia> cids = Dict()
+Dict{Any,Any} with 0 entries
+
 julia> function on_alloc(cid)
-           # probably start container process here
+           # start container process
            println("allocated $cid")
+           env = Dict("JULIA_PKGDIR" => "/home/tan/.julia");
+           clc = launchcontext(cmd="/bin/julia /tmp/simplecontainer.jl  1>/tmp/stdout 2>/tmp/stderr", env=env);
+           container_start(yarnam, cid, clc)
+           cids[cid] = "some identifier"
+           nothing
        end
 on_alloc (generic function with 1 method)
 
 julia> function on_finish(cid)
-           # release the container or start a new process here
+           # release the container (or can start a new process here also)
            println("finished $cid")
+           container_release(yarnam, cid)
+           delete!(cids, cid)
+           nothing
        end
 on_finish (generic function with 1 method)
 
 julia> callback(yarnam, Nullable(on_alloc), Nullable(on_finish))
 
 julia> yarnapp = submit(yarnclnt, yarnam)
-YarnApp YARN (EllyApp/11): accepted-0.0
-    location: tan@N/A:-1/default
+YarnApp YARN (EllyApp/2): accepted-0.0
+    location: tan@N/A:0/default
 ````
 
 Containers can then be allocated/de-allocated and started/stopped as required.
 
 ````
-julia> cid = container_allocate(yarnam, 1);
+julia> container_allocate(yarnam, 1);
+allocated Elly.hadoop.yarn.ContainerIdProto(#undef,Elly.hadoop.yarn.ApplicationAttemptIdProto(Elly.hadoop.yarn.ApplicationIdProto(2,1461548151454),1),1)
 
-julia> env = Dict("JULIA_PKGDIR" => "/home/tan/.julia");
-
-julia> clc = launchcontext(cmd="/bin/julia /tmp/simplecontainer.jl  1>/tmp/stdout 2>/tmp/stderr", env=env);
-
-julia> container_start(yarnam, cid, clc)
-Elly.hadoop.yarn.ContainerIdProto(#undef,Elly.hadoop.yarn.ApplicationAttemptIdProto(Elly.hadoop.yarn.ApplicationIdProto(11,1427704493231),1),1)
+julia> cid = collect(keys(cids))[1]
+Elly.hadoop.yarn.ContainerIdProto(#undef,Elly.hadoop.yarn.ApplicationAttemptIdProto(Elly.hadoop.yarn.ApplicationIdProto(2,1461548151454),1),1)
 
 julia> container_stop(yarnam, cid);
 
 julia> container_release(yarnam, cid);
+finished Elly.hadoop.yarn.ContainerIdProto(#undef,Elly.hadoop.yarn.ApplicationAttemptIdProto(Elly.hadoop.yarn.ApplicationIdProto(2,1461548151454),1),1)
 ````
 
 Finally the application master can be terminated with a call to `unregister`:

@@ -83,4 +83,6 @@ julia> rmprocs(workers()) # remove all processors
 
 julia> @everywhere println(myid())
 1
+
+julia> Elly.disconnect(yarncm);
 ````
