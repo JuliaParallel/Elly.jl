@@ -33,9 +33,11 @@ export YarnManager, launch, manage
 if VERSION < v"0.5.0-"
 typealias Lock RemoteRef
 makelock() = RemoteRef()
+byte2str(x) = bytestring(x)
 else
 typealias Lock Channel
 makelock() = Channel{Int}(1)
+byte2str(x) = String(x)
 end
 
 function tstr()

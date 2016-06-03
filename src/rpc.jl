@@ -117,7 +117,7 @@ type HadoopRpcChannel <: ProtoRpcChannel
     protocol_attribs::Dict
     call_id::Int32          # see: RpcRequestHeaderProto.callId
     sent_call_id::Int32     # set to the last call id sent for verification purpose
-    clnt_id::ASCIIString    # string(Base.Random.uuid4())
+    clnt_id::AbstractString # string(Base.Random.uuid4())
     ugi::UserGroupInformation
     iob::IOBuffer
     sock::Nullable{TCPSocket}

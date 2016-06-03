@@ -56,7 +56,7 @@ function digmd5_respond(username::AbstractString, password::AbstractString, dige
 end
 
 function testdigmd5(username::AbstractString, password::AbstractString, protocol::AbstractString, serverid::AbstractString, challenge::AbstractString)
-    parts = digmd5_decode_challenge(bytestring(challenge))
+    parts = digmd5_decode_challenge(challenge)
     digmd5_challenge_isvalid(parts) || error("invalid challenge params")
     digesturi = protocol * "/" * serverid
     digmd5_respond(username, password, digesturi, parts)
@@ -64,7 +64,7 @@ end
 
 function digmd5_respond(token::TokenProto, protocol::AbstractString, serverid::AbstractString, challenge::Vector{UInt8})
     isempty(challenge) && error("empty challenge")
-    parts = digmd5_decode_challenge(bytestring(challenge))
+    parts = digmd5_decode_challenge(byte2str(challenge))
     digmd5_challenge_isvalid(parts) || error("invalid challenge params")
     digesturi = protocol * "/" * serverid
     digmd5_respond(base64encode(token.identifier), base64encode(token.password), digesturi, parts)

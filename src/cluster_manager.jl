@@ -40,15 +40,22 @@ function show(io::IO, yarncm::YarnManager)
     show(io, yarncm.clnt)
 end
 
-function setup_worker(host, port)
-    @logmsg("YarnManager setup_worker: host:$host port:$port for container $(ENV[CONTAINER_ID])")
+function setup_worker(host, port, cookie)
+    @logmsg("YarnManager setup_worker: host:$host port:$port cookie:$cookie for container $(ENV[CONTAINER_ID])")
     c = connect(IPv4(host), port)
     Base.wait_connected(c)
     redirect_stdout(c)
     redirect_stderr(c)
     # identify container id so that rmprocs can clean things up nicely if required
     Base.serialize(c, ENV[CONTAINER_ID])
-    Base.start_worker(c)
+    if cookie == nothing
+        Base.start_worker(c)
+    else
+        if isa(cookie, Symbol)
+            cookie = string(cookie)[8:end] # strip the leading "cookie_"
+        end
+        Base.start_worker(c, cookie)
+    end
 end
 
 # used to reconstruct container id object from the environment string
@@ -104,7 +111,8 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
         end
     end
 
-    initargs = "using Elly; Elly.setup_worker($(getipaddr().host), $(port))"
+    cookie = (VERSION >= v"0.5.0-dev+4047") ? string(":cookie_", Base.cluster_cookie()) : "nothing"
+    initargs = "using Elly; Elly.setup_worker($(getipaddr().host), $(port), $(cookie))"
     clc = launchcontext(cmd="$cmd -e '$initargs'", env=appenv)
 
     @logmsg("YarnManager launch: initargs: $initargs")
