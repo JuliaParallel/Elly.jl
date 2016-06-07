@@ -1102,7 +1102,7 @@ function write_packet(writer::HDFSBlockWriter, pkt::PipelinedPacket)
 
     write(sock, hton(pkt_len))
     write(sock, hton(hdr_len))
-    Base.unsafe_write(sock, pointer(hdr_iob.data), hdr_iob.size)
+    unsafe_write(sock, pointer(hdr_iob.data), hdr_iob.size)
     write(sock, pkt.checksums)
     write(sock, pkt.bytes)
 
