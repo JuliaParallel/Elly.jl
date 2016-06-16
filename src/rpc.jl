@@ -616,12 +616,12 @@ function verify_pkt_checksums{T}(reader::HDFSBlockReader, buff::Vector{UInt8}, C
     offset = 1
     checksums = reader.checksums
     for idx in 1:(length(checksums)-1)
-        cs = chksum(C, pointer_to_array(pointer(buff, offset), chunk_len))
+        cs = chksum(C, unsafe_wrap(Array, pointer(buff, offset), chunk_len))
         (cs == checksums[idx]) || throw(HadoopRpcException("Checksum mismatch at chunk $(idx). Expected $(checksums[idx]), got $(cs)"))
         offset += chunk_len
     end
 
-    cs = chksum(pointer_to_array(pointer(buff, offset), data_len-(offset-1)))
+    cs = chksum(unsafe_wrap(Array, pointer(buff, offset), data_len-(offset-1)))
     (cs == checksums[end]) || throw(HadoopRpcException("Checksum mismatch at last chunk $(length(checksums)). Expected $(checksums[end]), got $(cs)"))
     nothing
 end
@@ -664,7 +664,7 @@ function read_packet!(reader::HDFSBlockReader, inbuff::Vector{UInt8}, offset::UI
     excess = Int64(length(inbuff)+1-offset) - Int64(packet_remaining)
     (excess >= 0) || return excess
 
-    buff = pointer_to_array(pointer(inbuff, offset), packet_remaining)
+    buff = unsafe_wrap(Array, pointer(inbuff, offset), packet_remaining)
 
     channel = reader.channel
     sock = get(channel.sock)
@@ -1047,7 +1047,7 @@ function populate_checksums{T}(bytes::Vector{UInt8}, chunk_len::UInt32, checksum
     c_offset = 1
     for idx in 1:nchunks
         c_len = min(nbytes-c_offset+1, chunk_len)
-        c_data = pointer_to_array(pointer(bytes, c_offset), c_len)
+        c_data = unsafe_wrap(Array, pointer(bytes, c_offset), c_len)
         checksums[idx] = hton(chksum(C, c_data))
         #@logmsg("chksum $(checksums[idx])")
         c_offset += c_len
