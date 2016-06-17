@@ -98,7 +98,7 @@ type HDFSFileInfo
     last_mod::UInt64
     last_access::UInt64
 
-    HDFSFileInfo(fs::HdfsFileStatusProto) = new(fs.fileType, bytestring(fs.path),
+    HDFSFileInfo(fs::HdfsFileStatusProto) = new(fs.fileType, byte2str(fs.path),
                     fs.length, fs.block_replication, fs.blocksize,
                     fs.owner, fs.group, fs.permission.perm,
                     fs.modification_time, fs.access_time)
@@ -296,7 +296,7 @@ readdir(file::HDFSFile, limit::Int=typemax(Int)) = readdir(file.client, file.pat
 function readdir(client::HDFSClient, path::AbstractString=".", limit::Int=typemax(Int))
     result = AbstractString[]
     _walkdir(client, path, (filestatus)->begin
-                push!(result, bytestring(filestatus.path))
+                push!(result, byte2str(filestatus.path))
                 (length(result) < limit)
             end)
     result
