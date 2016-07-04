@@ -37,12 +37,60 @@ function test_hdfs()
     println(st)
     @test st.name == "/tmp"
 
-    #println("blocks for /tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
-    #blocks = hdfs_blocks(hdfsclnt, "/tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
-    #println(blocks)
+    println("create a temporary dir...")
+    cd(hdfsclnt, "/tmp")
+    foo_dir = HDFSFile(hdfsclnt, "foo")
+    mkdir(foo_dir)
 
-    #println("setting replication factor for /tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary")
-    #@test hdfs_set_replication(hdfsclnt, "/tmp/hadoop-yarn/staging/history/done_intermediate/tan/job_1421916128583_0001.summary", 2)
+    println("create a temporary file...")
+    cd(hdfsclnt, "foo")
+    bar_file = HDFSFile(hdfsclnt, "bar")
+    teststr = "hello world\n"
+    nloops = 1000
+    tic()
+    open(bar_file, "w") do f
+        for idx in 1:nloops
+            write(f, teststr)
+        end
+    end
+    println("...done in $(toc()) secs")
+    println("verify file size to be $(length(teststr)*nloops)...")
+    @test filesize(bar_file) == length(teststr) * nloops
+
+    println("delete file...")
+    rm(bar_file)
+ 
+    println("create a large file...")
+    size_bytes = 128 * 1000 * 1000
+    nloops = 5
+    A = rand(UInt8, size_bytes)
+    open(bar_file, "w") do f
+        for idx in 1:nloops
+            tic()
+            write(f, A)
+            println("...block written in $(toc()) secs")
+        end
+    end
+    println("verify file size to be $(sizeof(A) * nloops)...")
+    @test filesize(bar_file) == sizeof(A) * nloops
+
+    println("read and verify...")
+    B = Array(UInt8, size_bytes)
+    open(bar_file, "r") do f
+        for idx in 1:nloops
+            tic()
+            read!(f, B)
+            println("...block read in $(toc()) secs")
+            @test A == B
+        end
+    end
+
+    println("blocks for $bar_file")
+    blocks = hdfs_blocks(bar_file)
+    println(blocks)
+
+    println("setting replication factor for $bar_file")
+    @test hdfs_set_replication(bar_file, 2)
 end
 
 test_hdfs()
