@@ -309,7 +309,7 @@ function _write{T<:Union{UInt8,Vector{UInt8}}}(writer::HDFSFileWriter, data::T)
             flush(blk_writer)
             disconnect(blk_writer, true)
             writer.blk_writer = Nullable{HDFSBlockWriter}()
-            (T <: UInt8) || (rem_data = unsafe_wrap(T, pointer(data, L-rem_len+1), rem_len))
+            (T <: UInt8) || (rem_data = unsafe_wrap(Array, pointer(data, L-rem_len+1), rem_len))
         end
     end
     L
