@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<configuration>
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+
+    <!-- disable vmem checks as there's no easy way to control it in Julia -->
+    <property>
+        <description>Whether virtual memory limits will be enforced for containers.</description>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+    </property>
+
+    <property>
+        <description>The address of the applications manager interface in the RM.</description>
+        <name>yarn.resourcemanager.address</name>
+        <value>127.0.0.1:8032</value>
+    </property>
+
+    <property>
+        <description>The address of the scheduler interface.</description>
+        <name>yarn.resourcemanager.scheduler.address</name>
+        <value>127.0.0.1:8030</value>
+    </property>
+</configuration>
