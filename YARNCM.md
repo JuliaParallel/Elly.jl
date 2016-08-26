@@ -6,7 +6,9 @@ for starting and stopping containers.
 
 It can be also used to get a distributed Julia shell in the Yarn cluster.
 
-Below example walks through a simple example using a Julia on a Yarn cluster.
+The below example walks through a simple example using a Julia on a Yarn cluster.
+You can find the YARN manager parameters in the `$HADOOP_CONFIG_DIR/yarn-site.xml` file 
+[Hadoop Docs](https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html).
 
 Bring up the Julia processes on the Yarn cluster:
 
@@ -61,7 +63,7 @@ So we should see a speedup when we use `dart_par` to compute on all nodes, compa
 The amount of speedup we get will depend on the nature of the computation, the cluster resources among other factors.
 
 ````
-julia> @everywhere require("dart.jl")
+julia> @everywhere include("dart.jl")
 
 julia> @time dart(10^8)
 elapsed time: 1.17578138 seconds (216 bytes allocated)
