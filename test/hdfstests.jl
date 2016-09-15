@@ -1,8 +1,8 @@
 using Elly
 using Base.Test
 
-function test_hdfs()
-    hdfsclnt = HDFSClient("localhost", 9000)
+function test_hdfs(host="localhost", port=9000)
+    hdfsclnt = HDFSClient(host, port)
 
     exists(hdfsclnt, "/tmp") || mkdir(hdfsclnt, "/tmp")
 
@@ -111,5 +111,3 @@ function test_hdfs()
     end
     @test length(allfiles) >= NFILES
 end
-
-test_hdfs()
