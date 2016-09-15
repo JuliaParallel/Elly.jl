@@ -1,8 +1,8 @@
 using Elly
 using Base.Test
 
-function test_hdfs()
-    hdfsclnt = HDFSClient("localhost", 9000)
+function test_hdfs(host="localhost", port=9000)
+    hdfsclnt = HDFSClient(host, port)
 
     exists(hdfsclnt, "/tmp") || mkdir(hdfsclnt, "/tmp")
 
@@ -91,6 +91,23 @@ function test_hdfs()
 
     println("setting replication factor for $bar_file")
     @test hdfs_set_replication(bar_file, 2)
-end
 
-test_hdfs()
+    cd(hdfsclnt, "/tmp/foo")
+    NFILES = 1000
+    println("create many ($NFILES) files...")
+    for idx in 1:NFILES
+        bar_file = HDFSFile(hdfsclnt, "bar$idx")
+        open(bar_file, "w") do f
+            for idx in 1:nloops
+                write(f, teststr)
+            end
+        end
+    end
+    allfiles = readdir(hdfsclnt, "/tmp/foo")
+    println("delete many ($NFILES) files...")
+    for idx in 1:NFILES
+        bar_file = HDFSFile(hdfsclnt, "bar$idx")
+        rm(bar_file)
+    end
+    @test length(allfiles) >= NFILES
+end

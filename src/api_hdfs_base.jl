@@ -148,7 +148,7 @@ function _walkdir(client::HDFSClient, path::AbstractString, process_entry::Funct
                 (cont == false) && break
             end
             if isfilled(dir_list, :remainingEntries) && (dir_list.remainingEntries > 0)
-                start_after = result[end].data
+                start_after = dir_list.partialListing[end].path
             else
                 cont = false
             end
