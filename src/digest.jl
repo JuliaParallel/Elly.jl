@@ -13,7 +13,7 @@ function md5(v...)
 
         ccall((:EVP_DigestInit_ex, OPENSSL_LIB), Void, (Ptr{Void}, Ptr{Void}, Ptr{Void}), ctx, md, C_NULL)
 
-        data = takebuf_array(iob)
+        data = take!(iob)
         ccall((:EVP_DigestUpdate, OPENSSL_LIB), Void, (Ptr{Void}, Ptr{UInt8}, UInt), ctx, data, length(data))
 
         size = ccall((:EVP_MD_size, OPENSSL_LIB), UInt, (Ptr{Void},), md)

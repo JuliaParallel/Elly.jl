@@ -38,7 +38,7 @@ end
 Thrown by Yarn APIs.
 """
 mutable struct YarnException <: Exception
-    message::AbstractString
+    message::String
 end
 
 function show(io::IO, serex::SerializedExceptionProto)
@@ -61,7 +61,7 @@ function YarnException(cex::ContainerExceptionMapProto)
     iob = IOBuffer()
     println(iob, "Error in container $(cont_id.id) of app $(app_id.id) attempt $(atmpt_id.attemptId):")
     show(iob, cex.exception)
-    YarnException(takebuf_string(iob))
+    YarnException(String(take!(iob)))
 end
 
 
@@ -113,7 +113,7 @@ const NODE_STATES = [:new, :running, :unhealthy, :decommissioned, :lost, :reboot
 
 function show(io::IO, node::YarnNode)
     print(io, "YarnNode: $(node.rack)/$(node.host):$(node.port) $(NODE_STATES[node.state])")
-    println(io, node.isrunning ? ", Used mem: $(node.memused)/$(node.mem), cores: $(node.coresused)/$(node.cores)" : "")
+    print(io, node.isrunning ? ", Used mem: $(node.memused)/$(node.mem), cores: $(node.coresused)/$(node.cores)" : "")
     nothing
 end
 
@@ -140,6 +140,7 @@ function show(io::IO, nodes::YarnNodes)
     println(io, "YarnNodes: $(nodes.count) (connected to $(length(nodes.conn)))")
     for n in values(nodes.status)
         show(io, n)
+        println(io, "")
     end
     nothing
 end

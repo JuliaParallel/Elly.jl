@@ -59,7 +59,7 @@ function setup_worker(host, port, cookie)
 end
 
 # used to reconstruct container id object from the environment string
-function _container(cid::AbstractString)
+function _container(cid::String)
     parts = split(cid, '_')
     (parts[1] == "container") || throw(YarnException("Invalid container id $cid"))
     cluster_timestamp = parse(Int64, parts[2])
@@ -74,7 +74,7 @@ end
 
 _envdict(envdict::Dict) = envdict
 function _envdict(envhash::Base.EnvHash)
-    envdict = Dict{AbstractString,AbstractString}()
+    envdict = Dict{String,String}()
     for (n,v) in envhash
         envdict[n] = v
     end
@@ -96,7 +96,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     paramkeys   = keys(params)
     np          = (:np       in paramkeys)  ? params[:np]               : 1
     cmd         = (:exename  in paramkeys)  ? params[:exename]          : _currprocname()
-    appenv      = (:env      in paramkeys)  ? _envdict(params[:env])    : Dict{AbstractString,AbstractString}()
+    appenv      = (:env      in paramkeys)  ? _envdict(params[:env])    : Dict{String,String}()
     mem         = (:mem      in paramkeys)  ? params[:mem]              : YARN_CONTAINER_MEM_DEFAULT
     cpu         = (:cpu      in paramkeys)  ? params[:cpu]              : YARN_CONTAINER_CPU_DEFAULT
     loc         = (:loc      in paramkeys)  ? params[:loc]              : YARN_CONTAINER_LOCATION_DEFAULT
@@ -111,7 +111,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
         end
     end
 
-    cookie = (VERSION >= v"0.5.0-dev+4047") ? string(":cookie_", Base.cluster_cookie()) : "nothing"
+    cookie = string(":cookie_", Base.cluster_cookie())
     initargs = "using Elly; Elly.setup_worker($(getipaddr().host), $(port), $(cookie))"
     clc = launchcontext(cmd="$cmd -e '$initargs'", env=appenv)
 
