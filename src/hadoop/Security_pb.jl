@@ -3,7 +3,7 @@ using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
 
-type TokenProto
+mutable struct TokenProto
     identifier::Array{UInt8,1}
     password::Array{UInt8,1}
     kind::AbstractString
@@ -16,7 +16,7 @@ hash(v::TokenProto) = ProtoBuf.protohash(v)
 isequal(v1::TokenProto, v2::TokenProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::TokenProto, v2::TokenProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetDelegationTokenRequestProto
+mutable struct GetDelegationTokenRequestProto
     renewer::AbstractString
     GetDelegationTokenRequestProto() = (o=new(); fillunset(o); o)
 end #type GetDelegationTokenRequestProto
@@ -26,7 +26,7 @@ hash(v::GetDelegationTokenRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetDelegationTokenRequestProto, v2::GetDelegationTokenRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetDelegationTokenRequestProto, v2::GetDelegationTokenRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetDelegationTokenResponseProto
+mutable struct GetDelegationTokenResponseProto
     token::TokenProto
     GetDelegationTokenResponseProto() = (o=new(); fillunset(o); o)
 end #type GetDelegationTokenResponseProto
@@ -34,7 +34,7 @@ hash(v::GetDelegationTokenResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetDelegationTokenResponseProto, v2::GetDelegationTokenResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetDelegationTokenResponseProto, v2::GetDelegationTokenResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenewDelegationTokenRequestProto
+mutable struct RenewDelegationTokenRequestProto
     token::TokenProto
     RenewDelegationTokenRequestProto() = (o=new(); fillunset(o); o)
 end #type RenewDelegationTokenRequestProto
@@ -44,7 +44,7 @@ hash(v::RenewDelegationTokenRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RenewDelegationTokenRequestProto, v2::RenewDelegationTokenRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenewDelegationTokenRequestProto, v2::RenewDelegationTokenRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenewDelegationTokenResponseProto
+mutable struct RenewDelegationTokenResponseProto
     newExpiryTime::UInt64
     RenewDelegationTokenResponseProto() = (o=new(); fillunset(o); o)
 end #type RenewDelegationTokenResponseProto
@@ -54,7 +54,7 @@ hash(v::RenewDelegationTokenResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RenewDelegationTokenResponseProto, v2::RenewDelegationTokenResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenewDelegationTokenResponseProto, v2::RenewDelegationTokenResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type CancelDelegationTokenRequestProto
+mutable struct CancelDelegationTokenRequestProto
     token::TokenProto
     CancelDelegationTokenRequestProto() = (o=new(); fillunset(o); o)
 end #type CancelDelegationTokenRequestProto
@@ -64,7 +64,7 @@ hash(v::CancelDelegationTokenRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::CancelDelegationTokenRequestProto, v2::CancelDelegationTokenRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CancelDelegationTokenRequestProto, v2::CancelDelegationTokenRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CancelDelegationTokenResponseProto
+mutable struct CancelDelegationTokenResponseProto
     CancelDelegationTokenResponseProto() = (o=new(); fillunset(o); o)
 end #type CancelDelegationTokenResponseProto
 hash(v::CancelDelegationTokenResponseProto) = ProtoBuf.protohash(v)

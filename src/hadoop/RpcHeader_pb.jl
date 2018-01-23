@@ -3,7 +3,7 @@ using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
 
-type __enum_RpcKindProto <: ProtoEnum
+mutable struct __enum_RpcKindProto <: ProtoEnum
     RPC_BUILTIN::Int32
     RPC_WRITABLE::Int32
     RPC_PROTOCOL_BUFFER::Int32
@@ -11,7 +11,7 @@ type __enum_RpcKindProto <: ProtoEnum
 end #type __enum_RpcKindProto
 const RpcKindProto = __enum_RpcKindProto()
 
-type RPCTraceInfoProto
+mutable struct RPCTraceInfoProto
     traceId::Int64
     parentId::Int64
     RPCTraceInfoProto() = (o=new(); fillunset(o); o)
@@ -20,7 +20,7 @@ hash(v::RPCTraceInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::RPCTraceInfoProto, v2::RPCTraceInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RPCTraceInfoProto, v2::RPCTraceInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type __enum_RpcRequestHeaderProto_OperationProto <: ProtoEnum
+mutable struct __enum_RpcRequestHeaderProto_OperationProto <: ProtoEnum
     RPC_FINAL_PACKET::Int32
     RPC_CONTINUATION_PACKET::Int32
     RPC_CLOSE_CONNECTION::Int32
@@ -28,7 +28,7 @@ type __enum_RpcRequestHeaderProto_OperationProto <: ProtoEnum
 end #type __enum_RpcRequestHeaderProto_OperationProto
 const RpcRequestHeaderProto_OperationProto = __enum_RpcRequestHeaderProto_OperationProto()
 
-type RpcRequestHeaderProto
+mutable struct RpcRequestHeaderProto
     rpcKind::Int32
     rpcOp::Int32
     callId::Int32
@@ -38,14 +38,14 @@ type RpcRequestHeaderProto
     RpcRequestHeaderProto() = (o=new(); fillunset(o); o)
 end #type RpcRequestHeaderProto
 const __req_RpcRequestHeaderProto = Symbol[:callId,:clientId]
-const __val_RpcRequestHeaderProto = @compat Dict(:retryCount => -1)
-const __wtype_RpcRequestHeaderProto = @compat Dict(:callId => :sint32, :retryCount => :sint32)
+const __val_RpcRequestHeaderProto = Dict(:retryCount => -1)
+const __wtype_RpcRequestHeaderProto = Dict(:callId => :sint32, :retryCount => :sint32)
 meta(t::Type{RpcRequestHeaderProto}) = meta(t, __req_RpcRequestHeaderProto, ProtoBuf.DEF_FNUM, __val_RpcRequestHeaderProto, true, ProtoBuf.DEF_PACK, __wtype_RpcRequestHeaderProto)
 hash(v::RpcRequestHeaderProto) = ProtoBuf.protohash(v)
 isequal(v1::RpcRequestHeaderProto, v2::RpcRequestHeaderProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RpcRequestHeaderProto, v2::RpcRequestHeaderProto) = ProtoBuf.protoeq(v1, v2)
 
-type __enum_RpcResponseHeaderProto_RpcStatusProto <: ProtoEnum
+mutable struct __enum_RpcResponseHeaderProto_RpcStatusProto <: ProtoEnum
     SUCCESS::Int32
     ERROR::Int32
     FATAL::Int32
@@ -53,7 +53,7 @@ type __enum_RpcResponseHeaderProto_RpcStatusProto <: ProtoEnum
 end #type __enum_RpcResponseHeaderProto_RpcStatusProto
 const RpcResponseHeaderProto_RpcStatusProto = __enum_RpcResponseHeaderProto_RpcStatusProto()
 
-type __enum_RpcResponseHeaderProto_RpcErrorCodeProto <: ProtoEnum
+mutable struct __enum_RpcResponseHeaderProto_RpcErrorCodeProto <: ProtoEnum
     ERROR_APPLICATION::Int32
     ERROR_NO_SUCH_METHOD::Int32
     ERROR_NO_SUCH_PROTOCOL::Int32
@@ -70,7 +70,7 @@ type __enum_RpcResponseHeaderProto_RpcErrorCodeProto <: ProtoEnum
 end #type __enum_RpcResponseHeaderProto_RpcErrorCodeProto
 const RpcResponseHeaderProto_RpcErrorCodeProto = __enum_RpcResponseHeaderProto_RpcErrorCodeProto()
 
-type RpcResponseHeaderProto
+mutable struct RpcResponseHeaderProto
     callId::UInt32
     status::Int32
     serverIpcVersionNum::UInt32
@@ -82,14 +82,14 @@ type RpcResponseHeaderProto
     RpcResponseHeaderProto() = (o=new(); fillunset(o); o)
 end #type RpcResponseHeaderProto
 const __req_RpcResponseHeaderProto = Symbol[:callId,:status]
-const __val_RpcResponseHeaderProto = @compat Dict(:retryCount => -1)
-const __wtype_RpcResponseHeaderProto = @compat Dict(:retryCount => :sint32)
+const __val_RpcResponseHeaderProto = Dict(:retryCount => -1)
+const __wtype_RpcResponseHeaderProto = Dict(:retryCount => :sint32)
 meta(t::Type{RpcResponseHeaderProto}) = meta(t, __req_RpcResponseHeaderProto, ProtoBuf.DEF_FNUM, __val_RpcResponseHeaderProto, true, ProtoBuf.DEF_PACK, __wtype_RpcResponseHeaderProto)
 hash(v::RpcResponseHeaderProto) = ProtoBuf.protohash(v)
 isequal(v1::RpcResponseHeaderProto, v2::RpcResponseHeaderProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RpcResponseHeaderProto, v2::RpcResponseHeaderProto) = ProtoBuf.protoeq(v1, v2)
 
-type __enum_RpcSaslProto_SaslState <: ProtoEnum
+mutable struct __enum_RpcSaslProto_SaslState <: ProtoEnum
     SUCCESS::Int32
     NEGOTIATE::Int32
     INITIATE::Int32
@@ -100,7 +100,7 @@ type __enum_RpcSaslProto_SaslState <: ProtoEnum
 end #type __enum_RpcSaslProto_SaslState
 const RpcSaslProto_SaslState = __enum_RpcSaslProto_SaslState()
 
-type RpcSaslProto_SaslAuth
+mutable struct RpcSaslProto_SaslAuth
     method::AbstractString
     mechanism::AbstractString
     protocol::AbstractString
@@ -114,7 +114,7 @@ hash(v::RpcSaslProto_SaslAuth) = ProtoBuf.protohash(v)
 isequal(v1::RpcSaslProto_SaslAuth, v2::RpcSaslProto_SaslAuth) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RpcSaslProto_SaslAuth, v2::RpcSaslProto_SaslAuth) = ProtoBuf.protoeq(v1, v2)
 
-type RpcSaslProto
+mutable struct RpcSaslProto
     version::UInt32
     state::Int32
     token::Array{UInt8,1}

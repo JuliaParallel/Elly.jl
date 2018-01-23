@@ -4,7 +4,7 @@ using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
 
-type __enum_CreateFlagProto <: ProtoEnum
+mutable struct __enum_CreateFlagProto <: ProtoEnum
     CREATE::Int32
     OVERWRITE::Int32
     APPEND::Int32
@@ -14,7 +14,7 @@ type __enum_CreateFlagProto <: ProtoEnum
 end #type __enum_CreateFlagProto
 const CreateFlagProto = __enum_CreateFlagProto()
 
-type __enum_DatanodeReportTypeProto <: ProtoEnum
+mutable struct __enum_DatanodeReportTypeProto <: ProtoEnum
     ALL::Int32
     LIVE::Int32
     DEAD::Int32
@@ -23,7 +23,7 @@ type __enum_DatanodeReportTypeProto <: ProtoEnum
 end #type __enum_DatanodeReportTypeProto
 const DatanodeReportTypeProto = __enum_DatanodeReportTypeProto()
 
-type __enum_SafeModeActionProto <: ProtoEnum
+mutable struct __enum_SafeModeActionProto <: ProtoEnum
     SAFEMODE_LEAVE::Int32
     SAFEMODE_ENTER::Int32
     SAFEMODE_GET::Int32
@@ -31,7 +31,7 @@ type __enum_SafeModeActionProto <: ProtoEnum
 end #type __enum_SafeModeActionProto
 const SafeModeActionProto = __enum_SafeModeActionProto()
 
-type __enum_RollingUpgradeActionProto <: ProtoEnum
+mutable struct __enum_RollingUpgradeActionProto <: ProtoEnum
     QUERY::Int32
     START::Int32
     FINALIZE::Int32
@@ -39,13 +39,13 @@ type __enum_RollingUpgradeActionProto <: ProtoEnum
 end #type __enum_RollingUpgradeActionProto
 const RollingUpgradeActionProto = __enum_RollingUpgradeActionProto()
 
-type __enum_CacheFlagProto <: ProtoEnum
+mutable struct __enum_CacheFlagProto <: ProtoEnum
     FORCE::Int32
     __enum_CacheFlagProto() = new(1)
 end #type __enum_CacheFlagProto
 const CacheFlagProto = __enum_CacheFlagProto()
 
-type GetBlockLocationsRequestProto
+mutable struct GetBlockLocationsRequestProto
     src::AbstractString
     offset::UInt64
     length::UInt64
@@ -57,7 +57,7 @@ hash(v::GetBlockLocationsRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetBlockLocationsRequestProto, v2::GetBlockLocationsRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetBlockLocationsRequestProto, v2::GetBlockLocationsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetBlockLocationsResponseProto
+mutable struct GetBlockLocationsResponseProto
     locations::LocatedBlocksProto
     GetBlockLocationsResponseProto() = (o=new(); fillunset(o); o)
 end #type GetBlockLocationsResponseProto
@@ -65,14 +65,14 @@ hash(v::GetBlockLocationsResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetBlockLocationsResponseProto, v2::GetBlockLocationsResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetBlockLocationsResponseProto, v2::GetBlockLocationsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetServerDefaultsRequestProto
+mutable struct GetServerDefaultsRequestProto
     GetServerDefaultsRequestProto() = (o=new(); fillunset(o); o)
 end #type GetServerDefaultsRequestProto
 hash(v::GetServerDefaultsRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetServerDefaultsRequestProto, v2::GetServerDefaultsRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetServerDefaultsRequestProto, v2::GetServerDefaultsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetServerDefaultsResponseProto
+mutable struct GetServerDefaultsResponseProto
     serverDefaults::FsServerDefaultsProto
     GetServerDefaultsResponseProto() = (o=new(); fillunset(o); o)
 end #type GetServerDefaultsResponseProto
@@ -82,7 +82,7 @@ hash(v::GetServerDefaultsResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetServerDefaultsResponseProto, v2::GetServerDefaultsResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetServerDefaultsResponseProto, v2::GetServerDefaultsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type CreateRequestProto
+mutable struct CreateRequestProto
     src::AbstractString
     masked::FsPermissionProto
     clientName::AbstractString
@@ -99,7 +99,7 @@ hash(v::CreateRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateRequestProto, v2::CreateRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateRequestProto, v2::CreateRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CreateResponseProto
+mutable struct CreateResponseProto
     fs::HdfsFileStatusProto
     CreateResponseProto() = (o=new(); fillunset(o); o)
 end #type CreateResponseProto
@@ -107,7 +107,7 @@ hash(v::CreateResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateResponseProto, v2::CreateResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateResponseProto, v2::CreateResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type AppendRequestProto
+mutable struct AppendRequestProto
     src::AbstractString
     clientName::AbstractString
     flag::UInt32
@@ -119,7 +119,7 @@ hash(v::AppendRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::AppendRequestProto, v2::AppendRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AppendRequestProto, v2::AppendRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type AppendResponseProto
+mutable struct AppendResponseProto
     block::LocatedBlockProto
     stat::HdfsFileStatusProto
     AppendResponseProto() = (o=new(); fillunset(o); o)
@@ -128,7 +128,7 @@ hash(v::AppendResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::AppendResponseProto, v2::AppendResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AppendResponseProto, v2::AppendResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetReplicationRequestProto
+mutable struct SetReplicationRequestProto
     src::AbstractString
     replication::UInt32
     SetReplicationRequestProto() = (o=new(); fillunset(o); o)
@@ -139,7 +139,7 @@ hash(v::SetReplicationRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetReplicationRequestProto, v2::SetReplicationRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetReplicationRequestProto, v2::SetReplicationRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetReplicationResponseProto
+mutable struct SetReplicationResponseProto
     result::Bool
     SetReplicationResponseProto() = (o=new(); fillunset(o); o)
 end #type SetReplicationResponseProto
@@ -149,7 +149,7 @@ hash(v::SetReplicationResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetReplicationResponseProto, v2::SetReplicationResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetReplicationResponseProto, v2::SetReplicationResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetStoragePolicyRequestProto
+mutable struct SetStoragePolicyRequestProto
     src::AbstractString
     policyName::AbstractString
     SetStoragePolicyRequestProto() = (o=new(); fillunset(o); o)
@@ -160,21 +160,21 @@ hash(v::SetStoragePolicyRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetStoragePolicyRequestProto, v2::SetStoragePolicyRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetStoragePolicyRequestProto, v2::SetStoragePolicyRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetStoragePolicyResponseProto
+mutable struct SetStoragePolicyResponseProto
     SetStoragePolicyResponseProto() = (o=new(); fillunset(o); o)
 end #type SetStoragePolicyResponseProto
 hash(v::SetStoragePolicyResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetStoragePolicyResponseProto, v2::SetStoragePolicyResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetStoragePolicyResponseProto, v2::SetStoragePolicyResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetStoragePoliciesRequestProto
+mutable struct GetStoragePoliciesRequestProto
     GetStoragePoliciesRequestProto() = (o=new(); fillunset(o); o)
 end #type GetStoragePoliciesRequestProto
 hash(v::GetStoragePoliciesRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetStoragePoliciesRequestProto, v2::GetStoragePoliciesRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetStoragePoliciesRequestProto, v2::GetStoragePoliciesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetStoragePoliciesResponseProto
+mutable struct GetStoragePoliciesResponseProto
     policies::Array{BlockStoragePolicyProto,1}
     GetStoragePoliciesResponseProto() = (o=new(); fillunset(o); o)
 end #type GetStoragePoliciesResponseProto
@@ -182,7 +182,7 @@ hash(v::GetStoragePoliciesResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetStoragePoliciesResponseProto, v2::GetStoragePoliciesResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetStoragePoliciesResponseProto, v2::GetStoragePoliciesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetPermissionRequestProto
+mutable struct SetPermissionRequestProto
     src::AbstractString
     permission::FsPermissionProto
     SetPermissionRequestProto() = (o=new(); fillunset(o); o)
@@ -193,14 +193,14 @@ hash(v::SetPermissionRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetPermissionRequestProto, v2::SetPermissionRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetPermissionRequestProto, v2::SetPermissionRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetPermissionResponseProto
+mutable struct SetPermissionResponseProto
     SetPermissionResponseProto() = (o=new(); fillunset(o); o)
 end #type SetPermissionResponseProto
 hash(v::SetPermissionResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetPermissionResponseProto, v2::SetPermissionResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetPermissionResponseProto, v2::SetPermissionResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetOwnerRequestProto
+mutable struct SetOwnerRequestProto
     src::AbstractString
     username::AbstractString
     groupname::AbstractString
@@ -212,14 +212,14 @@ hash(v::SetOwnerRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetOwnerRequestProto, v2::SetOwnerRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetOwnerRequestProto, v2::SetOwnerRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetOwnerResponseProto
+mutable struct SetOwnerResponseProto
     SetOwnerResponseProto() = (o=new(); fillunset(o); o)
 end #type SetOwnerResponseProto
 hash(v::SetOwnerResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetOwnerResponseProto, v2::SetOwnerResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetOwnerResponseProto, v2::SetOwnerResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type AbandonBlockRequestProto
+mutable struct AbandonBlockRequestProto
     b::ExtendedBlockProto
     src::AbstractString
     holder::AbstractString
@@ -227,20 +227,20 @@ type AbandonBlockRequestProto
     AbandonBlockRequestProto() = (o=new(); fillunset(o); o)
 end #type AbandonBlockRequestProto
 const __req_AbandonBlockRequestProto = Symbol[:b,:src,:holder]
-const __val_AbandonBlockRequestProto = @compat Dict(:fileId => 0)
+const __val_AbandonBlockRequestProto = Dict(:fileId => 0)
 meta(t::Type{AbandonBlockRequestProto}) = meta(t, __req_AbandonBlockRequestProto, ProtoBuf.DEF_FNUM, __val_AbandonBlockRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::AbandonBlockRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::AbandonBlockRequestProto, v2::AbandonBlockRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AbandonBlockRequestProto, v2::AbandonBlockRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type AbandonBlockResponseProto
+mutable struct AbandonBlockResponseProto
     AbandonBlockResponseProto() = (o=new(); fillunset(o); o)
 end #type AbandonBlockResponseProto
 hash(v::AbandonBlockResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::AbandonBlockResponseProto, v2::AbandonBlockResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AbandonBlockResponseProto, v2::AbandonBlockResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type AddBlockRequestProto
+mutable struct AddBlockRequestProto
     src::AbstractString
     clientName::AbstractString
     previous::ExtendedBlockProto
@@ -250,13 +250,13 @@ type AddBlockRequestProto
     AddBlockRequestProto() = (o=new(); fillunset(o); o)
 end #type AddBlockRequestProto
 const __req_AddBlockRequestProto = Symbol[:src,:clientName]
-const __val_AddBlockRequestProto = @compat Dict(:fileId => 0)
+const __val_AddBlockRequestProto = Dict(:fileId => 0)
 meta(t::Type{AddBlockRequestProto}) = meta(t, __req_AddBlockRequestProto, ProtoBuf.DEF_FNUM, __val_AddBlockRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::AddBlockRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::AddBlockRequestProto, v2::AddBlockRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AddBlockRequestProto, v2::AddBlockRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type AddBlockResponseProto
+mutable struct AddBlockResponseProto
     block::LocatedBlockProto
     AddBlockResponseProto() = (o=new(); fillunset(o); o)
 end #type AddBlockResponseProto
@@ -266,7 +266,7 @@ hash(v::AddBlockResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::AddBlockResponseProto, v2::AddBlockResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AddBlockResponseProto, v2::AddBlockResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetAdditionalDatanodeRequestProto
+mutable struct GetAdditionalDatanodeRequestProto
     src::AbstractString
     blk::ExtendedBlockProto
     existings::Array{DatanodeInfoProto,1}
@@ -278,13 +278,13 @@ type GetAdditionalDatanodeRequestProto
     GetAdditionalDatanodeRequestProto() = (o=new(); fillunset(o); o)
 end #type GetAdditionalDatanodeRequestProto
 const __req_GetAdditionalDatanodeRequestProto = Symbol[:src,:blk,:numAdditionalNodes,:clientName]
-const __val_GetAdditionalDatanodeRequestProto = @compat Dict(:fileId => 0)
+const __val_GetAdditionalDatanodeRequestProto = Dict(:fileId => 0)
 meta(t::Type{GetAdditionalDatanodeRequestProto}) = meta(t, __req_GetAdditionalDatanodeRequestProto, ProtoBuf.DEF_FNUM, __val_GetAdditionalDatanodeRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::GetAdditionalDatanodeRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetAdditionalDatanodeRequestProto, v2::GetAdditionalDatanodeRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetAdditionalDatanodeRequestProto, v2::GetAdditionalDatanodeRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetAdditionalDatanodeResponseProto
+mutable struct GetAdditionalDatanodeResponseProto
     block::LocatedBlockProto
     GetAdditionalDatanodeResponseProto() = (o=new(); fillunset(o); o)
 end #type GetAdditionalDatanodeResponseProto
@@ -294,7 +294,7 @@ hash(v::GetAdditionalDatanodeResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetAdditionalDatanodeResponseProto, v2::GetAdditionalDatanodeResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetAdditionalDatanodeResponseProto, v2::GetAdditionalDatanodeResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type CompleteRequestProto
+mutable struct CompleteRequestProto
     src::AbstractString
     clientName::AbstractString
     last::ExtendedBlockProto
@@ -302,13 +302,13 @@ type CompleteRequestProto
     CompleteRequestProto() = (o=new(); fillunset(o); o)
 end #type CompleteRequestProto
 const __req_CompleteRequestProto = Symbol[:src,:clientName]
-const __val_CompleteRequestProto = @compat Dict(:fileId => 0)
+const __val_CompleteRequestProto = Dict(:fileId => 0)
 meta(t::Type{CompleteRequestProto}) = meta(t, __req_CompleteRequestProto, ProtoBuf.DEF_FNUM, __val_CompleteRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::CompleteRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::CompleteRequestProto, v2::CompleteRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CompleteRequestProto, v2::CompleteRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CompleteResponseProto
+mutable struct CompleteResponseProto
     result::Bool
     CompleteResponseProto() = (o=new(); fillunset(o); o)
 end #type CompleteResponseProto
@@ -318,7 +318,7 @@ hash(v::CompleteResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::CompleteResponseProto, v2::CompleteResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CompleteResponseProto, v2::CompleteResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ReportBadBlocksRequestProto
+mutable struct ReportBadBlocksRequestProto
     blocks::Array{LocatedBlockProto,1}
     ReportBadBlocksRequestProto() = (o=new(); fillunset(o); o)
 end #type ReportBadBlocksRequestProto
@@ -326,14 +326,14 @@ hash(v::ReportBadBlocksRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ReportBadBlocksRequestProto, v2::ReportBadBlocksRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ReportBadBlocksRequestProto, v2::ReportBadBlocksRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type ReportBadBlocksResponseProto
+mutable struct ReportBadBlocksResponseProto
     ReportBadBlocksResponseProto() = (o=new(); fillunset(o); o)
 end #type ReportBadBlocksResponseProto
 hash(v::ReportBadBlocksResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ReportBadBlocksResponseProto, v2::ReportBadBlocksResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ReportBadBlocksResponseProto, v2::ReportBadBlocksResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ConcatRequestProto
+mutable struct ConcatRequestProto
     trg::AbstractString
     srcs::Array{AbstractString,1}
     ConcatRequestProto() = (o=new(); fillunset(o); o)
@@ -344,14 +344,14 @@ hash(v::ConcatRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ConcatRequestProto, v2::ConcatRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ConcatRequestProto, v2::ConcatRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type ConcatResponseProto
+mutable struct ConcatResponseProto
     ConcatResponseProto() = (o=new(); fillunset(o); o)
 end #type ConcatResponseProto
 hash(v::ConcatResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ConcatResponseProto, v2::ConcatResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ConcatResponseProto, v2::ConcatResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type TruncateRequestProto
+mutable struct TruncateRequestProto
     src::AbstractString
     newLength::UInt64
     clientName::AbstractString
@@ -363,7 +363,7 @@ hash(v::TruncateRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::TruncateRequestProto, v2::TruncateRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::TruncateRequestProto, v2::TruncateRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type TruncateResponseProto
+mutable struct TruncateResponseProto
     result::Bool
     TruncateResponseProto() = (o=new(); fillunset(o); o)
 end #type TruncateResponseProto
@@ -373,7 +373,7 @@ hash(v::TruncateResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::TruncateResponseProto, v2::TruncateResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::TruncateResponseProto, v2::TruncateResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenameRequestProto
+mutable struct RenameRequestProto
     src::AbstractString
     dst::AbstractString
     RenameRequestProto() = (o=new(); fillunset(o); o)
@@ -384,7 +384,7 @@ hash(v::RenameRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RenameRequestProto, v2::RenameRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenameRequestProto, v2::RenameRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenameResponseProto
+mutable struct RenameResponseProto
     result::Bool
     RenameResponseProto() = (o=new(); fillunset(o); o)
 end #type RenameResponseProto
@@ -394,7 +394,7 @@ hash(v::RenameResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RenameResponseProto, v2::RenameResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenameResponseProto, v2::RenameResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type Rename2RequestProto
+mutable struct Rename2RequestProto
     src::AbstractString
     dst::AbstractString
     overwriteDest::Bool
@@ -406,14 +406,14 @@ hash(v::Rename2RequestProto) = ProtoBuf.protohash(v)
 isequal(v1::Rename2RequestProto, v2::Rename2RequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::Rename2RequestProto, v2::Rename2RequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type Rename2ResponseProto
+mutable struct Rename2ResponseProto
     Rename2ResponseProto() = (o=new(); fillunset(o); o)
 end #type Rename2ResponseProto
 hash(v::Rename2ResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::Rename2ResponseProto, v2::Rename2ResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::Rename2ResponseProto, v2::Rename2ResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type DeleteRequestProto
+mutable struct DeleteRequestProto
     src::AbstractString
     recursive::Bool
     DeleteRequestProto() = (o=new(); fillunset(o); o)
@@ -424,7 +424,7 @@ hash(v::DeleteRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::DeleteRequestProto, v2::DeleteRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DeleteRequestProto, v2::DeleteRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type DeleteResponseProto
+mutable struct DeleteResponseProto
     result::Bool
     DeleteResponseProto() = (o=new(); fillunset(o); o)
 end #type DeleteResponseProto
@@ -434,7 +434,7 @@ hash(v::DeleteResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::DeleteResponseProto, v2::DeleteResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DeleteResponseProto, v2::DeleteResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type MkdirsRequestProto
+mutable struct MkdirsRequestProto
     src::AbstractString
     masked::FsPermissionProto
     createParent::Bool
@@ -446,7 +446,7 @@ hash(v::MkdirsRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::MkdirsRequestProto, v2::MkdirsRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::MkdirsRequestProto, v2::MkdirsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type MkdirsResponseProto
+mutable struct MkdirsResponseProto
     result::Bool
     MkdirsResponseProto() = (o=new(); fillunset(o); o)
 end #type MkdirsResponseProto
@@ -456,7 +456,7 @@ hash(v::MkdirsResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::MkdirsResponseProto, v2::MkdirsResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::MkdirsResponseProto, v2::MkdirsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetListingRequestProto
+mutable struct GetListingRequestProto
     src::AbstractString
     startAfter::Array{UInt8,1}
     needLocation::Bool
@@ -468,7 +468,7 @@ hash(v::GetListingRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetListingRequestProto, v2::GetListingRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetListingRequestProto, v2::GetListingRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetListingResponseProto
+mutable struct GetListingResponseProto
     dirList::DirectoryListingProto
     GetListingResponseProto() = (o=new(); fillunset(o); o)
 end #type GetListingResponseProto
@@ -476,14 +476,14 @@ hash(v::GetListingResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetListingResponseProto, v2::GetListingResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetListingResponseProto, v2::GetListingResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetSnapshottableDirListingRequestProto
+mutable struct GetSnapshottableDirListingRequestProto
     GetSnapshottableDirListingRequestProto() = (o=new(); fillunset(o); o)
 end #type GetSnapshottableDirListingRequestProto
 hash(v::GetSnapshottableDirListingRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetSnapshottableDirListingRequestProto, v2::GetSnapshottableDirListingRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetSnapshottableDirListingRequestProto, v2::GetSnapshottableDirListingRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetSnapshottableDirListingResponseProto
+mutable struct GetSnapshottableDirListingResponseProto
     snapshottableDirList::SnapshottableDirectoryListingProto
     GetSnapshottableDirListingResponseProto() = (o=new(); fillunset(o); o)
 end #type GetSnapshottableDirListingResponseProto
@@ -491,7 +491,7 @@ hash(v::GetSnapshottableDirListingResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetSnapshottableDirListingResponseProto, v2::GetSnapshottableDirListingResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetSnapshottableDirListingResponseProto, v2::GetSnapshottableDirListingResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetSnapshotDiffReportRequestProto
+mutable struct GetSnapshotDiffReportRequestProto
     snapshotRoot::AbstractString
     fromSnapshot::AbstractString
     toSnapshot::AbstractString
@@ -503,7 +503,7 @@ hash(v::GetSnapshotDiffReportRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetSnapshotDiffReportRequestProto, v2::GetSnapshotDiffReportRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetSnapshotDiffReportRequestProto, v2::GetSnapshotDiffReportRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetSnapshotDiffReportResponseProto
+mutable struct GetSnapshotDiffReportResponseProto
     diffReport::SnapshotDiffReportProto
     GetSnapshotDiffReportResponseProto() = (o=new(); fillunset(o); o)
 end #type GetSnapshotDiffReportResponseProto
@@ -513,7 +513,7 @@ hash(v::GetSnapshotDiffReportResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetSnapshotDiffReportResponseProto, v2::GetSnapshotDiffReportResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetSnapshotDiffReportResponseProto, v2::GetSnapshotDiffReportResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenewLeaseRequestProto
+mutable struct RenewLeaseRequestProto
     clientName::AbstractString
     RenewLeaseRequestProto() = (o=new(); fillunset(o); o)
 end #type RenewLeaseRequestProto
@@ -523,14 +523,14 @@ hash(v::RenewLeaseRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RenewLeaseRequestProto, v2::RenewLeaseRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenewLeaseRequestProto, v2::RenewLeaseRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenewLeaseResponseProto
+mutable struct RenewLeaseResponseProto
     RenewLeaseResponseProto() = (o=new(); fillunset(o); o)
 end #type RenewLeaseResponseProto
 hash(v::RenewLeaseResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RenewLeaseResponseProto, v2::RenewLeaseResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenewLeaseResponseProto, v2::RenewLeaseResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RecoverLeaseRequestProto
+mutable struct RecoverLeaseRequestProto
     src::AbstractString
     clientName::AbstractString
     RecoverLeaseRequestProto() = (o=new(); fillunset(o); o)
@@ -541,7 +541,7 @@ hash(v::RecoverLeaseRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RecoverLeaseRequestProto, v2::RecoverLeaseRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RecoverLeaseRequestProto, v2::RecoverLeaseRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RecoverLeaseResponseProto
+mutable struct RecoverLeaseResponseProto
     result::Bool
     RecoverLeaseResponseProto() = (o=new(); fillunset(o); o)
 end #type RecoverLeaseResponseProto
@@ -551,14 +551,14 @@ hash(v::RecoverLeaseResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RecoverLeaseResponseProto, v2::RecoverLeaseResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RecoverLeaseResponseProto, v2::RecoverLeaseResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetFsStatusRequestProto
+mutable struct GetFsStatusRequestProto
     GetFsStatusRequestProto() = (o=new(); fillunset(o); o)
 end #type GetFsStatusRequestProto
 hash(v::GetFsStatusRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetFsStatusRequestProto, v2::GetFsStatusRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetFsStatusRequestProto, v2::GetFsStatusRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetFsStatsResponseProto
+mutable struct GetFsStatsResponseProto
     capacity::UInt64
     used::UInt64
     remaining::UInt64
@@ -574,7 +574,7 @@ hash(v::GetFsStatsResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetFsStatsResponseProto, v2::GetFsStatsResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetFsStatsResponseProto, v2::GetFsStatsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetDatanodeReportRequestProto
+mutable struct GetDatanodeReportRequestProto
     _type::Int32
     GetDatanodeReportRequestProto() = (o=new(); fillunset(o); o)
 end #type GetDatanodeReportRequestProto
@@ -584,7 +584,7 @@ hash(v::GetDatanodeReportRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetDatanodeReportRequestProto, v2::GetDatanodeReportRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetDatanodeReportRequestProto, v2::GetDatanodeReportRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetDatanodeReportResponseProto
+mutable struct GetDatanodeReportResponseProto
     di::Array{DatanodeInfoProto,1}
     GetDatanodeReportResponseProto() = (o=new(); fillunset(o); o)
 end #type GetDatanodeReportResponseProto
@@ -592,7 +592,7 @@ hash(v::GetDatanodeReportResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetDatanodeReportResponseProto, v2::GetDatanodeReportResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetDatanodeReportResponseProto, v2::GetDatanodeReportResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetDatanodeStorageReportRequestProto
+mutable struct GetDatanodeStorageReportRequestProto
     _type::Int32
     GetDatanodeStorageReportRequestProto() = (o=new(); fillunset(o); o)
 end #type GetDatanodeStorageReportRequestProto
@@ -602,7 +602,7 @@ hash(v::GetDatanodeStorageReportRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetDatanodeStorageReportRequestProto, v2::GetDatanodeStorageReportRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetDatanodeStorageReportRequestProto, v2::GetDatanodeStorageReportRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type DatanodeStorageReportProto
+mutable struct DatanodeStorageReportProto
     datanodeInfo::DatanodeInfoProto
     storageReports::Array{StorageReportProto,1}
     DatanodeStorageReportProto() = (o=new(); fillunset(o); o)
@@ -613,7 +613,7 @@ hash(v::DatanodeStorageReportProto) = ProtoBuf.protohash(v)
 isequal(v1::DatanodeStorageReportProto, v2::DatanodeStorageReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DatanodeStorageReportProto, v2::DatanodeStorageReportProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetDatanodeStorageReportResponseProto
+mutable struct GetDatanodeStorageReportResponseProto
     datanodeStorageReports::Array{DatanodeStorageReportProto,1}
     GetDatanodeStorageReportResponseProto() = (o=new(); fillunset(o); o)
 end #type GetDatanodeStorageReportResponseProto
@@ -621,7 +621,7 @@ hash(v::GetDatanodeStorageReportResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetDatanodeStorageReportResponseProto, v2::GetDatanodeStorageReportResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetDatanodeStorageReportResponseProto, v2::GetDatanodeStorageReportResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetPreferredBlockSizeRequestProto
+mutable struct GetPreferredBlockSizeRequestProto
     filename::AbstractString
     GetPreferredBlockSizeRequestProto() = (o=new(); fillunset(o); o)
 end #type GetPreferredBlockSizeRequestProto
@@ -631,7 +631,7 @@ hash(v::GetPreferredBlockSizeRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetPreferredBlockSizeRequestProto, v2::GetPreferredBlockSizeRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetPreferredBlockSizeRequestProto, v2::GetPreferredBlockSizeRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetPreferredBlockSizeResponseProto
+mutable struct GetPreferredBlockSizeResponseProto
     bsize::UInt64
     GetPreferredBlockSizeResponseProto() = (o=new(); fillunset(o); o)
 end #type GetPreferredBlockSizeResponseProto
@@ -641,19 +641,19 @@ hash(v::GetPreferredBlockSizeResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetPreferredBlockSizeResponseProto, v2::GetPreferredBlockSizeResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetPreferredBlockSizeResponseProto, v2::GetPreferredBlockSizeResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetSafeModeRequestProto
+mutable struct SetSafeModeRequestProto
     action::Int32
     checked::Bool
     SetSafeModeRequestProto() = (o=new(); fillunset(o); o)
 end #type SetSafeModeRequestProto
 const __req_SetSafeModeRequestProto = Symbol[:action]
-const __val_SetSafeModeRequestProto = @compat Dict(:checked => false)
+const __val_SetSafeModeRequestProto = Dict(:checked => false)
 meta(t::Type{SetSafeModeRequestProto}) = meta(t, __req_SetSafeModeRequestProto, ProtoBuf.DEF_FNUM, __val_SetSafeModeRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::SetSafeModeRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetSafeModeRequestProto, v2::SetSafeModeRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetSafeModeRequestProto, v2::SetSafeModeRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetSafeModeResponseProto
+mutable struct SetSafeModeResponseProto
     result::Bool
     SetSafeModeResponseProto() = (o=new(); fillunset(o); o)
 end #type SetSafeModeResponseProto
@@ -663,28 +663,28 @@ hash(v::SetSafeModeResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetSafeModeResponseProto, v2::SetSafeModeResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetSafeModeResponseProto, v2::SetSafeModeResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SaveNamespaceRequestProto
+mutable struct SaveNamespaceRequestProto
     SaveNamespaceRequestProto() = (o=new(); fillunset(o); o)
 end #type SaveNamespaceRequestProto
 hash(v::SaveNamespaceRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SaveNamespaceRequestProto, v2::SaveNamespaceRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SaveNamespaceRequestProto, v2::SaveNamespaceRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SaveNamespaceResponseProto
+mutable struct SaveNamespaceResponseProto
     SaveNamespaceResponseProto() = (o=new(); fillunset(o); o)
 end #type SaveNamespaceResponseProto
 hash(v::SaveNamespaceResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SaveNamespaceResponseProto, v2::SaveNamespaceResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SaveNamespaceResponseProto, v2::SaveNamespaceResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RollEditsRequestProto
+mutable struct RollEditsRequestProto
     RollEditsRequestProto() = (o=new(); fillunset(o); o)
 end #type RollEditsRequestProto
 hash(v::RollEditsRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RollEditsRequestProto, v2::RollEditsRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RollEditsRequestProto, v2::RollEditsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RollEditsResponseProto
+mutable struct RollEditsResponseProto
     newSegmentTxId::UInt64
     RollEditsResponseProto() = (o=new(); fillunset(o); o)
 end #type RollEditsResponseProto
@@ -694,7 +694,7 @@ hash(v::RollEditsResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RollEditsResponseProto, v2::RollEditsResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RollEditsResponseProto, v2::RollEditsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RestoreFailedStorageRequestProto
+mutable struct RestoreFailedStorageRequestProto
     arg::AbstractString
     RestoreFailedStorageRequestProto() = (o=new(); fillunset(o); o)
 end #type RestoreFailedStorageRequestProto
@@ -704,7 +704,7 @@ hash(v::RestoreFailedStorageRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RestoreFailedStorageRequestProto, v2::RestoreFailedStorageRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RestoreFailedStorageRequestProto, v2::RestoreFailedStorageRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RestoreFailedStorageResponseProto
+mutable struct RestoreFailedStorageResponseProto
     result::Bool
     RestoreFailedStorageResponseProto() = (o=new(); fillunset(o); o)
 end #type RestoreFailedStorageResponseProto
@@ -714,35 +714,35 @@ hash(v::RestoreFailedStorageResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RestoreFailedStorageResponseProto, v2::RestoreFailedStorageResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RestoreFailedStorageResponseProto, v2::RestoreFailedStorageResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RefreshNodesRequestProto
+mutable struct RefreshNodesRequestProto
     RefreshNodesRequestProto() = (o=new(); fillunset(o); o)
 end #type RefreshNodesRequestProto
 hash(v::RefreshNodesRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RefreshNodesRequestProto, v2::RefreshNodesRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RefreshNodesRequestProto, v2::RefreshNodesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RefreshNodesResponseProto
+mutable struct RefreshNodesResponseProto
     RefreshNodesResponseProto() = (o=new(); fillunset(o); o)
 end #type RefreshNodesResponseProto
 hash(v::RefreshNodesResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RefreshNodesResponseProto, v2::RefreshNodesResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RefreshNodesResponseProto, v2::RefreshNodesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type FinalizeUpgradeRequestProto
+mutable struct FinalizeUpgradeRequestProto
     FinalizeUpgradeRequestProto() = (o=new(); fillunset(o); o)
 end #type FinalizeUpgradeRequestProto
 hash(v::FinalizeUpgradeRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::FinalizeUpgradeRequestProto, v2::FinalizeUpgradeRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::FinalizeUpgradeRequestProto, v2::FinalizeUpgradeRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type FinalizeUpgradeResponseProto
+mutable struct FinalizeUpgradeResponseProto
     FinalizeUpgradeResponseProto() = (o=new(); fillunset(o); o)
 end #type FinalizeUpgradeResponseProto
 hash(v::FinalizeUpgradeResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::FinalizeUpgradeResponseProto, v2::FinalizeUpgradeResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::FinalizeUpgradeResponseProto, v2::FinalizeUpgradeResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RollingUpgradeRequestProto
+mutable struct RollingUpgradeRequestProto
     action::Int32
     RollingUpgradeRequestProto() = (o=new(); fillunset(o); o)
 end #type RollingUpgradeRequestProto
@@ -752,7 +752,7 @@ hash(v::RollingUpgradeRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RollingUpgradeRequestProto, v2::RollingUpgradeRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RollingUpgradeRequestProto, v2::RollingUpgradeRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RollingUpgradeInfoProto
+mutable struct RollingUpgradeInfoProto
     status::RollingUpgradeStatusProto
     startTime::UInt64
     finalizeTime::UInt64
@@ -765,7 +765,7 @@ hash(v::RollingUpgradeInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::RollingUpgradeInfoProto, v2::RollingUpgradeInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RollingUpgradeInfoProto, v2::RollingUpgradeInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type RollingUpgradeResponseProto
+mutable struct RollingUpgradeResponseProto
     rollingUpgradeInfo::RollingUpgradeInfoProto
     RollingUpgradeResponseProto() = (o=new(); fillunset(o); o)
 end #type RollingUpgradeResponseProto
@@ -773,7 +773,7 @@ hash(v::RollingUpgradeResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RollingUpgradeResponseProto, v2::RollingUpgradeResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RollingUpgradeResponseProto, v2::RollingUpgradeResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ListCorruptFileBlocksRequestProto
+mutable struct ListCorruptFileBlocksRequestProto
     path::AbstractString
     cookie::AbstractString
     ListCorruptFileBlocksRequestProto() = (o=new(); fillunset(o); o)
@@ -784,7 +784,7 @@ hash(v::ListCorruptFileBlocksRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ListCorruptFileBlocksRequestProto, v2::ListCorruptFileBlocksRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ListCorruptFileBlocksRequestProto, v2::ListCorruptFileBlocksRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type ListCorruptFileBlocksResponseProto
+mutable struct ListCorruptFileBlocksResponseProto
     corrupt::CorruptFileBlocksProto
     ListCorruptFileBlocksResponseProto() = (o=new(); fillunset(o); o)
 end #type ListCorruptFileBlocksResponseProto
@@ -794,7 +794,7 @@ hash(v::ListCorruptFileBlocksResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ListCorruptFileBlocksResponseProto, v2::ListCorruptFileBlocksResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ListCorruptFileBlocksResponseProto, v2::ListCorruptFileBlocksResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type MetaSaveRequestProto
+mutable struct MetaSaveRequestProto
     filename::AbstractString
     MetaSaveRequestProto() = (o=new(); fillunset(o); o)
 end #type MetaSaveRequestProto
@@ -804,14 +804,14 @@ hash(v::MetaSaveRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::MetaSaveRequestProto, v2::MetaSaveRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::MetaSaveRequestProto, v2::MetaSaveRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type MetaSaveResponseProto
+mutable struct MetaSaveResponseProto
     MetaSaveResponseProto() = (o=new(); fillunset(o); o)
 end #type MetaSaveResponseProto
 hash(v::MetaSaveResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::MetaSaveResponseProto, v2::MetaSaveResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::MetaSaveResponseProto, v2::MetaSaveResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetFileInfoRequestProto
+mutable struct GetFileInfoRequestProto
     src::AbstractString
     GetFileInfoRequestProto() = (o=new(); fillunset(o); o)
 end #type GetFileInfoRequestProto
@@ -821,7 +821,7 @@ hash(v::GetFileInfoRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetFileInfoRequestProto, v2::GetFileInfoRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetFileInfoRequestProto, v2::GetFileInfoRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetFileInfoResponseProto
+mutable struct GetFileInfoResponseProto
     fs::HdfsFileStatusProto
     GetFileInfoResponseProto() = (o=new(); fillunset(o); o)
 end #type GetFileInfoResponseProto
@@ -829,7 +829,7 @@ hash(v::GetFileInfoResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetFileInfoResponseProto, v2::GetFileInfoResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetFileInfoResponseProto, v2::GetFileInfoResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type IsFileClosedRequestProto
+mutable struct IsFileClosedRequestProto
     src::AbstractString
     IsFileClosedRequestProto() = (o=new(); fillunset(o); o)
 end #type IsFileClosedRequestProto
@@ -839,7 +839,7 @@ hash(v::IsFileClosedRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::IsFileClosedRequestProto, v2::IsFileClosedRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::IsFileClosedRequestProto, v2::IsFileClosedRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type IsFileClosedResponseProto
+mutable struct IsFileClosedResponseProto
     result::Bool
     IsFileClosedResponseProto() = (o=new(); fillunset(o); o)
 end #type IsFileClosedResponseProto
@@ -849,7 +849,7 @@ hash(v::IsFileClosedResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::IsFileClosedResponseProto, v2::IsFileClosedResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::IsFileClosedResponseProto, v2::IsFileClosedResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type CacheDirectiveInfoExpirationProto
+mutable struct CacheDirectiveInfoExpirationProto
     millis::Int64
     isRelative::Bool
     CacheDirectiveInfoExpirationProto() = (o=new(); fillunset(o); o)
@@ -860,7 +860,7 @@ hash(v::CacheDirectiveInfoExpirationProto) = ProtoBuf.protohash(v)
 isequal(v1::CacheDirectiveInfoExpirationProto, v2::CacheDirectiveInfoExpirationProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CacheDirectiveInfoExpirationProto, v2::CacheDirectiveInfoExpirationProto) = ProtoBuf.protoeq(v1, v2)
 
-type CacheDirectiveInfoProto
+mutable struct CacheDirectiveInfoProto
     id::Int64
     path::AbstractString
     replication::UInt32
@@ -872,7 +872,7 @@ hash(v::CacheDirectiveInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::CacheDirectiveInfoProto, v2::CacheDirectiveInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CacheDirectiveInfoProto, v2::CacheDirectiveInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type CacheDirectiveStatsProto
+mutable struct CacheDirectiveStatsProto
     bytesNeeded::Int64
     bytesCached::Int64
     filesNeeded::Int64
@@ -886,7 +886,7 @@ hash(v::CacheDirectiveStatsProto) = ProtoBuf.protohash(v)
 isequal(v1::CacheDirectiveStatsProto, v2::CacheDirectiveStatsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CacheDirectiveStatsProto, v2::CacheDirectiveStatsProto) = ProtoBuf.protoeq(v1, v2)
 
-type AddCacheDirectiveRequestProto
+mutable struct AddCacheDirectiveRequestProto
     info::CacheDirectiveInfoProto
     cacheFlags::UInt32
     AddCacheDirectiveRequestProto() = (o=new(); fillunset(o); o)
@@ -897,7 +897,7 @@ hash(v::AddCacheDirectiveRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::AddCacheDirectiveRequestProto, v2::AddCacheDirectiveRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AddCacheDirectiveRequestProto, v2::AddCacheDirectiveRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type AddCacheDirectiveResponseProto
+mutable struct AddCacheDirectiveResponseProto
     id::Int64
     AddCacheDirectiveResponseProto() = (o=new(); fillunset(o); o)
 end #type AddCacheDirectiveResponseProto
@@ -907,7 +907,7 @@ hash(v::AddCacheDirectiveResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::AddCacheDirectiveResponseProto, v2::AddCacheDirectiveResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AddCacheDirectiveResponseProto, v2::AddCacheDirectiveResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ModifyCacheDirectiveRequestProto
+mutable struct ModifyCacheDirectiveRequestProto
     info::CacheDirectiveInfoProto
     cacheFlags::UInt32
     ModifyCacheDirectiveRequestProto() = (o=new(); fillunset(o); o)
@@ -918,14 +918,14 @@ hash(v::ModifyCacheDirectiveRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ModifyCacheDirectiveRequestProto, v2::ModifyCacheDirectiveRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ModifyCacheDirectiveRequestProto, v2::ModifyCacheDirectiveRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type ModifyCacheDirectiveResponseProto
+mutable struct ModifyCacheDirectiveResponseProto
     ModifyCacheDirectiveResponseProto() = (o=new(); fillunset(o); o)
 end #type ModifyCacheDirectiveResponseProto
 hash(v::ModifyCacheDirectiveResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ModifyCacheDirectiveResponseProto, v2::ModifyCacheDirectiveResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ModifyCacheDirectiveResponseProto, v2::ModifyCacheDirectiveResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveCacheDirectiveRequestProto
+mutable struct RemoveCacheDirectiveRequestProto
     id::Int64
     RemoveCacheDirectiveRequestProto() = (o=new(); fillunset(o); o)
 end #type RemoveCacheDirectiveRequestProto
@@ -935,14 +935,14 @@ hash(v::RemoveCacheDirectiveRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveCacheDirectiveRequestProto, v2::RemoveCacheDirectiveRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveCacheDirectiveRequestProto, v2::RemoveCacheDirectiveRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveCacheDirectiveResponseProto
+mutable struct RemoveCacheDirectiveResponseProto
     RemoveCacheDirectiveResponseProto() = (o=new(); fillunset(o); o)
 end #type RemoveCacheDirectiveResponseProto
 hash(v::RemoveCacheDirectiveResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveCacheDirectiveResponseProto, v2::RemoveCacheDirectiveResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveCacheDirectiveResponseProto, v2::RemoveCacheDirectiveResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ListCacheDirectivesRequestProto
+mutable struct ListCacheDirectivesRequestProto
     prevId::Int64
     filter::CacheDirectiveInfoProto
     ListCacheDirectivesRequestProto() = (o=new(); fillunset(o); o)
@@ -953,7 +953,7 @@ hash(v::ListCacheDirectivesRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ListCacheDirectivesRequestProto, v2::ListCacheDirectivesRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ListCacheDirectivesRequestProto, v2::ListCacheDirectivesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CacheDirectiveEntryProto
+mutable struct CacheDirectiveEntryProto
     info::CacheDirectiveInfoProto
     stats::CacheDirectiveStatsProto
     CacheDirectiveEntryProto() = (o=new(); fillunset(o); o)
@@ -964,7 +964,7 @@ hash(v::CacheDirectiveEntryProto) = ProtoBuf.protohash(v)
 isequal(v1::CacheDirectiveEntryProto, v2::CacheDirectiveEntryProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CacheDirectiveEntryProto, v2::CacheDirectiveEntryProto) = ProtoBuf.protoeq(v1, v2)
 
-type ListCacheDirectivesResponseProto
+mutable struct ListCacheDirectivesResponseProto
     elements::Array{CacheDirectiveEntryProto,1}
     hasMore::Bool
     ListCacheDirectivesResponseProto() = (o=new(); fillunset(o); o)
@@ -975,7 +975,7 @@ hash(v::ListCacheDirectivesResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ListCacheDirectivesResponseProto, v2::ListCacheDirectivesResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ListCacheDirectivesResponseProto, v2::ListCacheDirectivesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type CachePoolInfoProto
+mutable struct CachePoolInfoProto
     poolName::AbstractString
     ownerName::AbstractString
     groupName::AbstractString
@@ -988,7 +988,7 @@ hash(v::CachePoolInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::CachePoolInfoProto, v2::CachePoolInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CachePoolInfoProto, v2::CachePoolInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type CachePoolStatsProto
+mutable struct CachePoolStatsProto
     bytesNeeded::Int64
     bytesCached::Int64
     bytesOverlimit::Int64
@@ -1002,7 +1002,7 @@ hash(v::CachePoolStatsProto) = ProtoBuf.protohash(v)
 isequal(v1::CachePoolStatsProto, v2::CachePoolStatsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CachePoolStatsProto, v2::CachePoolStatsProto) = ProtoBuf.protoeq(v1, v2)
 
-type AddCachePoolRequestProto
+mutable struct AddCachePoolRequestProto
     info::CachePoolInfoProto
     AddCachePoolRequestProto() = (o=new(); fillunset(o); o)
 end #type AddCachePoolRequestProto
@@ -1012,14 +1012,14 @@ hash(v::AddCachePoolRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::AddCachePoolRequestProto, v2::AddCachePoolRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AddCachePoolRequestProto, v2::AddCachePoolRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type AddCachePoolResponseProto
+mutable struct AddCachePoolResponseProto
     AddCachePoolResponseProto() = (o=new(); fillunset(o); o)
 end #type AddCachePoolResponseProto
 hash(v::AddCachePoolResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::AddCachePoolResponseProto, v2::AddCachePoolResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AddCachePoolResponseProto, v2::AddCachePoolResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ModifyCachePoolRequestProto
+mutable struct ModifyCachePoolRequestProto
     info::CachePoolInfoProto
     ModifyCachePoolRequestProto() = (o=new(); fillunset(o); o)
 end #type ModifyCachePoolRequestProto
@@ -1029,14 +1029,14 @@ hash(v::ModifyCachePoolRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ModifyCachePoolRequestProto, v2::ModifyCachePoolRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ModifyCachePoolRequestProto, v2::ModifyCachePoolRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type ModifyCachePoolResponseProto
+mutable struct ModifyCachePoolResponseProto
     ModifyCachePoolResponseProto() = (o=new(); fillunset(o); o)
 end #type ModifyCachePoolResponseProto
 hash(v::ModifyCachePoolResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ModifyCachePoolResponseProto, v2::ModifyCachePoolResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ModifyCachePoolResponseProto, v2::ModifyCachePoolResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveCachePoolRequestProto
+mutable struct RemoveCachePoolRequestProto
     poolName::AbstractString
     RemoveCachePoolRequestProto() = (o=new(); fillunset(o); o)
 end #type RemoveCachePoolRequestProto
@@ -1046,14 +1046,14 @@ hash(v::RemoveCachePoolRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveCachePoolRequestProto, v2::RemoveCachePoolRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveCachePoolRequestProto, v2::RemoveCachePoolRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveCachePoolResponseProto
+mutable struct RemoveCachePoolResponseProto
     RemoveCachePoolResponseProto() = (o=new(); fillunset(o); o)
 end #type RemoveCachePoolResponseProto
 hash(v::RemoveCachePoolResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveCachePoolResponseProto, v2::RemoveCachePoolResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveCachePoolResponseProto, v2::RemoveCachePoolResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ListCachePoolsRequestProto
+mutable struct ListCachePoolsRequestProto
     prevPoolName::AbstractString
     ListCachePoolsRequestProto() = (o=new(); fillunset(o); o)
 end #type ListCachePoolsRequestProto
@@ -1063,7 +1063,7 @@ hash(v::ListCachePoolsRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ListCachePoolsRequestProto, v2::ListCachePoolsRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ListCachePoolsRequestProto, v2::ListCachePoolsRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CachePoolEntryProto
+mutable struct CachePoolEntryProto
     info::CachePoolInfoProto
     stats::CachePoolStatsProto
     CachePoolEntryProto() = (o=new(); fillunset(o); o)
@@ -1074,7 +1074,7 @@ hash(v::CachePoolEntryProto) = ProtoBuf.protohash(v)
 isequal(v1::CachePoolEntryProto, v2::CachePoolEntryProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CachePoolEntryProto, v2::CachePoolEntryProto) = ProtoBuf.protoeq(v1, v2)
 
-type ListCachePoolsResponseProto
+mutable struct ListCachePoolsResponseProto
     entries::Array{CachePoolEntryProto,1}
     hasMore::Bool
     ListCachePoolsResponseProto() = (o=new(); fillunset(o); o)
@@ -1085,7 +1085,7 @@ hash(v::ListCachePoolsResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ListCachePoolsResponseProto, v2::ListCachePoolsResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ListCachePoolsResponseProto, v2::ListCachePoolsResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetFileLinkInfoRequestProto
+mutable struct GetFileLinkInfoRequestProto
     src::AbstractString
     GetFileLinkInfoRequestProto() = (o=new(); fillunset(o); o)
 end #type GetFileLinkInfoRequestProto
@@ -1095,7 +1095,7 @@ hash(v::GetFileLinkInfoRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetFileLinkInfoRequestProto, v2::GetFileLinkInfoRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetFileLinkInfoRequestProto, v2::GetFileLinkInfoRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetFileLinkInfoResponseProto
+mutable struct GetFileLinkInfoResponseProto
     fs::HdfsFileStatusProto
     GetFileLinkInfoResponseProto() = (o=new(); fillunset(o); o)
 end #type GetFileLinkInfoResponseProto
@@ -1103,7 +1103,7 @@ hash(v::GetFileLinkInfoResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetFileLinkInfoResponseProto, v2::GetFileLinkInfoResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetFileLinkInfoResponseProto, v2::GetFileLinkInfoResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetContentSummaryRequestProto
+mutable struct GetContentSummaryRequestProto
     path::AbstractString
     GetContentSummaryRequestProto() = (o=new(); fillunset(o); o)
 end #type GetContentSummaryRequestProto
@@ -1113,7 +1113,7 @@ hash(v::GetContentSummaryRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetContentSummaryRequestProto, v2::GetContentSummaryRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetContentSummaryRequestProto, v2::GetContentSummaryRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetContentSummaryResponseProto
+mutable struct GetContentSummaryResponseProto
     summary::ContentSummaryProto
     GetContentSummaryResponseProto() = (o=new(); fillunset(o); o)
 end #type GetContentSummaryResponseProto
@@ -1123,7 +1123,7 @@ hash(v::GetContentSummaryResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetContentSummaryResponseProto, v2::GetContentSummaryResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetContentSummaryResponseProto, v2::GetContentSummaryResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetQuotaRequestProto
+mutable struct SetQuotaRequestProto
     path::AbstractString
     namespaceQuota::UInt64
     storagespaceQuota::UInt64
@@ -1136,14 +1136,14 @@ hash(v::SetQuotaRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetQuotaRequestProto, v2::SetQuotaRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetQuotaRequestProto, v2::SetQuotaRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetQuotaResponseProto
+mutable struct SetQuotaResponseProto
     SetQuotaResponseProto() = (o=new(); fillunset(o); o)
 end #type SetQuotaResponseProto
 hash(v::SetQuotaResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetQuotaResponseProto, v2::SetQuotaResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetQuotaResponseProto, v2::SetQuotaResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type FsyncRequestProto
+mutable struct FsyncRequestProto
     src::AbstractString
     client::AbstractString
     lastBlockLength::Int64
@@ -1151,21 +1151,21 @@ type FsyncRequestProto
     FsyncRequestProto() = (o=new(); fillunset(o); o)
 end #type FsyncRequestProto
 const __req_FsyncRequestProto = Symbol[:src,:client]
-const __val_FsyncRequestProto = @compat Dict(:lastBlockLength => -1, :fileId => 0)
-const __wtype_FsyncRequestProto = @compat Dict(:lastBlockLength => :sint64)
+const __val_FsyncRequestProto = Dict(:lastBlockLength => -1, :fileId => 0)
+const __wtype_FsyncRequestProto = Dict(:lastBlockLength => :sint64)
 meta(t::Type{FsyncRequestProto}) = meta(t, __req_FsyncRequestProto, ProtoBuf.DEF_FNUM, __val_FsyncRequestProto, true, ProtoBuf.DEF_PACK, __wtype_FsyncRequestProto)
 hash(v::FsyncRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::FsyncRequestProto, v2::FsyncRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::FsyncRequestProto, v2::FsyncRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type FsyncResponseProto
+mutable struct FsyncResponseProto
     FsyncResponseProto() = (o=new(); fillunset(o); o)
 end #type FsyncResponseProto
 hash(v::FsyncResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::FsyncResponseProto, v2::FsyncResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::FsyncResponseProto, v2::FsyncResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetTimesRequestProto
+mutable struct SetTimesRequestProto
     src::AbstractString
     mtime::UInt64
     atime::UInt64
@@ -1177,14 +1177,14 @@ hash(v::SetTimesRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetTimesRequestProto, v2::SetTimesRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetTimesRequestProto, v2::SetTimesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetTimesResponseProto
+mutable struct SetTimesResponseProto
     SetTimesResponseProto() = (o=new(); fillunset(o); o)
 end #type SetTimesResponseProto
 hash(v::SetTimesResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetTimesResponseProto, v2::SetTimesResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetTimesResponseProto, v2::SetTimesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type CreateSymlinkRequestProto
+mutable struct CreateSymlinkRequestProto
     target::AbstractString
     link::AbstractString
     dirPerm::FsPermissionProto
@@ -1197,14 +1197,14 @@ hash(v::CreateSymlinkRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateSymlinkRequestProto, v2::CreateSymlinkRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateSymlinkRequestProto, v2::CreateSymlinkRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CreateSymlinkResponseProto
+mutable struct CreateSymlinkResponseProto
     CreateSymlinkResponseProto() = (o=new(); fillunset(o); o)
 end #type CreateSymlinkResponseProto
 hash(v::CreateSymlinkResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateSymlinkResponseProto, v2::CreateSymlinkResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateSymlinkResponseProto, v2::CreateSymlinkResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetLinkTargetRequestProto
+mutable struct GetLinkTargetRequestProto
     path::AbstractString
     GetLinkTargetRequestProto() = (o=new(); fillunset(o); o)
 end #type GetLinkTargetRequestProto
@@ -1214,7 +1214,7 @@ hash(v::GetLinkTargetRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetLinkTargetRequestProto, v2::GetLinkTargetRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetLinkTargetRequestProto, v2::GetLinkTargetRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetLinkTargetResponseProto
+mutable struct GetLinkTargetResponseProto
     targetPath::AbstractString
     GetLinkTargetResponseProto() = (o=new(); fillunset(o); o)
 end #type GetLinkTargetResponseProto
@@ -1222,7 +1222,7 @@ hash(v::GetLinkTargetResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetLinkTargetResponseProto, v2::GetLinkTargetResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetLinkTargetResponseProto, v2::GetLinkTargetResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type UpdateBlockForPipelineRequestProto
+mutable struct UpdateBlockForPipelineRequestProto
     block::ExtendedBlockProto
     clientName::AbstractString
     UpdateBlockForPipelineRequestProto() = (o=new(); fillunset(o); o)
@@ -1233,7 +1233,7 @@ hash(v::UpdateBlockForPipelineRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::UpdateBlockForPipelineRequestProto, v2::UpdateBlockForPipelineRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::UpdateBlockForPipelineRequestProto, v2::UpdateBlockForPipelineRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type UpdateBlockForPipelineResponseProto
+mutable struct UpdateBlockForPipelineResponseProto
     block::LocatedBlockProto
     UpdateBlockForPipelineResponseProto() = (o=new(); fillunset(o); o)
 end #type UpdateBlockForPipelineResponseProto
@@ -1243,7 +1243,7 @@ hash(v::UpdateBlockForPipelineResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::UpdateBlockForPipelineResponseProto, v2::UpdateBlockForPipelineResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::UpdateBlockForPipelineResponseProto, v2::UpdateBlockForPipelineResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type UpdatePipelineRequestProto
+mutable struct UpdatePipelineRequestProto
     clientName::AbstractString
     oldBlock::ExtendedBlockProto
     newBlock::ExtendedBlockProto
@@ -1257,14 +1257,14 @@ hash(v::UpdatePipelineRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::UpdatePipelineRequestProto, v2::UpdatePipelineRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::UpdatePipelineRequestProto, v2::UpdatePipelineRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type UpdatePipelineResponseProto
+mutable struct UpdatePipelineResponseProto
     UpdatePipelineResponseProto() = (o=new(); fillunset(o); o)
 end #type UpdatePipelineResponseProto
 hash(v::UpdatePipelineResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::UpdatePipelineResponseProto, v2::UpdatePipelineResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::UpdatePipelineResponseProto, v2::UpdatePipelineResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetBalancerBandwidthRequestProto
+mutable struct SetBalancerBandwidthRequestProto
     bandwidth::Int64
     SetBalancerBandwidthRequestProto() = (o=new(); fillunset(o); o)
 end #type SetBalancerBandwidthRequestProto
@@ -1274,21 +1274,21 @@ hash(v::SetBalancerBandwidthRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetBalancerBandwidthRequestProto, v2::SetBalancerBandwidthRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetBalancerBandwidthRequestProto, v2::SetBalancerBandwidthRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetBalancerBandwidthResponseProto
+mutable struct SetBalancerBandwidthResponseProto
     SetBalancerBandwidthResponseProto() = (o=new(); fillunset(o); o)
 end #type SetBalancerBandwidthResponseProto
 hash(v::SetBalancerBandwidthResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetBalancerBandwidthResponseProto, v2::SetBalancerBandwidthResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetBalancerBandwidthResponseProto, v2::SetBalancerBandwidthResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetDataEncryptionKeyRequestProto
+mutable struct GetDataEncryptionKeyRequestProto
     GetDataEncryptionKeyRequestProto() = (o=new(); fillunset(o); o)
 end #type GetDataEncryptionKeyRequestProto
 hash(v::GetDataEncryptionKeyRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetDataEncryptionKeyRequestProto, v2::GetDataEncryptionKeyRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetDataEncryptionKeyRequestProto, v2::GetDataEncryptionKeyRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetDataEncryptionKeyResponseProto
+mutable struct GetDataEncryptionKeyResponseProto
     dataEncryptionKey::DataEncryptionKeyProto
     GetDataEncryptionKeyResponseProto() = (o=new(); fillunset(o); o)
 end #type GetDataEncryptionKeyResponseProto
@@ -1296,7 +1296,7 @@ hash(v::GetDataEncryptionKeyResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetDataEncryptionKeyResponseProto, v2::GetDataEncryptionKeyResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetDataEncryptionKeyResponseProto, v2::GetDataEncryptionKeyResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type CreateSnapshotRequestProto
+mutable struct CreateSnapshotRequestProto
     snapshotRoot::AbstractString
     snapshotName::AbstractString
     CreateSnapshotRequestProto() = (o=new(); fillunset(o); o)
@@ -1307,7 +1307,7 @@ hash(v::CreateSnapshotRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateSnapshotRequestProto, v2::CreateSnapshotRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateSnapshotRequestProto, v2::CreateSnapshotRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CreateSnapshotResponseProto
+mutable struct CreateSnapshotResponseProto
     snapshotPath::AbstractString
     CreateSnapshotResponseProto() = (o=new(); fillunset(o); o)
 end #type CreateSnapshotResponseProto
@@ -1317,7 +1317,7 @@ hash(v::CreateSnapshotResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateSnapshotResponseProto, v2::CreateSnapshotResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateSnapshotResponseProto, v2::CreateSnapshotResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenameSnapshotRequestProto
+mutable struct RenameSnapshotRequestProto
     snapshotRoot::AbstractString
     snapshotOldName::AbstractString
     snapshotNewName::AbstractString
@@ -1329,14 +1329,14 @@ hash(v::RenameSnapshotRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RenameSnapshotRequestProto, v2::RenameSnapshotRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenameSnapshotRequestProto, v2::RenameSnapshotRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenameSnapshotResponseProto
+mutable struct RenameSnapshotResponseProto
     RenameSnapshotResponseProto() = (o=new(); fillunset(o); o)
 end #type RenameSnapshotResponseProto
 hash(v::RenameSnapshotResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RenameSnapshotResponseProto, v2::RenameSnapshotResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenameSnapshotResponseProto, v2::RenameSnapshotResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type AllowSnapshotRequestProto
+mutable struct AllowSnapshotRequestProto
     snapshotRoot::AbstractString
     AllowSnapshotRequestProto() = (o=new(); fillunset(o); o)
 end #type AllowSnapshotRequestProto
@@ -1346,14 +1346,14 @@ hash(v::AllowSnapshotRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::AllowSnapshotRequestProto, v2::AllowSnapshotRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AllowSnapshotRequestProto, v2::AllowSnapshotRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type AllowSnapshotResponseProto
+mutable struct AllowSnapshotResponseProto
     AllowSnapshotResponseProto() = (o=new(); fillunset(o); o)
 end #type AllowSnapshotResponseProto
 hash(v::AllowSnapshotResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::AllowSnapshotResponseProto, v2::AllowSnapshotResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AllowSnapshotResponseProto, v2::AllowSnapshotResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type DisallowSnapshotRequestProto
+mutable struct DisallowSnapshotRequestProto
     snapshotRoot::AbstractString
     DisallowSnapshotRequestProto() = (o=new(); fillunset(o); o)
 end #type DisallowSnapshotRequestProto
@@ -1363,14 +1363,14 @@ hash(v::DisallowSnapshotRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::DisallowSnapshotRequestProto, v2::DisallowSnapshotRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DisallowSnapshotRequestProto, v2::DisallowSnapshotRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type DisallowSnapshotResponseProto
+mutable struct DisallowSnapshotResponseProto
     DisallowSnapshotResponseProto() = (o=new(); fillunset(o); o)
 end #type DisallowSnapshotResponseProto
 hash(v::DisallowSnapshotResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::DisallowSnapshotResponseProto, v2::DisallowSnapshotResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DisallowSnapshotResponseProto, v2::DisallowSnapshotResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type DeleteSnapshotRequestProto
+mutable struct DeleteSnapshotRequestProto
     snapshotRoot::AbstractString
     snapshotName::AbstractString
     DeleteSnapshotRequestProto() = (o=new(); fillunset(o); o)
@@ -1381,14 +1381,14 @@ hash(v::DeleteSnapshotRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::DeleteSnapshotRequestProto, v2::DeleteSnapshotRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DeleteSnapshotRequestProto, v2::DeleteSnapshotRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type DeleteSnapshotResponseProto
+mutable struct DeleteSnapshotResponseProto
     DeleteSnapshotResponseProto() = (o=new(); fillunset(o); o)
 end #type DeleteSnapshotResponseProto
 hash(v::DeleteSnapshotResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::DeleteSnapshotResponseProto, v2::DeleteSnapshotResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DeleteSnapshotResponseProto, v2::DeleteSnapshotResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type CheckAccessRequestProto
+mutable struct CheckAccessRequestProto
     path::AbstractString
     mode::Int32
     CheckAccessRequestProto() = (o=new(); fillunset(o); o)
@@ -1399,21 +1399,21 @@ hash(v::CheckAccessRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::CheckAccessRequestProto, v2::CheckAccessRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CheckAccessRequestProto, v2::CheckAccessRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CheckAccessResponseProto
+mutable struct CheckAccessResponseProto
     CheckAccessResponseProto() = (o=new(); fillunset(o); o)
 end #type CheckAccessResponseProto
 hash(v::CheckAccessResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::CheckAccessResponseProto, v2::CheckAccessResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CheckAccessResponseProto, v2::CheckAccessResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetCurrentEditLogTxidRequestProto
+mutable struct GetCurrentEditLogTxidRequestProto
     GetCurrentEditLogTxidRequestProto() = (o=new(); fillunset(o); o)
 end #type GetCurrentEditLogTxidRequestProto
 hash(v::GetCurrentEditLogTxidRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetCurrentEditLogTxidRequestProto, v2::GetCurrentEditLogTxidRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetCurrentEditLogTxidRequestProto, v2::GetCurrentEditLogTxidRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetCurrentEditLogTxidResponseProto
+mutable struct GetCurrentEditLogTxidResponseProto
     txid::Int64
     GetCurrentEditLogTxidResponseProto() = (o=new(); fillunset(o); o)
 end #type GetCurrentEditLogTxidResponseProto
@@ -1423,7 +1423,7 @@ hash(v::GetCurrentEditLogTxidResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::GetCurrentEditLogTxidResponseProto, v2::GetCurrentEditLogTxidResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetCurrentEditLogTxidResponseProto, v2::GetCurrentEditLogTxidResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetEditsFromTxidRequestProto
+mutable struct GetEditsFromTxidRequestProto
     txid::Int64
     GetEditsFromTxidRequestProto() = (o=new(); fillunset(o); o)
 end #type GetEditsFromTxidRequestProto
@@ -1433,7 +1433,7 @@ hash(v::GetEditsFromTxidRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetEditsFromTxidRequestProto, v2::GetEditsFromTxidRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetEditsFromTxidRequestProto, v2::GetEditsFromTxidRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetEditsFromTxidResponseProto
+mutable struct GetEditsFromTxidResponseProto
     eventsList::EventsListProto
     GetEditsFromTxidResponseProto() = (o=new(); fillunset(o); o)
 end #type GetEditsFromTxidResponseProto
@@ -1533,12 +1533,12 @@ const _ClientNamenodeProtocol_desc = ServiceDescriptor("ClientNamenodeProtocol",
 
 ClientNamenodeProtocol(impl::Module) = ProtoService(_ClientNamenodeProtocol_desc, impl)
 
-type ClientNamenodeProtocolStub <: AbstractProtoServiceStub{false}
+mutable struct ClientNamenodeProtocolStub <: AbstractProtoServiceStub{false}
     impl::ProtoServiceStub
     ClientNamenodeProtocolStub(channel::ProtoRpcChannel) = new(ProtoServiceStub(_ClientNamenodeProtocol_desc, channel))
 end # type ClientNamenodeProtocolStub
 
-type ClientNamenodeProtocolBlockingStub <: AbstractProtoServiceStub{true}
+mutable struct ClientNamenodeProtocolBlockingStub <: AbstractProtoServiceStub{true}
     impl::ProtoServiceBlockingStub
     ClientNamenodeProtocolBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ClientNamenodeProtocol_desc, channel))
 end # type ClientNamenodeProtocolBlockingStub

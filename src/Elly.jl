@@ -7,7 +7,7 @@ using CRC
 
 import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, mkpath,
         mv, rm, abspath, cd, pwd, touch, open, nb_available, cp, joinpath, dirname,
-        eof, position, seek, seekend, seekstart, skip, read, write, read!, readbytes, readall, close,
+        eof, position, seek, seekend, seekstart, skip, read, write, read!, close,
         launch, manage, convert
 import ProtoBuf: write_bytes, read_bytes, call_method
 import URIParser: URI
@@ -30,15 +30,9 @@ export YarnAppMaster, register, unregister, kill, can_schedule_mem, can_schedule
 
 export YarnManager, launch, manage
 
-if VERSION < v"0.5.0-"
-typealias Lock RemoteRef
-makelock() = RemoteRef()
-byte2str(x) = bytestring(x)
-else
-typealias Lock Channel
+const Lock = Channel
 makelock() = Channel{Int}(1)
 byte2str(x) = String(x)
-end
 
 function tstr()
     t = time()

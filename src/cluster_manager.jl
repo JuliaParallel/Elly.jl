@@ -1,4 +1,4 @@
-immutable YarnManager <: ClusterManager
+struct YarnManager <: ClusterManager
     ugi::UserGroupInformation
     clnt::YarnClient
     am::YarnAppMaster

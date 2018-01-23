@@ -3,7 +3,7 @@ using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
 
-type CreateEncryptionZoneRequestProto
+mutable struct CreateEncryptionZoneRequestProto
     src::AbstractString
     keyName::AbstractString
     CreateEncryptionZoneRequestProto() = (o=new(); fillunset(o); o)
@@ -14,14 +14,14 @@ hash(v::CreateEncryptionZoneRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateEncryptionZoneRequestProto, v2::CreateEncryptionZoneRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateEncryptionZoneRequestProto, v2::CreateEncryptionZoneRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type CreateEncryptionZoneResponseProto
+mutable struct CreateEncryptionZoneResponseProto
     CreateEncryptionZoneResponseProto() = (o=new(); fillunset(o); o)
 end #type CreateEncryptionZoneResponseProto
 hash(v::CreateEncryptionZoneResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateEncryptionZoneResponseProto, v2::CreateEncryptionZoneResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateEncryptionZoneResponseProto, v2::CreateEncryptionZoneResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ListEncryptionZonesRequestProto
+mutable struct ListEncryptionZonesRequestProto
     id::Int64
     ListEncryptionZonesRequestProto() = (o=new(); fillunset(o); o)
 end #type ListEncryptionZonesRequestProto
@@ -31,7 +31,7 @@ hash(v::ListEncryptionZonesRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ListEncryptionZonesRequestProto, v2::ListEncryptionZonesRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ListEncryptionZonesRequestProto, v2::ListEncryptionZonesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type EncryptionZoneProto
+mutable struct EncryptionZoneProto
     id::Int64
     path::AbstractString
     suite::Int32
@@ -45,7 +45,7 @@ hash(v::EncryptionZoneProto) = ProtoBuf.protohash(v)
 isequal(v1::EncryptionZoneProto, v2::EncryptionZoneProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::EncryptionZoneProto, v2::EncryptionZoneProto) = ProtoBuf.protoeq(v1, v2)
 
-type ListEncryptionZonesResponseProto
+mutable struct ListEncryptionZonesResponseProto
     zones::Array{EncryptionZoneProto,1}
     hasMore::Bool
     ListEncryptionZonesResponseProto() = (o=new(); fillunset(o); o)
@@ -56,7 +56,7 @@ hash(v::ListEncryptionZonesResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ListEncryptionZonesResponseProto, v2::ListEncryptionZonesResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ListEncryptionZonesResponseProto, v2::ListEncryptionZonesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetEZForPathRequestProto
+mutable struct GetEZForPathRequestProto
     src::AbstractString
     GetEZForPathRequestProto() = (o=new(); fillunset(o); o)
 end #type GetEZForPathRequestProto
@@ -66,7 +66,7 @@ hash(v::GetEZForPathRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetEZForPathRequestProto, v2::GetEZForPathRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetEZForPathRequestProto, v2::GetEZForPathRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetEZForPathResponseProto
+mutable struct GetEZForPathResponseProto
     zone::EncryptionZoneProto
     GetEZForPathResponseProto() = (o=new(); fillunset(o); o)
 end #type GetEZForPathResponseProto

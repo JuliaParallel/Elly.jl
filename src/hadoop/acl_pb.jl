@@ -3,14 +3,14 @@ using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
 
-type __enum_AclEntryProto_AclEntryScopeProto <: ProtoEnum
+mutable struct __enum_AclEntryProto_AclEntryScopeProto <: ProtoEnum
     ACCESS::Int32
     DEFAULT::Int32
     __enum_AclEntryProto_AclEntryScopeProto() = new(0,1)
 end #type __enum_AclEntryProto_AclEntryScopeProto
 const AclEntryProto_AclEntryScopeProto = __enum_AclEntryProto_AclEntryScopeProto()
 
-type __enum_AclEntryProto_AclEntryTypeProto <: ProtoEnum
+mutable struct __enum_AclEntryProto_AclEntryTypeProto <: ProtoEnum
     USER::Int32
     GROUP::Int32
     MASK::Int32
@@ -19,7 +19,7 @@ type __enum_AclEntryProto_AclEntryTypeProto <: ProtoEnum
 end #type __enum_AclEntryProto_AclEntryTypeProto
 const AclEntryProto_AclEntryTypeProto = __enum_AclEntryProto_AclEntryTypeProto()
 
-type __enum_AclEntryProto_FsActionProto <: ProtoEnum
+mutable struct __enum_AclEntryProto_FsActionProto <: ProtoEnum
     NONE::Int32
     EXECUTE::Int32
     WRITE::Int32
@@ -32,7 +32,7 @@ type __enum_AclEntryProto_FsActionProto <: ProtoEnum
 end #type __enum_AclEntryProto_FsActionProto
 const AclEntryProto_FsActionProto = __enum_AclEntryProto_FsActionProto()
 
-type AclEntryProto
+mutable struct AclEntryProto
     _type::Int32
     scope::Int32
     permissions::Int32
@@ -45,7 +45,7 @@ hash(v::AclEntryProto) = ProtoBuf.protohash(v)
 isequal(v1::AclEntryProto, v2::AclEntryProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AclEntryProto, v2::AclEntryProto) = ProtoBuf.protoeq(v1, v2)
 
-type AclStatusProto
+mutable struct AclStatusProto
     owner::AbstractString
     group::AbstractString
     sticky::Bool
@@ -59,7 +59,7 @@ hash(v::AclStatusProto) = ProtoBuf.protohash(v)
 isequal(v1::AclStatusProto, v2::AclStatusProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AclStatusProto, v2::AclStatusProto) = ProtoBuf.protoeq(v1, v2)
 
-type AclEditLogProto
+mutable struct AclEditLogProto
     src::AbstractString
     entries::Array{AclEntryProto,1}
     AclEditLogProto() = (o=new(); fillunset(o); o)
@@ -70,7 +70,7 @@ hash(v::AclEditLogProto) = ProtoBuf.protohash(v)
 isequal(v1::AclEditLogProto, v2::AclEditLogProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AclEditLogProto, v2::AclEditLogProto) = ProtoBuf.protoeq(v1, v2)
 
-type ModifyAclEntriesRequestProto
+mutable struct ModifyAclEntriesRequestProto
     src::AbstractString
     aclSpec::Array{AclEntryProto,1}
     ModifyAclEntriesRequestProto() = (o=new(); fillunset(o); o)
@@ -81,14 +81,14 @@ hash(v::ModifyAclEntriesRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ModifyAclEntriesRequestProto, v2::ModifyAclEntriesRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ModifyAclEntriesRequestProto, v2::ModifyAclEntriesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type ModifyAclEntriesResponseProto
+mutable struct ModifyAclEntriesResponseProto
     ModifyAclEntriesResponseProto() = (o=new(); fillunset(o); o)
 end #type ModifyAclEntriesResponseProto
 hash(v::ModifyAclEntriesResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::ModifyAclEntriesResponseProto, v2::ModifyAclEntriesResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ModifyAclEntriesResponseProto, v2::ModifyAclEntriesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveAclRequestProto
+mutable struct RemoveAclRequestProto
     src::AbstractString
     RemoveAclRequestProto() = (o=new(); fillunset(o); o)
 end #type RemoveAclRequestProto
@@ -98,14 +98,14 @@ hash(v::RemoveAclRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveAclRequestProto, v2::RemoveAclRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveAclRequestProto, v2::RemoveAclRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveAclResponseProto
+mutable struct RemoveAclResponseProto
     RemoveAclResponseProto() = (o=new(); fillunset(o); o)
 end #type RemoveAclResponseProto
 hash(v::RemoveAclResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveAclResponseProto, v2::RemoveAclResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveAclResponseProto, v2::RemoveAclResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveAclEntriesRequestProto
+mutable struct RemoveAclEntriesRequestProto
     src::AbstractString
     aclSpec::Array{AclEntryProto,1}
     RemoveAclEntriesRequestProto() = (o=new(); fillunset(o); o)
@@ -116,14 +116,14 @@ hash(v::RemoveAclEntriesRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveAclEntriesRequestProto, v2::RemoveAclEntriesRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveAclEntriesRequestProto, v2::RemoveAclEntriesRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveAclEntriesResponseProto
+mutable struct RemoveAclEntriesResponseProto
     RemoveAclEntriesResponseProto() = (o=new(); fillunset(o); o)
 end #type RemoveAclEntriesResponseProto
 hash(v::RemoveAclEntriesResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveAclEntriesResponseProto, v2::RemoveAclEntriesResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveAclEntriesResponseProto, v2::RemoveAclEntriesResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveDefaultAclRequestProto
+mutable struct RemoveDefaultAclRequestProto
     src::AbstractString
     RemoveDefaultAclRequestProto() = (o=new(); fillunset(o); o)
 end #type RemoveDefaultAclRequestProto
@@ -133,14 +133,14 @@ hash(v::RemoveDefaultAclRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveDefaultAclRequestProto, v2::RemoveDefaultAclRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveDefaultAclRequestProto, v2::RemoveDefaultAclRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoveDefaultAclResponseProto
+mutable struct RemoveDefaultAclResponseProto
     RemoveDefaultAclResponseProto() = (o=new(); fillunset(o); o)
 end #type RemoveDefaultAclResponseProto
 hash(v::RemoveDefaultAclResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoveDefaultAclResponseProto, v2::RemoveDefaultAclResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoveDefaultAclResponseProto, v2::RemoveDefaultAclResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetAclRequestProto
+mutable struct SetAclRequestProto
     src::AbstractString
     aclSpec::Array{AclEntryProto,1}
     SetAclRequestProto() = (o=new(); fillunset(o); o)
@@ -151,14 +151,14 @@ hash(v::SetAclRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::SetAclRequestProto, v2::SetAclRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetAclRequestProto, v2::SetAclRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type SetAclResponseProto
+mutable struct SetAclResponseProto
     SetAclResponseProto() = (o=new(); fillunset(o); o)
 end #type SetAclResponseProto
 hash(v::SetAclResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::SetAclResponseProto, v2::SetAclResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SetAclResponseProto, v2::SetAclResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetAclStatusRequestProto
+mutable struct GetAclStatusRequestProto
     src::AbstractString
     GetAclStatusRequestProto() = (o=new(); fillunset(o); o)
 end #type GetAclStatusRequestProto
@@ -168,7 +168,7 @@ hash(v::GetAclStatusRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::GetAclStatusRequestProto, v2::GetAclStatusRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::GetAclStatusRequestProto, v2::GetAclStatusRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type GetAclStatusResponseProto
+mutable struct GetAclStatusResponseProto
     result::AclStatusProto
     GetAclStatusResponseProto() = (o=new(); fillunset(o); o)
 end #type GetAclStatusResponseProto

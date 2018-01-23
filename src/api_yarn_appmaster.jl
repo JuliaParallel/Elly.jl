@@ -13,11 +13,11 @@ const YARN_CONTAINER_PRIORITY_DEFAULT = 1
 const YARN_NM_CONN_KEEPALIVE_SECS = 5*60
 
 
-@doc doc"""
+"""
 YarnAppMaster is a skeleton application master. It provides the generic scafolding methods which can be used to create specific
 application masters for different purposes.
-""" ->
-type YarnAppMaster
+"""
+mutable struct YarnAppMaster
     amrm_conn::YarnAMRMProtocol
 
     host::AbstractString

@@ -34,12 +34,12 @@ const _ApplicationClientProtocolService_desc = ServiceDescriptor("ApplicationCli
 
 ApplicationClientProtocolService(impl::Module) = ProtoService(_ApplicationClientProtocolService_desc, impl)
 
-type ApplicationClientProtocolServiceStub <: AbstractProtoServiceStub{false}
+mutable struct ApplicationClientProtocolServiceStub <: AbstractProtoServiceStub{false}
     impl::ProtoServiceStub
     ApplicationClientProtocolServiceStub(channel::ProtoRpcChannel) = new(ProtoServiceStub(_ApplicationClientProtocolService_desc, channel))
 end # type ApplicationClientProtocolServiceStub
 
-type ApplicationClientProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
+mutable struct ApplicationClientProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
     impl::ProtoServiceBlockingStub
     ApplicationClientProtocolServiceBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ApplicationClientProtocolService_desc, channel))
 end # type ApplicationClientProtocolServiceBlockingStub

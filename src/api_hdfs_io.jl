@@ -1,19 +1,19 @@
 
 
 
-@doc doc"""
+"""
 Default length (bytes) upto which to pre-fetch block metadata.
 (10 blocks of default size)
-""" ->
+"""
 const HDFS_READER_WINDOW_LENGTH = UInt64(64*1024*1024*10)
 
-@doc doc"""
+"""
 # HDFSFileReader
 Provides Julia IO APIs for reading HDFS files.
 Communicates with namenode for file metadata (through HDFSClient)
 and to datanodes for file data (through HDFSBlockReader)
-""" ->
-type HDFSFileReader <: IO
+"""
+mutable struct HDFSFileReader <: IO
     client::HDFSClient
     path::AbstractString
     size::UInt64
@@ -169,7 +169,7 @@ function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::U
             ret = read_packet!(blk_reader, out, offset)                     # try to read directly into output
             if ret < 0
                 pkt_len = len + UInt64(abs(ret))                            # bytes in this packet
-                buff = Array(UInt8, pkt_len)                                # allocate a temporary array
+                buff = Array{UInt8}(pkt_len)                                # allocate a temporary array
                 @logmsg("allocated temporary array of size $pkt_len, len:$len, ret:$ret, offset:$offset, bufflen:$(length(buff)), outlen:$(length(out))")
                 ret = read_packet!(blk_reader, buff, UInt64(1))             # read complete packet
                 copy!(out, offset, buff, 1, len)                            # copy len bytes to output
@@ -217,7 +217,7 @@ function read!(reader::HDFSFileReader, a::Vector{UInt8})
         if navlb == 0
             if (reader.fptr + remaining) > reader.size
                 canread = reader.size - reader.fptr
-                tb = Array(UInt8, Int(canread/sizeof(UInt8)))
+                tb = Array{UInt8}(Int(canread/sizeof(UInt8)))
                 nbytes = _read_and_buffer(reader, tb, UInt64(1), canread)
                 copy!(a, offset, tb, 1, length(tb))
             else
@@ -237,12 +237,12 @@ function read!(reader::HDFSFileReader, a::Vector{UInt8})
     (remaining > 0) && throw(EOFError())
     a
 end
-const _a = Array(UInt8, 1)
+const _a = Array{UInt8}(1)
 read(reader::HDFSFileReader, ::Type{UInt8}) = (read!(reader, _a); _a[1])
-readbytes(reader::HDFSFileReader, nb::Integer) = read!(reader, Array(UInt8, nb))
+readbytes(reader::HDFSFileReader, nb::Integer) = read!(reader, Array{UInt8}(nb))
 readall(reader::HDFSFileReader) = readbytes(reader, nb_available(reader))
 
-@doc doc"""
+"""
 # HDFSFileWriter
 Provides Julia IO APIs for writing HDFS files.
 
@@ -259,8 +259,8 @@ On close call NameNode.complete to:
     lease is added on file create or append
     dfs client should start thread to renew leases periodically
 - change file from under construction to complete
-""" ->
-type HDFSFileWriter <: IO
+"""
+mutable struct HDFSFileWriter <: IO
     client::HDFSClient
     path::AbstractString
     fptr::UInt64
@@ -290,7 +290,7 @@ function renewlease(writer::HDFSFileWriter)
     renewlease(writer.client)
 end
 
-function _write{T<:Union{UInt8,Vector{UInt8}}}(writer::HDFSFileWriter, data::T)
+function _write(writer::HDFSFileWriter, data::T) where T<:Union{UInt8,Vector{UInt8}}
     rem_data = data
     L = rem_len = length(data)
 
@@ -374,7 +374,7 @@ function cp(frompath::Union{HDFSFile,AbstractString}, topath::Union{HDFSFile,Abs
     end
 
     buff_sz = 64*1024*1024
-    buff = Array(UInt8, buff_sz)
+    buff = Array{UInt8}(buff_sz)
     brem = btot = (len == 0) ? (filesize(fromfile)-offset) : len
     while brem > 0
         bread = min(brem, buff_sz)

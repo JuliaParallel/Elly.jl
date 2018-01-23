@@ -4,7 +4,7 @@ using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
 
-type __enum_ContainerStateProto <: ProtoEnum
+mutable struct __enum_ContainerStateProto <: ProtoEnum
     C_NEW::Int32
     C_RUNNING::Int32
     C_COMPLETE::Int32
@@ -12,7 +12,7 @@ type __enum_ContainerStateProto <: ProtoEnum
 end #type __enum_ContainerStateProto
 const ContainerStateProto = __enum_ContainerStateProto()
 
-type __enum_YarnApplicationStateProto <: ProtoEnum
+mutable struct __enum_YarnApplicationStateProto <: ProtoEnum
     NEW::Int32
     NEW_SAVING::Int32
     SUBMITTED::Int32
@@ -25,7 +25,7 @@ type __enum_YarnApplicationStateProto <: ProtoEnum
 end #type __enum_YarnApplicationStateProto
 const YarnApplicationStateProto = __enum_YarnApplicationStateProto()
 
-type __enum_YarnApplicationAttemptStateProto <: ProtoEnum
+mutable struct __enum_YarnApplicationAttemptStateProto <: ProtoEnum
     APP_ATTEMPT_NEW::Int32
     APP_ATTEMPT_SUBMITTED::Int32
     APP_ATTEMPT_SCHEDULED::Int32
@@ -41,7 +41,7 @@ type __enum_YarnApplicationAttemptStateProto <: ProtoEnum
 end #type __enum_YarnApplicationAttemptStateProto
 const YarnApplicationAttemptStateProto = __enum_YarnApplicationAttemptStateProto()
 
-type __enum_FinalApplicationStatusProto <: ProtoEnum
+mutable struct __enum_FinalApplicationStatusProto <: ProtoEnum
     APP_UNDEFINED::Int32
     APP_SUCCEEDED::Int32
     APP_FAILED::Int32
@@ -50,7 +50,7 @@ type __enum_FinalApplicationStatusProto <: ProtoEnum
 end #type __enum_FinalApplicationStatusProto
 const FinalApplicationStatusProto = __enum_FinalApplicationStatusProto()
 
-type __enum_LocalResourceVisibilityProto <: ProtoEnum
+mutable struct __enum_LocalResourceVisibilityProto <: ProtoEnum
     PUBLIC::Int32
     PRIVATE::Int32
     APPLICATION::Int32
@@ -58,7 +58,7 @@ type __enum_LocalResourceVisibilityProto <: ProtoEnum
 end #type __enum_LocalResourceVisibilityProto
 const LocalResourceVisibilityProto = __enum_LocalResourceVisibilityProto()
 
-type __enum_LocalResourceTypeProto <: ProtoEnum
+mutable struct __enum_LocalResourceTypeProto <: ProtoEnum
     ARCHIVE::Int32
     FILE::Int32
     PATTERN::Int32
@@ -66,7 +66,7 @@ type __enum_LocalResourceTypeProto <: ProtoEnum
 end #type __enum_LocalResourceTypeProto
 const LocalResourceTypeProto = __enum_LocalResourceTypeProto()
 
-type __enum_NodeStateProto <: ProtoEnum
+mutable struct __enum_NodeStateProto <: ProtoEnum
     NS_NEW::Int32
     NS_RUNNING::Int32
     NS_UNHEALTHY::Int32
@@ -77,35 +77,35 @@ type __enum_NodeStateProto <: ProtoEnum
 end #type __enum_NodeStateProto
 const NodeStateProto = __enum_NodeStateProto()
 
-type __enum_AMCommandProto <: ProtoEnum
+mutable struct __enum_AMCommandProto <: ProtoEnum
     AM_RESYNC::Int32
     AM_SHUTDOWN::Int32
     __enum_AMCommandProto() = new(1,2)
 end #type __enum_AMCommandProto
 const AMCommandProto = __enum_AMCommandProto()
 
-type __enum_ApplicationAccessTypeProto <: ProtoEnum
+mutable struct __enum_ApplicationAccessTypeProto <: ProtoEnum
     APPACCESS_VIEW_APP::Int32
     APPACCESS_MODIFY_APP::Int32
     __enum_ApplicationAccessTypeProto() = new(1,2)
 end #type __enum_ApplicationAccessTypeProto
 const ApplicationAccessTypeProto = __enum_ApplicationAccessTypeProto()
 
-type __enum_QueueStateProto <: ProtoEnum
+mutable struct __enum_QueueStateProto <: ProtoEnum
     Q_STOPPED::Int32
     Q_RUNNING::Int32
     __enum_QueueStateProto() = new(1,2)
 end #type __enum_QueueStateProto
 const QueueStateProto = __enum_QueueStateProto()
 
-type __enum_QueueACLProto <: ProtoEnum
+mutable struct __enum_QueueACLProto <: ProtoEnum
     QACL_SUBMIT_APPLICATIONS::Int32
     QACL_ADMINISTER_QUEUE::Int32
     __enum_QueueACLProto() = new(1,2)
 end #type __enum_QueueACLProto
 const QueueACLProto = __enum_QueueACLProto()
 
-type __enum_ReservationRequestInterpreterProto <: ProtoEnum
+mutable struct __enum_ReservationRequestInterpreterProto <: ProtoEnum
     R_ANY::Int32
     R_ALL::Int32
     R_ORDER::Int32
@@ -114,7 +114,7 @@ type __enum_ReservationRequestInterpreterProto <: ProtoEnum
 end #type __enum_ReservationRequestInterpreterProto
 const ReservationRequestInterpreterProto = __enum_ReservationRequestInterpreterProto()
 
-type __enum_ContainerExitStatusProto <: ProtoEnum
+mutable struct __enum_ContainerExitStatusProto <: ProtoEnum
     SUCCESS::Int32
     INVALID::Int32
     ABORTED::Int32
@@ -123,7 +123,7 @@ type __enum_ContainerExitStatusProto <: ProtoEnum
 end #type __enum_ContainerExitStatusProto
 const ContainerExitStatusProto = __enum_ContainerExitStatusProto()
 
-type SerializedExceptionProto
+mutable struct SerializedExceptionProto
     message::AbstractString
     trace::AbstractString
     class_name::AbstractString
@@ -134,7 +134,7 @@ hash(v::SerializedExceptionProto) = ProtoBuf.protohash(v)
 isequal(v1::SerializedExceptionProto, v2::SerializedExceptionProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SerializedExceptionProto, v2::SerializedExceptionProto) = ProtoBuf.protoeq(v1, v2)
 
-type ApplicationIdProto
+mutable struct ApplicationIdProto
     id::Int32
     cluster_timestamp::Int64
     ApplicationIdProto() = (o=new(); fillunset(o); o)
@@ -143,7 +143,7 @@ hash(v::ApplicationIdProto) = ProtoBuf.protohash(v)
 isequal(v1::ApplicationIdProto, v2::ApplicationIdProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ApplicationIdProto, v2::ApplicationIdProto) = ProtoBuf.protoeq(v1, v2)
 
-type ApplicationAttemptIdProto
+mutable struct ApplicationAttemptIdProto
     application_id::ApplicationIdProto
     attemptId::Int32
     ApplicationAttemptIdProto() = (o=new(); fillunset(o); o)
@@ -152,7 +152,7 @@ hash(v::ApplicationAttemptIdProto) = ProtoBuf.protohash(v)
 isequal(v1::ApplicationAttemptIdProto, v2::ApplicationAttemptIdProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ApplicationAttemptIdProto, v2::ApplicationAttemptIdProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContainerIdProto
+mutable struct ContainerIdProto
     app_id::ApplicationIdProto
     app_attempt_id::ApplicationAttemptIdProto
     id::Int64
@@ -162,7 +162,7 @@ hash(v::ContainerIdProto) = ProtoBuf.protohash(v)
 isequal(v1::ContainerIdProto, v2::ContainerIdProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContainerIdProto, v2::ContainerIdProto) = ProtoBuf.protoeq(v1, v2)
 
-type ResourceProto
+mutable struct ResourceProto
     memory::Int32
     virtual_cores::Int32
     ResourceProto() = (o=new(); fillunset(o); o)
@@ -171,7 +171,7 @@ hash(v::ResourceProto) = ProtoBuf.protohash(v)
 isequal(v1::ResourceProto, v2::ResourceProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ResourceProto, v2::ResourceProto) = ProtoBuf.protoeq(v1, v2)
 
-type ResourceOptionProto
+mutable struct ResourceOptionProto
     resource::ResourceProto
     over_commit_timeout::Int32
     ResourceOptionProto() = (o=new(); fillunset(o); o)
@@ -180,7 +180,7 @@ hash(v::ResourceOptionProto) = ProtoBuf.protohash(v)
 isequal(v1::ResourceOptionProto, v2::ResourceOptionProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ResourceOptionProto, v2::ResourceOptionProto) = ProtoBuf.protoeq(v1, v2)
 
-type PriorityProto
+mutable struct PriorityProto
     priority::Int32
     PriorityProto() = (o=new(); fillunset(o); o)
 end #type PriorityProto
@@ -188,7 +188,7 @@ hash(v::PriorityProto) = ProtoBuf.protohash(v)
 isequal(v1::PriorityProto, v2::PriorityProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::PriorityProto, v2::PriorityProto) = ProtoBuf.protoeq(v1, v2)
 
-type URLProto
+mutable struct URLProto
     scheme::AbstractString
     host::AbstractString
     port::Int32
@@ -200,7 +200,7 @@ hash(v::URLProto) = ProtoBuf.protohash(v)
 isequal(v1::URLProto, v2::URLProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::URLProto, v2::URLProto) = ProtoBuf.protoeq(v1, v2)
 
-type LocalResourceProto
+mutable struct LocalResourceProto
     resource::URLProto
     size::Int64
     timestamp::Int64
@@ -214,7 +214,7 @@ hash(v::LocalResourceProto) = ProtoBuf.protohash(v)
 isequal(v1::LocalResourceProto, v2::LocalResourceProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::LocalResourceProto, v2::LocalResourceProto) = ProtoBuf.protoeq(v1, v2)
 
-type ApplicationResourceUsageReportProto
+mutable struct ApplicationResourceUsageReportProto
     num_used_containers::Int32
     num_reserved_containers::Int32
     used_resources::ResourceProto
@@ -228,7 +228,7 @@ hash(v::ApplicationResourceUsageReportProto) = ProtoBuf.protohash(v)
 isequal(v1::ApplicationResourceUsageReportProto, v2::ApplicationResourceUsageReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ApplicationResourceUsageReportProto, v2::ApplicationResourceUsageReportProto) = ProtoBuf.protoeq(v1, v2)
 
-type ApplicationReportProto
+mutable struct ApplicationReportProto
     applicationId::ApplicationIdProto
     user::AbstractString
     queue::AbstractString
@@ -251,13 +251,13 @@ type ApplicationReportProto
     applicationTags::Array{AbstractString,1}
     ApplicationReportProto() = (o=new(); fillunset(o); o)
 end #type ApplicationReportProto
-const __val_ApplicationReportProto = @compat Dict(:diagnostics => "N/A")
+const __val_ApplicationReportProto = Dict(:diagnostics => "N/A")
 meta(t::Type{ApplicationReportProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ApplicationReportProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ApplicationReportProto) = ProtoBuf.protohash(v)
 isequal(v1::ApplicationReportProto, v2::ApplicationReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ApplicationReportProto, v2::ApplicationReportProto) = ProtoBuf.protoeq(v1, v2)
 
-type ApplicationAttemptReportProto
+mutable struct ApplicationAttemptReportProto
     application_attempt_id::ApplicationAttemptIdProto
     host::AbstractString
     rpc_port::Int32
@@ -268,13 +268,13 @@ type ApplicationAttemptReportProto
     original_tracking_url::AbstractString
     ApplicationAttemptReportProto() = (o=new(); fillunset(o); o)
 end #type ApplicationAttemptReportProto
-const __val_ApplicationAttemptReportProto = @compat Dict(:diagnostics => "N/A")
+const __val_ApplicationAttemptReportProto = Dict(:diagnostics => "N/A")
 meta(t::Type{ApplicationAttemptReportProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ApplicationAttemptReportProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ApplicationAttemptReportProto) = ProtoBuf.protohash(v)
 isequal(v1::ApplicationAttemptReportProto, v2::ApplicationAttemptReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ApplicationAttemptReportProto, v2::ApplicationAttemptReportProto) = ProtoBuf.protoeq(v1, v2)
 
-type NodeIdProto
+mutable struct NodeIdProto
     host::AbstractString
     port::Int32
     NodeIdProto() = (o=new(); fillunset(o); o)
@@ -283,7 +283,7 @@ hash(v::NodeIdProto) = ProtoBuf.protohash(v)
 isequal(v1::NodeIdProto, v2::NodeIdProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NodeIdProto, v2::NodeIdProto) = ProtoBuf.protoeq(v1, v2)
 
-type NodeResourceMapProto
+mutable struct NodeResourceMapProto
     node_id::NodeIdProto
     resource_option::ResourceOptionProto
     NodeResourceMapProto() = (o=new(); fillunset(o); o)
@@ -292,7 +292,7 @@ hash(v::NodeResourceMapProto) = ProtoBuf.protohash(v)
 isequal(v1::NodeResourceMapProto, v2::NodeResourceMapProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NodeResourceMapProto, v2::NodeResourceMapProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContainerReportProto
+mutable struct ContainerReportProto
     container_id::ContainerIdProto
     resource::ResourceProto
     node_id::NodeIdProto
@@ -306,13 +306,13 @@ type ContainerReportProto
     node_http_address::AbstractString
     ContainerReportProto() = (o=new(); fillunset(o); o)
 end #type ContainerReportProto
-const __val_ContainerReportProto = @compat Dict(:diagnostics_info => "N/A")
+const __val_ContainerReportProto = Dict(:diagnostics_info => "N/A")
 meta(t::Type{ContainerReportProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ContainerReportProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ContainerReportProto) = ProtoBuf.protohash(v)
 isequal(v1::ContainerReportProto, v2::ContainerReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContainerReportProto, v2::ContainerReportProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContainerProto
+mutable struct ContainerProto
     id::ContainerIdProto
     nodeId::NodeIdProto
     node_http_address::AbstractString
@@ -325,7 +325,7 @@ hash(v::ContainerProto) = ProtoBuf.protohash(v)
 isequal(v1::ContainerProto, v2::ContainerProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContainerProto, v2::ContainerProto) = ProtoBuf.protoeq(v1, v2)
 
-type NodeReportProto
+mutable struct NodeReportProto
     nodeId::NodeIdProto
     httpAddress::AbstractString
     rackName::AbstractString
@@ -342,7 +342,7 @@ hash(v::NodeReportProto) = ProtoBuf.protohash(v)
 isequal(v1::NodeReportProto, v2::NodeReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NodeReportProto, v2::NodeReportProto) = ProtoBuf.protoeq(v1, v2)
 
-type NodeIdToLabelsProto
+mutable struct NodeIdToLabelsProto
     nodeId::NodeIdProto
     nodeLabels::Array{AbstractString,1}
     NodeIdToLabelsProto() = (o=new(); fillunset(o); o)
@@ -351,7 +351,7 @@ hash(v::NodeIdToLabelsProto) = ProtoBuf.protohash(v)
 isequal(v1::NodeIdToLabelsProto, v2::NodeIdToLabelsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NodeIdToLabelsProto, v2::NodeIdToLabelsProto) = ProtoBuf.protoeq(v1, v2)
 
-type LabelsToNodeIdsProto
+mutable struct LabelsToNodeIdsProto
     nodeLabels::AbstractString
     nodeId::Array{NodeIdProto,1}
     LabelsToNodeIdsProto() = (o=new(); fillunset(o); o)
@@ -360,7 +360,7 @@ hash(v::LabelsToNodeIdsProto) = ProtoBuf.protohash(v)
 isequal(v1::LabelsToNodeIdsProto, v2::LabelsToNodeIdsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::LabelsToNodeIdsProto, v2::LabelsToNodeIdsProto) = ProtoBuf.protoeq(v1, v2)
 
-type ResourceRequestProto
+mutable struct ResourceRequestProto
     priority::PriorityProto
     resource_name::AbstractString
     capability::ResourceProto
@@ -369,13 +369,13 @@ type ResourceRequestProto
     node_label_expression::AbstractString
     ResourceRequestProto() = (o=new(); fillunset(o); o)
 end #type ResourceRequestProto
-const __val_ResourceRequestProto = @compat Dict(:relax_locality => true)
+const __val_ResourceRequestProto = Dict(:relax_locality => true)
 meta(t::Type{ResourceRequestProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ResourceRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ResourceRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ResourceRequestProto, v2::ResourceRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ResourceRequestProto, v2::ResourceRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type PreemptionContainerProto
+mutable struct PreemptionContainerProto
     id::ContainerIdProto
     PreemptionContainerProto() = (o=new(); fillunset(o); o)
 end #type PreemptionContainerProto
@@ -383,7 +383,7 @@ hash(v::PreemptionContainerProto) = ProtoBuf.protohash(v)
 isequal(v1::PreemptionContainerProto, v2::PreemptionContainerProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::PreemptionContainerProto, v2::PreemptionContainerProto) = ProtoBuf.protoeq(v1, v2)
 
-type StrictPreemptionContractProto
+mutable struct StrictPreemptionContractProto
     container::Array{PreemptionContainerProto,1}
     StrictPreemptionContractProto() = (o=new(); fillunset(o); o)
 end #type StrictPreemptionContractProto
@@ -391,7 +391,7 @@ hash(v::StrictPreemptionContractProto) = ProtoBuf.protohash(v)
 isequal(v1::StrictPreemptionContractProto, v2::StrictPreemptionContractProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StrictPreemptionContractProto, v2::StrictPreemptionContractProto) = ProtoBuf.protoeq(v1, v2)
 
-type PreemptionResourceRequestProto
+mutable struct PreemptionResourceRequestProto
     resource::ResourceRequestProto
     PreemptionResourceRequestProto() = (o=new(); fillunset(o); o)
 end #type PreemptionResourceRequestProto
@@ -399,7 +399,7 @@ hash(v::PreemptionResourceRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::PreemptionResourceRequestProto, v2::PreemptionResourceRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::PreemptionResourceRequestProto, v2::PreemptionResourceRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type PreemptionContractProto
+mutable struct PreemptionContractProto
     resource::Array{PreemptionResourceRequestProto,1}
     container::Array{PreemptionContainerProto,1}
     PreemptionContractProto() = (o=new(); fillunset(o); o)
@@ -408,7 +408,7 @@ hash(v::PreemptionContractProto) = ProtoBuf.protohash(v)
 isequal(v1::PreemptionContractProto, v2::PreemptionContractProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::PreemptionContractProto, v2::PreemptionContractProto) = ProtoBuf.protoeq(v1, v2)
 
-type PreemptionMessageProto
+mutable struct PreemptionMessageProto
     strictContract::StrictPreemptionContractProto
     contract::PreemptionContractProto
     PreemptionMessageProto() = (o=new(); fillunset(o); o)
@@ -417,7 +417,7 @@ hash(v::PreemptionMessageProto) = ProtoBuf.protohash(v)
 isequal(v1::PreemptionMessageProto, v2::PreemptionMessageProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::PreemptionMessageProto, v2::PreemptionMessageProto) = ProtoBuf.protoeq(v1, v2)
 
-type ResourceBlacklistRequestProto
+mutable struct ResourceBlacklistRequestProto
     blacklist_additions::Array{AbstractString,1}
     blacklist_removals::Array{AbstractString,1}
     ResourceBlacklistRequestProto() = (o=new(); fillunset(o); o)
@@ -426,31 +426,31 @@ hash(v::ResourceBlacklistRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ResourceBlacklistRequestProto, v2::ResourceBlacklistRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ResourceBlacklistRequestProto, v2::ResourceBlacklistRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type LogAggregationContextProto
+mutable struct LogAggregationContextProto
     include_pattern::AbstractString
     exclude_pattern::AbstractString
     rolled_logs_include_pattern::AbstractString
     rolled_logs_exclude_pattern::AbstractString
     LogAggregationContextProto() = (o=new(); fillunset(o); o)
 end #type LogAggregationContextProto
-const __val_LogAggregationContextProto = @compat Dict(:include_pattern => ".*", :rolled_logs_exclude_pattern => ".*")
+const __val_LogAggregationContextProto = Dict(:include_pattern => ".*", :rolled_logs_exclude_pattern => ".*")
 meta(t::Type{LogAggregationContextProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_LogAggregationContextProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::LogAggregationContextProto) = ProtoBuf.protohash(v)
 isequal(v1::LogAggregationContextProto, v2::LogAggregationContextProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::LogAggregationContextProto, v2::LogAggregationContextProto) = ProtoBuf.protoeq(v1, v2)
 
-type ApplicationACLMapProto
+mutable struct ApplicationACLMapProto
     accessType::Int32
     acl::AbstractString
     ApplicationACLMapProto() = (o=new(); fillunset(o); o)
 end #type ApplicationACLMapProto
-const __val_ApplicationACLMapProto = @compat Dict(:acl => " ")
+const __val_ApplicationACLMapProto = Dict(:acl => " ")
 meta(t::Type{ApplicationACLMapProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ApplicationACLMapProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ApplicationACLMapProto) = ProtoBuf.protohash(v)
 isequal(v1::ApplicationACLMapProto, v2::ApplicationACLMapProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ApplicationACLMapProto, v2::ApplicationACLMapProto) = ProtoBuf.protoeq(v1, v2)
 
-type YarnClusterMetricsProto
+mutable struct YarnClusterMetricsProto
     num_node_managers::Int32
     YarnClusterMetricsProto() = (o=new(); fillunset(o); o)
 end #type YarnClusterMetricsProto
@@ -458,7 +458,7 @@ hash(v::YarnClusterMetricsProto) = ProtoBuf.protohash(v)
 isequal(v1::YarnClusterMetricsProto, v2::YarnClusterMetricsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::YarnClusterMetricsProto, v2::YarnClusterMetricsProto) = ProtoBuf.protoeq(v1, v2)
 
-type QueueInfoProto
+mutable struct QueueInfoProto
     queueName::AbstractString
     capacity::Float32
     maximumCapacity::Float32
@@ -474,7 +474,7 @@ hash(v::QueueInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::QueueInfoProto, v2::QueueInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::QueueInfoProto, v2::QueueInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type QueueUserACLInfoProto
+mutable struct QueueUserACLInfoProto
     queueName::AbstractString
     userAcls::Array{Int32,1}
     QueueUserACLInfoProto() = (o=new(); fillunset(o); o)
@@ -483,7 +483,7 @@ hash(v::QueueUserACLInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::QueueUserACLInfoProto, v2::QueueUserACLInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::QueueUserACLInfoProto, v2::QueueUserACLInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type ReservationIdProto
+mutable struct ReservationIdProto
     id::Int64
     cluster_timestamp::Int64
     ReservationIdProto() = (o=new(); fillunset(o); o)
@@ -492,31 +492,31 @@ hash(v::ReservationIdProto) = ProtoBuf.protohash(v)
 isequal(v1::ReservationIdProto, v2::ReservationIdProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ReservationIdProto, v2::ReservationIdProto) = ProtoBuf.protoeq(v1, v2)
 
-type ReservationRequestProto
+mutable struct ReservationRequestProto
     capability::ResourceProto
     num_containers::Int32
     concurrency::Int32
     duration::Int64
     ReservationRequestProto() = (o=new(); fillunset(o); o)
 end #type ReservationRequestProto
-const __val_ReservationRequestProto = @compat Dict(:num_containers => 1, :concurrency => 1, :duration => -1)
+const __val_ReservationRequestProto = Dict(:num_containers => 1, :concurrency => 1, :duration => -1)
 meta(t::Type{ReservationRequestProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ReservationRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ReservationRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ReservationRequestProto, v2::ReservationRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ReservationRequestProto, v2::ReservationRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type ReservationRequestsProto
+mutable struct ReservationRequestsProto
     reservation_resources::Array{ReservationRequestProto,1}
     interpreter::Int32
     ReservationRequestsProto() = (o=new(); fillunset(o); o)
 end #type ReservationRequestsProto
-const __val_ReservationRequestsProto = @compat Dict(:interpreter => ReservationRequestInterpreterProto.R_ALL)
+const __val_ReservationRequestsProto = Dict(:interpreter => ReservationRequestInterpreterProto.R_ALL)
 meta(t::Type{ReservationRequestsProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ReservationRequestsProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ReservationRequestsProto) = ProtoBuf.protohash(v)
 isequal(v1::ReservationRequestsProto, v2::ReservationRequestsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ReservationRequestsProto, v2::ReservationRequestsProto) = ProtoBuf.protoeq(v1, v2)
 
-type ReservationDefinitionProto
+mutable struct ReservationDefinitionProto
     reservation_requests::ReservationRequestsProto
     arrival::Int64
     deadline::Int64
@@ -527,20 +527,20 @@ hash(v::ReservationDefinitionProto) = ProtoBuf.protohash(v)
 isequal(v1::ReservationDefinitionProto, v2::ReservationDefinitionProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ReservationDefinitionProto, v2::ReservationDefinitionProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContainerStatusProto
+mutable struct ContainerStatusProto
     container_id::ContainerIdProto
     state::Int32
     diagnostics::AbstractString
     exit_status::Int32
     ContainerStatusProto() = (o=new(); fillunset(o); o)
 end #type ContainerStatusProto
-const __val_ContainerStatusProto = @compat Dict(:diagnostics => "N/A", :exit_status => -1000)
+const __val_ContainerStatusProto = Dict(:diagnostics => "N/A", :exit_status => -1000)
 meta(t::Type{ContainerStatusProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ContainerStatusProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ContainerStatusProto) = ProtoBuf.protohash(v)
 isequal(v1::ContainerStatusProto, v2::ContainerStatusProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContainerStatusProto, v2::ContainerStatusProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContainerResourceIncreaseRequestProto
+mutable struct ContainerResourceIncreaseRequestProto
     container_id::ContainerIdProto
     capability::ResourceProto
     ContainerResourceIncreaseRequestProto() = (o=new(); fillunset(o); o)
@@ -549,7 +549,7 @@ hash(v::ContainerResourceIncreaseRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::ContainerResourceIncreaseRequestProto, v2::ContainerResourceIncreaseRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContainerResourceIncreaseRequestProto, v2::ContainerResourceIncreaseRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContainerResourceIncreaseProto
+mutable struct ContainerResourceIncreaseProto
     container_id::ContainerIdProto
     capability::ResourceProto
     container_token::TokenProto
@@ -559,7 +559,7 @@ hash(v::ContainerResourceIncreaseProto) = ProtoBuf.protohash(v)
 isequal(v1::ContainerResourceIncreaseProto, v2::ContainerResourceIncreaseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContainerResourceIncreaseProto, v2::ContainerResourceIncreaseProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContainerResourceDecreaseProto
+mutable struct ContainerResourceDecreaseProto
     container_id::ContainerIdProto
     capability::ResourceProto
     ContainerResourceDecreaseProto() = (o=new(); fillunset(o); o)
@@ -568,7 +568,7 @@ hash(v::ContainerResourceDecreaseProto) = ProtoBuf.protohash(v)
 isequal(v1::ContainerResourceDecreaseProto, v2::ContainerResourceDecreaseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContainerResourceDecreaseProto, v2::ContainerResourceDecreaseProto) = ProtoBuf.protoeq(v1, v2)
 
-type StringLocalResourceMapProto
+mutable struct StringLocalResourceMapProto
     key::AbstractString
     value::LocalResourceProto
     StringLocalResourceMapProto() = (o=new(); fillunset(o); o)
@@ -577,7 +577,7 @@ hash(v::StringLocalResourceMapProto) = ProtoBuf.protohash(v)
 isequal(v1::StringLocalResourceMapProto, v2::StringLocalResourceMapProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StringLocalResourceMapProto, v2::StringLocalResourceMapProto) = ProtoBuf.protoeq(v1, v2)
 
-type StringStringMapProto
+mutable struct StringStringMapProto
     key::AbstractString
     value::AbstractString
     StringStringMapProto() = (o=new(); fillunset(o); o)
@@ -586,7 +586,7 @@ hash(v::StringStringMapProto) = ProtoBuf.protohash(v)
 isequal(v1::StringStringMapProto, v2::StringStringMapProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StringStringMapProto, v2::StringStringMapProto) = ProtoBuf.protoeq(v1, v2)
 
-type StringBytesMapProto
+mutable struct StringBytesMapProto
     key::AbstractString
     value::Array{UInt8,1}
     StringBytesMapProto() = (o=new(); fillunset(o); o)
@@ -595,7 +595,7 @@ hash(v::StringBytesMapProto) = ProtoBuf.protohash(v)
 isequal(v1::StringBytesMapProto, v2::StringBytesMapProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StringBytesMapProto, v2::StringBytesMapProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContainerLaunchContextProto
+mutable struct ContainerLaunchContextProto
     localResources::Array{StringLocalResourceMapProto,1}
     tokens::Array{UInt8,1}
     service_data::Array{StringBytesMapProto,1}
@@ -608,7 +608,7 @@ hash(v::ContainerLaunchContextProto) = ProtoBuf.protohash(v)
 isequal(v1::ContainerLaunchContextProto, v2::ContainerLaunchContextProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContainerLaunchContextProto, v2::ContainerLaunchContextProto) = ProtoBuf.protoeq(v1, v2)
 
-type ApplicationSubmissionContextProto
+mutable struct ApplicationSubmissionContextProto
     application_id::ApplicationIdProto
     application_name::AbstractString
     queue::AbstractString
@@ -628,7 +628,7 @@ type ApplicationSubmissionContextProto
     am_container_resource_request::ResourceRequestProto
     ApplicationSubmissionContextProto() = (o=new(); fillunset(o); o)
 end #type ApplicationSubmissionContextProto
-const __val_ApplicationSubmissionContextProto = @compat Dict(:application_name => "N/A", :queue => "default", :cancel_tokens_when_complete => true, :unmanaged_am => false, :maxAppAttempts => 0, :applicationType => "YARN", :keep_containers_across_application_attempts => false, :attempt_failures_validity_interval => -1)
+const __val_ApplicationSubmissionContextProto = Dict(:application_name => "N/A", :queue => "default", :cancel_tokens_when_complete => true, :unmanaged_am => false, :maxAppAttempts => 0, :applicationType => "YARN", :keep_containers_across_application_attempts => false, :attempt_failures_validity_interval => -1)
 meta(t::Type{ApplicationSubmissionContextProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ApplicationSubmissionContextProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::ApplicationSubmissionContextProto) = ProtoBuf.protohash(v)
 isequal(v1::ApplicationSubmissionContextProto, v2::ApplicationSubmissionContextProto) = ProtoBuf.protoisequal(v1, v2)

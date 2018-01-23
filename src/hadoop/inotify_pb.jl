@@ -3,7 +3,7 @@ using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
 
-type __enum_EventType <: ProtoEnum
+mutable struct __enum_EventType <: ProtoEnum
     EVENT_CREATE::Int32
     EVENT_CLOSE::Int32
     EVENT_APPEND::Int32
@@ -14,7 +14,7 @@ type __enum_EventType <: ProtoEnum
 end #type __enum_EventType
 const EventType = __enum_EventType()
 
-type __enum_INodeType <: ProtoEnum
+mutable struct __enum_INodeType <: ProtoEnum
     I_TYPE_FILE::Int32
     I_TYPE_DIRECTORY::Int32
     I_TYPE_SYMLINK::Int32
@@ -22,7 +22,7 @@ type __enum_INodeType <: ProtoEnum
 end #type __enum_INodeType
 const INodeType = __enum_INodeType()
 
-type __enum_MetadataUpdateType <: ProtoEnum
+mutable struct __enum_MetadataUpdateType <: ProtoEnum
     META_TYPE_TIMES::Int32
     META_TYPE_REPLICATION::Int32
     META_TYPE_OWNER::Int32
@@ -33,7 +33,7 @@ type __enum_MetadataUpdateType <: ProtoEnum
 end #type __enum_MetadataUpdateType
 const MetadataUpdateType = __enum_MetadataUpdateType()
 
-type EventProto
+mutable struct EventProto
     _type::Int32
     contents::Array{UInt8,1}
     EventProto() = (o=new(); fillunset(o); o)
@@ -44,7 +44,7 @@ hash(v::EventProto) = ProtoBuf.protohash(v)
 isequal(v1::EventProto, v2::EventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::EventProto, v2::EventProto) = ProtoBuf.protoeq(v1, v2)
 
-type EventBatchProto
+mutable struct EventBatchProto
     txid::Int64
     events::Array{EventProto,1}
     EventBatchProto() = (o=new(); fillunset(o); o)
@@ -55,7 +55,7 @@ hash(v::EventBatchProto) = ProtoBuf.protohash(v)
 isequal(v1::EventBatchProto, v2::EventBatchProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::EventBatchProto, v2::EventBatchProto) = ProtoBuf.protoeq(v1, v2)
 
-type CreateEventProto
+mutable struct CreateEventProto
     _type::Int32
     path::AbstractString
     ctime::Int64
@@ -69,13 +69,13 @@ type CreateEventProto
     CreateEventProto() = (o=new(); fillunset(o); o)
 end #type CreateEventProto
 const __req_CreateEventProto = Symbol[:_type,:path,:ctime,:ownerName,:groupName,:perms]
-const __val_CreateEventProto = @compat Dict(:defaultBlockSize => 0)
+const __val_CreateEventProto = Dict(:defaultBlockSize => 0)
 meta(t::Type{CreateEventProto}) = meta(t, __req_CreateEventProto, ProtoBuf.DEF_FNUM, __val_CreateEventProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::CreateEventProto) = ProtoBuf.protohash(v)
 isequal(v1::CreateEventProto, v2::CreateEventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CreateEventProto, v2::CreateEventProto) = ProtoBuf.protoeq(v1, v2)
 
-type CloseEventProto
+mutable struct CloseEventProto
     path::AbstractString
     fileSize::Int64
     timestamp::Int64
@@ -87,19 +87,19 @@ hash(v::CloseEventProto) = ProtoBuf.protohash(v)
 isequal(v1::CloseEventProto, v2::CloseEventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CloseEventProto, v2::CloseEventProto) = ProtoBuf.protoeq(v1, v2)
 
-type AppendEventProto
+mutable struct AppendEventProto
     path::AbstractString
     newBlock::Bool
     AppendEventProto() = (o=new(); fillunset(o); o)
 end #type AppendEventProto
 const __req_AppendEventProto = Symbol[:path]
-const __val_AppendEventProto = @compat Dict(:newBlock => false)
+const __val_AppendEventProto = Dict(:newBlock => false)
 meta(t::Type{AppendEventProto}) = meta(t, __req_AppendEventProto, ProtoBuf.DEF_FNUM, __val_AppendEventProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
 hash(v::AppendEventProto) = ProtoBuf.protohash(v)
 isequal(v1::AppendEventProto, v2::AppendEventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::AppendEventProto, v2::AppendEventProto) = ProtoBuf.protoeq(v1, v2)
 
-type RenameEventProto
+mutable struct RenameEventProto
     srcPath::AbstractString
     destPath::AbstractString
     timestamp::Int64
@@ -111,7 +111,7 @@ hash(v::RenameEventProto) = ProtoBuf.protohash(v)
 isequal(v1::RenameEventProto, v2::RenameEventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RenameEventProto, v2::RenameEventProto) = ProtoBuf.protoeq(v1, v2)
 
-type MetadataUpdateEventProto
+mutable struct MetadataUpdateEventProto
     path::AbstractString
     _type::Int32
     mtime::Int64
@@ -131,7 +131,7 @@ hash(v::MetadataUpdateEventProto) = ProtoBuf.protohash(v)
 isequal(v1::MetadataUpdateEventProto, v2::MetadataUpdateEventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::MetadataUpdateEventProto, v2::MetadataUpdateEventProto) = ProtoBuf.protoeq(v1, v2)
 
-type UnlinkEventProto
+mutable struct UnlinkEventProto
     path::AbstractString
     timestamp::Int64
     UnlinkEventProto() = (o=new(); fillunset(o); o)
@@ -142,7 +142,7 @@ hash(v::UnlinkEventProto) = ProtoBuf.protohash(v)
 isequal(v1::UnlinkEventProto, v2::UnlinkEventProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::UnlinkEventProto, v2::UnlinkEventProto) = ProtoBuf.protoeq(v1, v2)
 
-type EventsListProto
+mutable struct EventsListProto
     events::Array{EventProto,1}
     firstTxid::Int64
     lastTxid::Int64

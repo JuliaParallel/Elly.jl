@@ -13,12 +13,12 @@ const _ApplicationMasterProtocolService_desc = ServiceDescriptor("ApplicationMas
 
 ApplicationMasterProtocolService(impl::Module) = ProtoService(_ApplicationMasterProtocolService_desc, impl)
 
-type ApplicationMasterProtocolServiceStub <: AbstractProtoServiceStub{false}
+mutable struct ApplicationMasterProtocolServiceStub <: AbstractProtoServiceStub{false}
     impl::ProtoServiceStub
     ApplicationMasterProtocolServiceStub(channel::ProtoRpcChannel) = new(ProtoServiceStub(_ApplicationMasterProtocolService_desc, channel))
 end # type ApplicationMasterProtocolServiceStub
 
-type ApplicationMasterProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
+mutable struct ApplicationMasterProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
     impl::ProtoServiceBlockingStub
     ApplicationMasterProtocolServiceBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ApplicationMasterProtocolService_desc, channel))
 end # type ApplicationMasterProtocolServiceBlockingStub

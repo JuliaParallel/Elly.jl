@@ -52,7 +52,7 @@ function digmd5_respond(username::AbstractString, password::AbstractString, dige
                "maxbuf=",       SASL_DIGESTMD5_MAXBUF,  ',',
                "response=",     bytes2hex(response),    ',',
                "qop=",          qop)
-    takebuf_string(iob)
+    String(take!(iob))
 end
 
 function testdigmd5(username::AbstractString, password::AbstractString, protocol::AbstractString, serverid::AbstractString, challenge::AbstractString)

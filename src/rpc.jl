@@ -27,13 +27,13 @@ const HRPC_PROTOCOLS = Dict(
     ContainerManagementProtocolServiceBlockingStub  => Dict(:id => "org.apache.hadoop.yarn.api.ContainerManagementProtocolPB",  :ver => UInt64(1), :name => "YarnNMClient")
 )
 
-@doc doc"""
+"""
 HadoopRpcException is thrown on Rpc interaction errors either with namenode or datanode.
 Field `status` contains error code (enum) if received from the connected entity or just ERROR (1) to indicate failure.
 Though HadoopRpcException is used while communicating with both namenodes and datanodes, SUCCESS and ERROR are coded
 with the same values in both cases. Other specific error codes need knowledge of the context to interpret.
-""" ->
-type HadoopRpcException <: Exception
+"""
+mutable struct HadoopRpcException <: Exception
     status::Int32
     message::AbstractString
     function HadoopRpcException(header::RpcResponseHeaderProto)
@@ -51,18 +51,18 @@ end
 const crc32 = crc(CRC_32)
 const crc32c = crc(CRC_32_C)
 
-immutable ChkSum{T} end
-typealias ChkSumCRC32   ChkSum{ChecksumTypeProto.CHECKSUM_CRC32}
-typealias ChkSumCRC32C  ChkSum{ChecksumTypeProto.CHECKSUM_CRC32C}
+struct ChkSum{T} end
+const ChkSumCRC32   =   ChkSum{ChecksumTypeProto.CHECKSUM_CRC32}
+const ChkSumCRC32C  =  ChkSum{ChecksumTypeProto.CHECKSUM_CRC32C}
 
 chksum(::Type{ChkSumCRC32}, c_data::Vector{UInt8}) = crc32(c_data)
 chksum(::Type{ChkSumCRC32C}, c_data::Vector{UInt8}) = crc32c(c_data)
-chksum{T}(::Type{ChkSum{T}}, c_data::Vector{UInt8}) = throw(HadoopRpcException("Unknown CRC type $T"))
+chksum(::Type{ChkSum{T}}, c_data::Vector{UInt8}) where {T} = throw(HadoopRpcException("Unknown CRC type $T"))
 isvalid_chksum(::Type{ChkSumCRC32}) = true
 isvalid_chksum(::Type{ChkSumCRC32C}) = true
-isvalid_chksum{T}(::Type{ChkSum{T}}) = false
+isvalid_chksum(::Type{ChkSum{T}}) where {T} = false
 
-function _len_uleb{T <: Integer}(x::T)
+function _len_uleb(x::T) where T <: Integer
     nw = 1
     while ((x >>>= 7) != 0)
         nw += 1
@@ -74,7 +74,7 @@ function buffer_size_delimited(channelbuff::IOBuffer, obj)
     iob = IOBuffer()
     writeproto(iob, obj)
 
-    data = takebuf_array(iob)
+    data = take!(iob)
     len = write_bytes(channelbuff, data)
     @logmsg("$(typeof(obj)) -> $data")
     @logmsg("$(typeof(obj)) -> buffer. len $len")
@@ -82,7 +82,7 @@ function buffer_size_delimited(channelbuff::IOBuffer, obj)
 end
 
 function send_buffered(buff::IOBuffer, sock::TCPSocket, delimited::Bool)
-    data = takebuf_array(buff)
+    data = take!(buff)
     len::UInt32 = 0
     if delimited
         datalen = UInt32(length(data))
@@ -107,11 +107,11 @@ end
 
 #
 # Hadoop RPC Channel
-type HadoopRpcController <: ProtoRpcController
+mutable struct HadoopRpcController <: ProtoRpcController
     debug::Bool
 end
 
-type HadoopRpcChannel <: ProtoRpcChannel
+mutable struct HadoopRpcChannel <: ProtoRpcChannel
     host::AbstractString
     port::Integer
     protocol_attribs::Dict
@@ -308,11 +308,11 @@ const HDATA_COPY_BLOCK          = Int8(84)
 const HDATA_BLOCK_CHECKSUM      = Int8(85)
 const HDATA_TRANSFER_BLOCK      = Int8(86)
 
-@doc doc"""
+"""
 HadoopDataChannel is the connection to a datanode.
 Also associated with it is a buffer to help in message preparation.
-""" ->
-type HadoopDataChannel
+"""
+mutable struct HadoopDataChannel
     host::AbstractString
     port::Integer
     iob::IOBuffer
@@ -365,11 +365,11 @@ function _select_node_for_block(block::LocatedBlockProto)
 end
 
 
-@doc doc"""
+"""
 HadoopDataChannelPool is a connection pool that holds connections to datanodes.
 Connections are deemed stale after `keepalivesecs`.
-""" ->
-type HadoopDataChannelPool
+"""
+mutable struct HadoopDataChannelPool
     free::Dict{AbstractString,Vector}
     keepalivesecs::UInt64
 
@@ -414,10 +414,10 @@ end
 #
 # Begin Block Reader implementation to read data
 
-@doc doc"""
+"""
 HDFSBlockReader reads one block of data from a datanode.
-""" ->
-type HDFSBlockReader
+"""
+mutable struct HDFSBlockReader
     channel::HadoopDataChannel
 
     # block and region assigned
@@ -557,7 +557,7 @@ function recv_packet_hdr(reader::HDFSBlockReader)
 
         pkt_len = ntoh(read(sock, UInt32))
         hdr_len = ntoh(read(sock, UInt16))
-        hdr_bytes = Array(UInt8, hdr_len)
+        hdr_bytes = Array{UInt8}(hdr_len)
         read!(sock, hdr_bytes)
         @logmsg("pkt_hdr <- sock. len $(hdr_len) (pkt_len: $pkt_len)")
 
@@ -567,13 +567,13 @@ function recv_packet_hdr(reader::HDFSBlockReader)
         data_len = pkt_hdr.dataLen
         block_op_resp = get(reader.block_op_resp)
         reader.chunk_len = block_op_resp.readOpChecksumInfo.checksum.bytesPerChecksum
-        reader.chunk = Array(UInt8, reader.chunk_len)
+        reader.chunk = Array{UInt8}(reader.chunk_len)
         reader.chunk_count = div(data_len + reader.chunk_len - 1, reader.chunk_len)    # chunk_len-1 to take care of chunks with partial data
         reader.chunks_read = 0
         @logmsg("received packet with $(reader.chunk_count) chunks of $(reader.chunk_len) bytes each in $data_len bytes of data")
         @logmsg("last packet: $(pkt_hdr.lastPacketInBlock)")
 
-        checksums = Array(UInt32, reader.chunk_count)
+        checksums = Array{UInt32}(reader.chunk_count)
         read!(sock, checksums)
         @logmsg("checksums <- sock. len $(sizeof(checksums))")
         for idx in 1:length(checksums)
@@ -611,7 +611,7 @@ function verify_pkt_checksums(reader::HDFSBlockReader, buff::Vector{UInt8})
     verify_pkt_checksums(reader, buff, C)
 end
 
-function verify_pkt_checksums{T}(reader::HDFSBlockReader, buff::Vector{UInt8}, C::Type{ChkSum{T}})
+function verify_pkt_checksums(reader::HDFSBlockReader, buff::Vector{UInt8}, C::Type{ChkSum{T}}) where T
     chunk_len = reader.chunk_len
     offset = 1
     checksums = reader.checksums
@@ -645,11 +645,11 @@ function initiate(reader::HDFSBlockReader; retry=true)
     end
 end
 
-@doc doc"""
+"""
 Read one packet into `inbuff` starting from `offset`.
 If `inbuff` has insufficient space, returns the minimum additional space required in `inbuff` to read the packet as a negative number.
 Otherwise, returns the number of bytes available in `inbuff` after reading the packet.
-""" ->
+"""
 function read_packet!(reader::HDFSBlockReader, inbuff::Vector{UInt8}, offset::UInt64)
     if !reader.initiated
         # initiate the stream
@@ -691,11 +691,11 @@ end
 #
 # Begin Block Writer implementation for writing / appending data
 
-@doc doc"""
+"""
 PipelinedPacket holds a packet of data while it is sent to datanodes and acknowledged.
 The data bytes are reset once acks are received successfully to reduce memory usage.
-""" ->
-type PipelinedPacket
+"""
+mutable struct PipelinedPacket
     seqno::Int64
     hdr::PacketHeaderProto
     bytes::Vector{UInt8}
@@ -703,13 +703,13 @@ type PipelinedPacket
     acks::Vector{Int32}
 end
 
-@doc doc"""
+"""
 WriterPipeline holds all packets of data for a block and provides methods to maintain
 their states. Pipeline `failed` status is set if any of the acks received is a failure.
 Field `acked_bytes` contains the count of bytes successfully sent till an error is
 encountered.
-""" ->
-type WriterPipeline
+"""
+mutable struct WriterPipeline
     pkt_prepared::Vector{PipelinedPacket}
     pkt_ackwait::Vector{PipelinedPacket}
     pkt_ackrcvd::Vector{PipelinedPacket}
@@ -786,7 +786,7 @@ pending(pipeline::WriterPipeline) = (length(pipeline.pkt_prepared) + length(pipe
 # - maintain a list of IOBuffers and LocatedBlockProtos in HDFSFileWriters that are queued / being written to, with a max limit beyond which it needs to wait for blocks to be written.
 # - close of HDFSFileWriter should wait for all blocks to be flushed
 # - this can later be tweaked to incorporate node failover
-@doc doc"""
+"""
 HDFSBlockWriter writes one block worth of data to a datanode.
 
 The `write` method returns number of bytes accepted for writing into this block, which may be less than
@@ -795,8 +795,8 @@ what was requested if block is full.
 Packets are sent and acks received as and when data being written exceed packet size limit.
 
 The `close` operation flushes remaining data in the block and waits for all pending acks.
-""" ->
-type HDFSBlockWriter
+"""
+mutable struct HDFSBlockWriter
     channel::HadoopDataChannel
     server_defaults::FsServerDefaultsProto
 
@@ -1040,7 +1040,7 @@ function recv_blockop(writer::HDFSBlockWriter)
 end
 
 populate_checksums(bytes::Vector{UInt8}, chunk_len::UInt32, checksums::Vector{UInt32}, checksum_type::Int32) = populate_checksums(bytes, chunk_len, checksums, ChkSum{checksum_type})
-function populate_checksums{T}(bytes::Vector{UInt8}, chunk_len::UInt32, checksums::Vector{UInt32}, C::Type{ChkSum{T}})
+function populate_checksums(bytes::Vector{UInt8}, chunk_len::UInt32, checksums::Vector{UInt32}, C::Type{ChkSum{T}}) where T
     isvalid_chksum(C) || throw(HadoopRpcException("Unknown checksum type $T"))
     nbytes = length(bytes)
     nchunks = length(checksums)
@@ -1074,15 +1074,15 @@ function prepare_packet(writer::HDFSBlockWriter)
     writer.total_written += bytes_in_packet
 
     if bytes_in_packet == nb_available(writer.buffer)
-        bytes = takebuf_array(writer.buffer)
+        bytes = take!(writer.buffer)
     else
-        bytes = Array(UInt8, bytes_in_packet)
+        bytes = Array{UInt8}(bytes_in_packet)
         read!(writer.buffer, bytes)
     end
 
     chunk_len = defaults.bytesPerChecksum
     chunk_count = div(bytes_in_packet + chunk_len - 1, chunk_len)
-    checksums = Array(UInt32, chunk_count)
+    checksums = Array{UInt32}(chunk_count)
     populate_checksums(bytes, chunk_len, checksums, defaults.checksumType)
 
     enqueue(writer.pkt_pipeline, PipelinedPacket(seq_no, pkt_hdr, bytes, checksums, Int32[]))
@@ -1133,25 +1133,25 @@ function read_packet_ack(writer::HDFSBlockWriter)
     nothing
 end
 
-@doc doc"""
+"""
 HadoopRpcProtocol binds a channel and controller with a service protocol implementation.
 Used by actual service implementations.
-""" ->
-type HadoopRpcProtocol{T<:AbstractProtoServiceStub}
+"""
+mutable struct HadoopRpcProtocol{T<:AbstractProtoServiceStub}
     channel::HadoopRpcChannel
     controller::HadoopRpcController
     stub::T
-
-    function HadoopRpcProtocol(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation())
-        channel = HadoopRpcChannel(host, port, ugi, T)
-        controller = HadoopRpcController(false)
-        stub = T(channel)
-
-        new(channel, controller, stub)
-    end
 end
 
-function show{T}(io::IO, client::HadoopRpcProtocol{T})
+function HadoopRpcProtocol{T}(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation()) where T<:AbstractProtoServiceStub
+    channel = HadoopRpcChannel(host, port, ugi, T)
+    controller = HadoopRpcController(false)
+    stub = T(channel)
+
+    HadoopRpcProtocol{T}(channel, controller, stub)
+end
+
+function show(io::IO, client::HadoopRpcProtocol{T}) where T
     srvcname = (HRPC_PROTOCOLS[T])[:name]
     print(io, "$(srvcname): ")
     show(io, client.channel)

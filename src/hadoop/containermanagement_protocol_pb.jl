@@ -13,12 +13,12 @@ const _ContainerManagementProtocolService_desc = ServiceDescriptor("ContainerMan
 
 ContainerManagementProtocolService(impl::Module) = ProtoService(_ContainerManagementProtocolService_desc, impl)
 
-type ContainerManagementProtocolServiceStub <: AbstractProtoServiceStub{false}
+mutable struct ContainerManagementProtocolServiceStub <: AbstractProtoServiceStub{false}
     impl::ProtoServiceStub
     ContainerManagementProtocolServiceStub(channel::ProtoRpcChannel) = new(ProtoServiceStub(_ContainerManagementProtocolService_desc, channel))
 end # type ContainerManagementProtocolServiceStub
 
-type ContainerManagementProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
+mutable struct ContainerManagementProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
     impl::ProtoServiceBlockingStub
     ContainerManagementProtocolServiceBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ContainerManagementProtocolService_desc, channel))
 end # type ContainerManagementProtocolServiceBlockingStub

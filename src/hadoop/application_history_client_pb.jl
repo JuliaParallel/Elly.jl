@@ -20,12 +20,12 @@ const _ApplicationHistoryProtocolService_desc = ServiceDescriptor("ApplicationHi
 
 ApplicationHistoryProtocolService(impl::Module) = ProtoService(_ApplicationHistoryProtocolService_desc, impl)
 
-type ApplicationHistoryProtocolServiceStub <: AbstractProtoServiceStub{false}
+mutable struct ApplicationHistoryProtocolServiceStub <: AbstractProtoServiceStub{false}
     impl::ProtoServiceStub
     ApplicationHistoryProtocolServiceStub(channel::ProtoRpcChannel) = new(ProtoServiceStub(_ApplicationHistoryProtocolService_desc, channel))
 end # type ApplicationHistoryProtocolServiceStub
 
-type ApplicationHistoryProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
+mutable struct ApplicationHistoryProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
     impl::ProtoServiceBlockingStub
     ApplicationHistoryProtocolServiceBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ApplicationHistoryProtocolService_desc, channel))
 end # type ApplicationHistoryProtocolServiceBlockingStub

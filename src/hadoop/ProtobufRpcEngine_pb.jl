@@ -3,7 +3,7 @@ using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
 
-type RequestHeaderProto
+mutable struct RequestHeaderProto
     methodName::AbstractString
     declaringClassProtocolName::AbstractString
     clientProtocolVersion::UInt64

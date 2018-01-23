@@ -1,17 +1,17 @@
 
-@doc doc"""
+"""
 # HDFSException
 Thrown by HDFS APIs.
-""" ->
-type HDFSException <: Exception
+"""
+mutable struct HDFSException <: Exception
     message::AbstractString
 end
 
 
-@doc doc"""
+"""
 HDFSProtocol: Hadoop RPC client for namenode protocol.
-""" ->
-typealias HDFSProtocol HadoopRpcProtocol{ClientNamenodeProtocolBlockingStub}
+"""
+const HDFSProtocol = HadoopRpcProtocol{ClientNamenodeProtocolBlockingStub}
 
 for fn in (:getListing, :getFileInfo, :getBlockLocations, :getServerDefaults, :getFsStats, :setReplication, :getContentSummary, :mkdirs, :rename2, :rename, :delete, :create, :complete, :addBlock, :renewLease, :setTimes)
     @eval begin
@@ -19,12 +19,12 @@ for fn in (:getListing, :getFileInfo, :getBlockLocations, :getServerDefaults, :g
     end
 end
 
-@doc doc"""
+"""
 # HDFSClient
 A client to the namenode in a HDFS cluster and holds a connection to it.
 It also stores the folder context for using relative paths in APIs that use the client.
-""" ->
-type HDFSClient
+"""
+mutable struct HDFSClient
     nn_conn::HDFSProtocol
     wd::AbstractString
     server_defaults::Nullable{FsServerDefaultsProto}
@@ -53,11 +53,11 @@ pwd(client::HDFSClient) = client.wd
 
 
 
-@doc doc"""
+"""
 # HDFSFile
 Holds a HDFSClient and path pointing to a file on HDFS
-""" ->
-type HDFSFile
+"""
+mutable struct HDFSFile
     client::HDFSClient
     path::AbstractString
 end
@@ -82,11 +82,11 @@ function convert(::Type{URI}, file::HDFSFile)
     URI("hdfs://$(user_spec)$(ch.host):$(ch.port)$(abspath(client, file.path))")
 end
 
-@doc doc"""
+"""
 # HDFSFileInfo
 Stat structure for file/foledr in HDFS
-""" ->
-type HDFSFileInfo
+"""
+mutable struct HDFSFileInfo
     kind::Int32
     name::AbstractString
     size::UInt64
@@ -399,12 +399,12 @@ function _complete_file(client::HDFSClient, path::AbstractString, last::Nullable
     endresp.result
 end
 
-function _add_block{T<:LocatedBlockProto}(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}())
+function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}()) where T<:LocatedBlockProto
     isnull(previous) && (return _add_block(ExtendedBlockProto, client, path))
     @logmsg("adding next block to $(get(previous).b)")
     _add_block(ExtendedBlockProto, client, path, Nullable(get(previous).b))
 end
-function _add_block{T<:ExtendedBlockProto}(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}())
+function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}()) where T<:ExtendedBlockProto
     path = abspath(client, path)
 
     inp = protobuild(AddBlockRequestProto, Dict(:src => path,
@@ -415,11 +415,11 @@ function _add_block{T<:ExtendedBlockProto}(::Type{T}, client::HDFSClient, path::
     return resp.block
 end
 
-@doc doc"""
+"""
 Applications that write infrequently/slowly must call renewlease periodically to prevent
 the namenode from assuming the client from having abandoned the file or some other client
 from recovering the lease.
-""" ->
+"""
 function renewlease(client::HDFSClient)
     inp = protobuild(RenewLeaseRequestProto, Dict(:clientName => ELLY_CLIENTNAME))
     renewLease(client.nn_conn, inp)

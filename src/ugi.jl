@@ -1,5 +1,5 @@
 # Basic UserGroupInformation to store user information and tokens,
-type UserGroupInformation
+mutable struct UserGroupInformation
     userinfo::UserInformationProto
     tokens::Dict{AbstractString,TokenProto}
     function UserGroupInformation(username::AbstractString="")
