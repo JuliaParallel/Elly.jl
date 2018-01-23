@@ -3,7 +3,7 @@
 # - Client - Datanode
 # ref: https://wiki.apache.org/hadoop/HadoopRpc
 
-const HRPC_HEADER               = "hrpc"
+const HRPC_HEADER               = convert(Vector{UInt8}, "hrpc")
 const HRPC_VERSION              = 0x09
 const HRPC_SERVICE_CLASS        = 0x00
 
@@ -159,7 +159,7 @@ function next_call_id(channel::HadoopRpcChannel)
 end
 
 function buffer_handshake(channel::HadoopRpcChannel, authprotocol::UInt8)
-    write(channel.iob, [HRPC_HEADER.data, HRPC_VERSION, HRPC_SERVICE_CLASS, authprotocol;])
+    write(channel.iob, [HRPC_HEADER, HRPC_VERSION, HRPC_SERVICE_CLASS, authprotocol;])
 end
 
 function buffer_connctx(channel::HadoopRpcChannel)
@@ -174,7 +174,7 @@ function buffer_reqhdr(channel::HadoopRpcChannel, call_id::Int32)
                 :rpcOp => HRPC_FINAL_PACKET,
                 :callId => call_id,
                 #:retryCount => -1,
-                :clientId => channel.clnt_id.data))
+                :clientId => convert(Vector{UInt8}, channel.clnt_id)))
 
     buffer_size_delimited(channel.iob, hdr)
 end
@@ -285,7 +285,7 @@ function recv_rpc_message(channel::HadoopRpcChannel, resp)
     nothing
 end
 
-function call_method(channel::HadoopRpcChannel, method::MethodDescriptor, controller::HadoopRpcController, params)
+function call_method(channel::HadoopRpcChannel, service::ServiceDescriptor, method::MethodDescriptor, controller::HadoopRpcController, params)
     @logmsg("call_method $(method.name)")
     send_rpc_message(channel, controller, method, params)
     resp_type = get_response_type(method)
