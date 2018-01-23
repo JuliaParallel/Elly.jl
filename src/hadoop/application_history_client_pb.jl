@@ -1,8 +1,9 @@
-using ..common
+# syntax: proto2
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
+using ..common
 
 # service methods for ApplicationHistoryProtocolService
 const _ApplicationHistoryProtocolService_methods = MethodDescriptor[
@@ -16,19 +17,19 @@ const _ApplicationHistoryProtocolService_methods = MethodDescriptor[
         MethodDescriptor("renewDelegationToken", 8, RenewDelegationTokenRequestProto, RenewDelegationTokenResponseProto),
         MethodDescriptor("cancelDelegationToken", 9, CancelDelegationTokenRequestProto, CancelDelegationTokenResponseProto)
     ] # const _ApplicationHistoryProtocolService_methods
-const _ApplicationHistoryProtocolService_desc = ServiceDescriptor("ApplicationHistoryProtocolService", 1, _ApplicationHistoryProtocolService_methods)
+const _ApplicationHistoryProtocolService_desc = ServiceDescriptor("hadoop.yarn.ApplicationHistoryProtocolService", 1, _ApplicationHistoryProtocolService_methods)
 
 ApplicationHistoryProtocolService(impl::Module) = ProtoService(_ApplicationHistoryProtocolService_desc, impl)
 
 mutable struct ApplicationHistoryProtocolServiceStub <: AbstractProtoServiceStub{false}
     impl::ProtoServiceStub
     ApplicationHistoryProtocolServiceStub(channel::ProtoRpcChannel) = new(ProtoServiceStub(_ApplicationHistoryProtocolService_desc, channel))
-end # type ApplicationHistoryProtocolServiceStub
+end # mutable struct ApplicationHistoryProtocolServiceStub
 
 mutable struct ApplicationHistoryProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
     impl::ProtoServiceBlockingStub
     ApplicationHistoryProtocolServiceBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ApplicationHistoryProtocolService_desc, channel))
-end # type ApplicationHistoryProtocolServiceBlockingStub
+end # mutable struct ApplicationHistoryProtocolServiceBlockingStub
 
 getApplicationReport(stub::ApplicationHistoryProtocolServiceStub, controller::ProtoRpcController, inp::GetApplicationReportRequestProto, done::Function) = call_method(stub.impl, _ApplicationHistoryProtocolService_methods[1], controller, inp, done)
 getApplicationReport(stub::ApplicationHistoryProtocolServiceBlockingStub, controller::ProtoRpcController, inp::GetApplicationReportRequestProto) = call_method(stub.impl, _ApplicationHistoryProtocolService_methods[1], controller, inp)
