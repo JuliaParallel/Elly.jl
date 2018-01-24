@@ -4,6 +4,7 @@ using Compat
 using ProtoBuf
 using URIParser
 using CRC
+using MbedTLS
 
 import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, mkpath,
         mv, rm, abspath, cd, pwd, touch, open, nb_available, cp, joinpath, dirname,
@@ -32,7 +33,6 @@ export YarnManager, launch, manage
 
 const Lock = Channel
 makelock() = Channel{Int}(1)
-byte2str(x) = String(x)
 
 function tstr()
     t = time()
@@ -63,9 +63,6 @@ using Elly.hadoop.hdfs
 using Elly.hadoop.yarn
 
 const ELLY_CLIENTNAME = "elly"
-
-include("digest.jl")
-md5init()
 
 include("ugi.jl")
 include("rpc.jl")

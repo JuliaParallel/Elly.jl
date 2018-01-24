@@ -3,3 +3,4 @@ Compat 0.17.0
 ProtoBuf
 URIParser
 CRC
+MbedTLS
