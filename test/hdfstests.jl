@@ -2,6 +2,8 @@ using Elly
 using Base.Test
 
 function test_hdfs(host="localhost", port=9000)
+    limitedtestenv = (get(ENV, "CI", "false") == "true")
+
     hdfsclnt = HDFSClient(host, port)
 
     exists(hdfsclnt, "/tmp") || mkdir(hdfsclnt, "/tmp")
@@ -59,12 +61,12 @@ function test_hdfs(host="localhost", port=9000)
 
     println("delete file...")
     rm(bar_file)
- 
+
     println("create a large file...")
-    size_bytes = 128 * 1000 * 1000
-    nloops = 5
+    size_bytes = limitedtestenv ? (128 * 10 * 1000) : (128 * 1000 * 1000)
+    nloops = limitedtestenv ? 2 : 5
     A = rand(UInt8, size_bytes)
-    open(bar_file, "w") do f
+    open(bar_file, "w"; blocksz=UInt64(size_bytes)) do f
         for idx in 1:nloops
             tic()
             write(f, A)
@@ -104,21 +106,23 @@ function test_hdfs(host="localhost", port=9000)
     @test hdfs_set_replication(bar_file, 2)
 
     cd(hdfsclnt, "/tmp/foo")
-    NFILES = 1000
+    NFILES = limitedtestenv ? 100 : 1000
     println("create many ($NFILES) files...")
-    for idx in 1:NFILES
-        bar_file = HDFSFile(hdfsclnt, "bar$idx")
+    for fidx in 1:NFILES
+        bar_file = HDFSFile(hdfsclnt, "bar$fidx")
         open(bar_file, "w") do f
             for idx in 1:nloops
                 write(f, teststr)
             end
         end
+        ((fidx % 10) == 0) && println("...created file #$fidx")
     end
     allfiles = readdir(hdfsclnt, "/tmp/foo")
     println("delete many ($NFILES) files...")
     for idx in 1:NFILES
         bar_file = HDFSFile(hdfsclnt, "bar$idx")
         rm(bar_file)
+        ((idx % 10) == 0) && println("...deleted file #$idx")
     end
     @test length(allfiles) >= NFILES
 end
