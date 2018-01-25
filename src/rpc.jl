@@ -356,21 +356,22 @@ function _select_node_for_block(block::LocatedBlockProto)
 end
 
 
+const TDCPoolElem = Tuple{HadoopDataChannel,Float64}
 """
 HadoopDataChannelPool is a connection pool that holds connections to datanodes.
 Connections are deemed stale after `keepalivesecs`.
 """
-mutable struct HadoopDataChannelPool
-    free::Dict{AbstractString,Vector}
+struct HadoopDataChannelPool
+    free::Dict{String,Vector{TDCPoolElem}}
     keepalivesecs::UInt64
 
-    HadoopDataChannelPool(keepalivesecs::Integer) = new(Dict{AbstractString,Vector}(), keepalivesecs)
+    HadoopDataChannelPool(keepalivesecs::Integer) = new(Dict{String,Vector{TDCPoolElem}}(), keepalivesecs)
 end
 
 const _dcpool = HadoopDataChannelPool(30)
 function _get(pool::HadoopDataChannelPool, host::AbstractString, port::Integer)
     dnid = "$host:$port"
-    free = (dnid in keys(pool.free)) ? pool.free[dnid] : []
+    free = (dnid in keys(pool.free)) ? pool.free[dnid] : Vector{TDCPoolElem}()
 
     timediff = _dcpool.keepalivesecs
     while !isempty(free) && (timediff >= _dcpool.keepalivesecs)
@@ -394,11 +395,12 @@ function _put(pool::HadoopDataChannelPool, channel::HadoopDataChannel, reuse::Bo
         end
     end
     dnid = "$(channel.host):$(channel.port)"
-    free = dnid in keys(pool.free) ? pool.free[dnid] : (pool.free[dnid] = [])
+    free = dnid in keys(pool.free) ? pool.free[dnid] : (pool.free[dnid] = Vector{TDCPoolElem}())
     for (ch,tm) in free
         (object_id(channel) == object_id(ch)) && return
     end
     push!(free, (channel,time()))
+    nothing
 end
 
 
@@ -427,9 +429,9 @@ mutable struct HDFSBlockReader
     chunk_len::UInt64
     chunk_count::UInt64
     chunks_read::UInt64
-    chunk::Array{UInt8,1}
+    chunk::Vector{UInt8}
 
-    checksums::Array{UInt32,1}
+    checksums::Vector{UInt32}
     chk_crc::Bool
 
     initiated::Bool
@@ -548,7 +550,7 @@ function recv_packet_hdr(reader::HDFSBlockReader)
 
         pkt_len = ntoh(read(sock, UInt32))
         hdr_len = ntoh(read(sock, UInt16))
-        hdr_bytes = Array{UInt8}(hdr_len)
+        hdr_bytes = Vector{UInt8}(hdr_len)
         read!(sock, hdr_bytes)
         @logmsg("pkt_hdr <- sock. len $(hdr_len) (pkt_len: $pkt_len)")
 
@@ -558,13 +560,13 @@ function recv_packet_hdr(reader::HDFSBlockReader)
         data_len = pkt_hdr.dataLen
         block_op_resp = get(reader.block_op_resp)
         reader.chunk_len = block_op_resp.readOpChecksumInfo.checksum.bytesPerChecksum
-        reader.chunk = Array{UInt8}(reader.chunk_len)
+        reader.chunk = Vector{UInt8}(reader.chunk_len)
         reader.chunk_count = div(data_len + reader.chunk_len - 1, reader.chunk_len)    # chunk_len-1 to take care of chunks with partial data
         reader.chunks_read = 0
         @logmsg("received packet with $(reader.chunk_count) chunks of $(reader.chunk_len) bytes each in $data_len bytes of data")
         @logmsg("last packet: $(pkt_hdr.lastPacketInBlock)")
 
-        checksums = Array{UInt32}(reader.chunk_count)
+        checksums = Vector{UInt32}(reader.chunk_count)
         read!(sock, checksums)
         @logmsg("checksums <- sock. len $(sizeof(checksums))")
         for idx in 1:length(checksums)
@@ -1062,13 +1064,13 @@ function prepare_packet(writer::HDFSBlockWriter)
     if bytes_in_packet == nb_available(writer.buffer)
         bytes = take!(writer.buffer)
     else
-        bytes = Array{UInt8}(bytes_in_packet)
+        bytes = Vector{UInt8}(bytes_in_packet)
         read!(writer.buffer, bytes)
     end
 
     chunk_len = defaults.bytesPerChecksum
     chunk_count = div(bytes_in_packet + chunk_len - 1, chunk_len)
-    checksums = Array{UInt32}(chunk_count)
+    checksums = Vector{UInt32}(chunk_count)
     populate_checksums(bytes, chunk_len, checksums, defaults.checksumType)
 
     enqueue(writer.pkt_pipeline, PipelinedPacket(seq_no, pkt_hdr, bytes, checksums, Int32[]))

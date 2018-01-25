@@ -3,7 +3,7 @@
 # HDFSException
 Thrown by HDFS APIs.
 """
-mutable struct HDFSException <: Exception
+struct HDFSException <: Exception
     message::AbstractString
 end
 
@@ -57,7 +57,7 @@ pwd(client::HDFSClient) = client.wd
 # HDFSFile
 Holds a HDFSClient and path pointing to a file on HDFS
 """
-mutable struct HDFSFile
+struct HDFSFile
     client::HDFSClient
     path::AbstractString
 end
