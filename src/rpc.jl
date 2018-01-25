@@ -48,8 +48,15 @@ mutable struct HadoopRpcException <: Exception
 end
 
 # Utility methods
+function resolveCRC32c()
+    try
+        return eval(Base, :crc32c)
+    end
+    crc(CRC_32_C)
+end
+
 const crc32 = crc(CRC_32)
-const crc32c = crc(CRC_32_C)
+const crc32c = resolveCRC32c()
 calc_chksum(typ::Int32, c_data::Vector{UInt8}) = (typ === ChecksumTypeProto.CHECKSUM_CRC32) ? crc32(c_data) : (typ === ChecksumTypeProto.CHECKSUM_CRC32C) ? crc32c(c_data) : throw(HadoopRpcException("Unknown CRC type $typ"))
 isvalid_chksum(typ::Int32) = (typ === ChecksumTypeProto.CHECKSUM_CRC32) || (typ === ChecksumTypeProto.CHECKSUM_CRC32C)
 

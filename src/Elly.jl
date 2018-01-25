@@ -15,6 +15,10 @@ import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, file
 import ProtoBuf: write_bytes, read_bytes, call_method
 import URIParser: URI
 
+if VERSION >= v"0.7.0-"
+    using CRC32c
+end
+
 export show, convert, URI
 
 export UserGroupInformation, add_token, find_tokens, username
