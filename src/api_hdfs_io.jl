@@ -184,8 +184,13 @@ function _read_and_buffer(reader::HDFSFileReader, out::Array{UInt8,1}, offset::U
             reader.fptr += copylen
         end
     catch ex
-        channel = reader.channel
-        @logmsg("exception receiving from $(channel.host):$(channel.port): $ex")
+        if !isnull(reader.blk_reader)
+            blk_reader = get(reader.blk_reader)
+            channel = blk_reader.channel
+            @logmsg("exception receiving from $(channel.host):$(channel.port): $ex")
+        else
+            @logmsg("exception receiving: $ex")
+        end
         disconnect(reader, false)
         rethrow(ex)
     end
@@ -356,6 +361,15 @@ function open(client::HDFSClient, path::AbstractString, open_mode::AbstractStrin
     throw(ArgumentError("invalid open mode: $mode"))
 end
 open(file::HDFSFile, open_mode::AbstractString; opts...) = open(file.client, file.path, open_mode; opts...)
+function open(fn::Function, file::Union{HDFSFile,HDFSClient}, args...; kwargs...)
+    io = nothing
+    try
+        io = open(file, args...; kwargs...)
+        return fn(io)
+    finally
+        close(io)
+    end
+end
 
 #
 # File copy

@@ -85,6 +85,17 @@ function test_hdfs(host="localhost", port=9000)
         end
     end
 
+    println("read and verify with crc...")
+    B = Array{UInt8}(size_bytes)
+    open(bar_file, "r"; crc=true) do f
+        for idx in 1:nloops
+            tic()
+            read!(f, B)
+            println("...block read in $(toc()) secs")
+            @test A == B
+        end
+    end
+
     println("blocks for $bar_file")
     blocks = hdfs_blocks(bar_file)
     println(blocks)

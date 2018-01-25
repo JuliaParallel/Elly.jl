@@ -50,17 +50,8 @@ end
 # Utility methods
 const crc32 = crc(CRC_32)
 const crc32c = crc(CRC_32_C)
-
-struct ChkSum{T} end
-const ChkSumCRC32   =   ChkSum{ChecksumTypeProto.CHECKSUM_CRC32}
-const ChkSumCRC32C  =  ChkSum{ChecksumTypeProto.CHECKSUM_CRC32C}
-
-chksum(::Type{ChkSumCRC32}, c_data::Vector{UInt8}) = crc32(c_data)
-chksum(::Type{ChkSumCRC32C}, c_data::Vector{UInt8}) = crc32c(c_data)
-chksum(::Type{ChkSum{T}}, c_data::Vector{UInt8}) where {T} = throw(HadoopRpcException("Unknown CRC type $T"))
-isvalid_chksum(::Type{ChkSumCRC32}) = true
-isvalid_chksum(::Type{ChkSumCRC32C}) = true
-isvalid_chksum(::Type{ChkSum{T}}) where {T} = false
+calc_chksum(typ::Int32, c_data::Vector{UInt8}) = (typ === ChecksumTypeProto.CHECKSUM_CRC32) ? crc32(c_data) : (typ === ChecksumTypeProto.CHECKSUM_CRC32C) ? crc32c(c_data) : throw(HadoopRpcException("Unknown CRC type $typ"))
+isvalid_chksum(typ::Int32) = (typ === ChecksumTypeProto.CHECKSUM_CRC32) || (typ === ChecksumTypeProto.CHECKSUM_CRC32C)
 
 function _len_uleb(x::T) where T <: Integer
     nw = 1
@@ -539,7 +530,7 @@ function recv_blockop(reader::HDFSBlockReader)
     try
         block_resp = recv_blockop(get(channel.sock))
         checksum_type = block_resp.readOpChecksumInfo.checksum._type
-        isvalid_chksum(ChkSum{checksum_type}) || throw(HadoopRpcException("Unknown checksum type $checksum_type"))
+        isvalid_chksum(checksum_type) || throw(HadoopRpcException("Unknown checksum type $checksum_type"))
         reader.block_op_resp = Nullable(block_resp)
     catch ex
         @logmsg("exception receiving from $(channel.host):$(channel.port): $ex")
@@ -603,25 +594,21 @@ function verify_pkt_checksums(reader::HDFSBlockReader, buff::Vector{UInt8})
 
     block_op_resp = get(reader.block_op_resp)
     checksum_type = block_op_resp.readOpChecksumInfo.checksum._type
-    C = ChkSum{checksum_type}
-    if !isvalid_chksum(C)
+    if !isvalid_chksum(checksum_type)
         disconnect(reader, false)
         throw(HadoopRpcException("Unknown CRC type $checksum_type"))
     end
-    verify_pkt_checksums(reader, buff, C)
-end
 
-function verify_pkt_checksums(reader::HDFSBlockReader, buff::Vector{UInt8}, C::Type{ChkSum{T}}) where T
     chunk_len = reader.chunk_len
     offset = 1
     checksums = reader.checksums
     for idx in 1:(length(checksums)-1)
-        cs = chksum(C, unsafe_wrap(Array, pointer(buff, offset), chunk_len))
+        cs = calc_chksum(checksum_type, unsafe_wrap(Array, pointer(buff, offset), chunk_len))
         (cs == checksums[idx]) || throw(HadoopRpcException("Checksum mismatch at chunk $(idx). Expected $(checksums[idx]), got $(cs)"))
         offset += chunk_len
     end
 
-    cs = chksum(unsafe_wrap(Array, pointer(buff, offset), data_len-(offset-1)))
+    cs = calc_chksum(checksum_type, unsafe_wrap(Array, pointer(buff, offset), data_len-(offset-1)))
     (cs == checksums[end]) || throw(HadoopRpcException("Checksum mismatch at last chunk $(length(checksums)). Expected $(checksums[end]), got $(cs)"))
     nothing
 end
@@ -1039,16 +1026,15 @@ function recv_blockop(writer::HDFSBlockWriter)
     nothing
 end
 
-populate_checksums(bytes::Vector{UInt8}, chunk_len::UInt32, checksums::Vector{UInt32}, checksum_type::Int32) = populate_checksums(bytes, chunk_len, checksums, ChkSum{checksum_type})
-function populate_checksums(bytes::Vector{UInt8}, chunk_len::UInt32, checksums::Vector{UInt32}, C::Type{ChkSum{T}}) where T
-    isvalid_chksum(C) || throw(HadoopRpcException("Unknown checksum type $T"))
+function populate_checksums(bytes::Vector{UInt8}, chunk_len::UInt32, checksums::Vector{UInt32}, checksum_type::Int32)
+    isvalid_chksum(checksum_type) || throw(HadoopRpcException("Unknown checksum type $T"))
     nbytes = length(bytes)
     nchunks = length(checksums)
     c_offset = 1
     for idx in 1:nchunks
         c_len = min(nbytes-c_offset+1, chunk_len)
         c_data = unsafe_wrap(Array, pointer(bytes, c_offset), c_len)
-        checksums[idx] = hton(chksum(C, c_data))
+        checksums[idx] = hton(calc_chksum(checksum_type, c_data))
         #@logmsg("chksum $(checksums[idx])")
         c_offset += c_len
     end
