@@ -42,7 +42,7 @@ function test_hdfs(host="localhost", port=9000)
     println("create a temporary dir...")
     cd(hdfsclnt, "/tmp")
     foo_dir = HDFSFile(hdfsclnt, "foo")
-    mkdir(foo_dir)
+    mkdir(foo_dir, Elly.DEFAULT_FOLDER_MODE)
 
     println("create a temporary file...")
     cd(hdfsclnt, "foo")
@@ -59,7 +59,21 @@ function test_hdfs(host="localhost", port=9000)
     println("verify file size to be $(length(teststr)*nloops)...")
     @test filesize(bar_file) == length(teststr) * nloops
 
-    println("delete file...")
+    println("touch, move and delete file...")
+    touch(bar_file)
+    @test isfile(bar_file)
+    st = stat(bar_file)
+    println(st)
+    @test st.name == "bar"
+    mv(bar_file, "/tmp/foo/bar2")
+    bar2_file = HDFSFile("hdfs://$(host):$(port)/tmp/foo/bar2")
+    @test isfile(bar2_file)
+    rm(bar2_file)
+
+    println("touch and delete a new file...")
+    touch(bar_file)
+    @test exists(bar_file)
+    @test isfile(bar_file)
     rm(bar_file)
 
     println("create a large file...")
@@ -125,4 +139,12 @@ function test_hdfs(host="localhost", port=9000)
         ((idx % 10) == 0) && println("...deleted file #$idx")
     end
     @test length(allfiles) >= NFILES
+
+    println("test renew lease")
+    hdfs_renewlease(hdfsclnt)
+    iob = IOBuffer()
+    show(iob, hdfsclnt)
+    @test !isempty(take!(iob))
+
+    nothing
 end

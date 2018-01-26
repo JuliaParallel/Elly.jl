@@ -289,7 +289,7 @@ end
 show(io::IO, writer::HDFSFileWriter) = println(io, "HDFSFileWriter: $(URI(writer, true))")
 
 function renewlease(writer::HDFSFileWriter)
-    renewlease(writer.client)
+    hdfs_renewlease(writer.client)
 end
 
 function _write(writer::HDFSFileWriter, data::T) where T<:Union{UInt8,Vector{UInt8}}

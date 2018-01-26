@@ -420,7 +420,7 @@ Applications that write infrequently/slowly must call renewlease periodically to
 the namenode from assuming the client from having abandoned the file or some other client
 from recovering the lease.
 """
-function renewlease(client::HDFSClient)
+function hdfs_renewlease(client::HDFSClient)
     inp = protobuild(RenewLeaseRequestProto, Dict(:clientName => ELLY_CLIENTNAME))
     renewLease(client.nn_conn, inp)
     nothing
