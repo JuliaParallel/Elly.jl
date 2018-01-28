@@ -1,7 +1,7 @@
-@doc doc"""
+"""
 YarnClientProtocol: Hadoop RPC client for application client to Yarn resource manager protocol.
-""" ->
-typealias YarnClientProtocol HadoopRpcProtocol{ApplicationClientProtocolServiceBlockingStub}
+"""
+const YarnClientProtocol = HadoopRpcProtocol{ApplicationClientProtocolServiceBlockingStub}
 
 for fn in (:getClusterMetrics, :getClusterNodes, :getNewApplication, :submitApplication, :forceKillApplication, :getApplicationReport, :getApplicationAttempts)
     @eval begin
@@ -9,10 +9,10 @@ for fn in (:getClusterMetrics, :getClusterNodes, :getNewApplication, :submitAppl
     end
 end
 
-@doc doc"""
+"""
 YarnAMRMProtocol: Hadoop RPC client for Yarn application master to resource manager protocol.
-""" ->
-typealias YarnAMRMProtocol HadoopRpcProtocol{ApplicationMasterProtocolServiceBlockingStub}
+"""
+const YarnAMRMProtocol = HadoopRpcProtocol{ApplicationMasterProtocolServiceBlockingStub}
 
 for fn in (:registerApplicationMaster, :finishApplicationMaster, :allocate)
     @eval begin
@@ -20,10 +20,10 @@ for fn in (:registerApplicationMaster, :finishApplicationMaster, :allocate)
     end
 end
 
-@doc doc"""
+"""
 YarnAMNMProtocol: Hadoop RPC client for Yarn application master to node manager protocol.
-""" ->
-typealias YarnAMNMProtocol HadoopRpcProtocol{ContainerManagementProtocolServiceBlockingStub}
+"""
+const YarnAMNMProtocol = HadoopRpcProtocol{ContainerManagementProtocolServiceBlockingStub}
 
 for fn in (:startContainers, :stopContainers, :getContainerStatuses)
     @eval begin
@@ -33,12 +33,12 @@ end
 
 
 
-@doc doc"""
+"""
 # YarnException
 Thrown by Yarn APIs.
-""" ->
-type YarnException <: Exception
-    message::AbstractString
+"""
+mutable struct YarnException <: Exception
+    message::String
 end
 
 function show(io::IO, serex::SerializedExceptionProto)
@@ -61,16 +61,16 @@ function YarnException(cex::ContainerExceptionMapProto)
     iob = IOBuffer()
     println(iob, "Error in container $(cont_id.id) of app $(app_id.id) attempt $(atmpt_id.attemptId):")
     show(iob, cex.exception)
-    YarnException(takebuf_string(iob))
+    YarnException(String(take!(iob)))
 end
 
 
 
-@doc doc"""
+"""
 YarnNode represents a node manager in the yarn cluster and its
 communication address, resource state and run state.
-""" ->
-type YarnNode
+"""
+mutable struct YarnNode
     host::AbstractString
     port::Int32
     rack::AbstractString
@@ -106,24 +106,24 @@ type YarnNode
     end
 end
 
-@doc doc"""
+"""
 NODE_STATES: enum value to state map. Used for converting state for display.
-""" ->
+"""
 const NODE_STATES = [:new, :running, :unhealthy, :decommissioned, :lost, :rebooted]
 
 function show(io::IO, node::YarnNode)
     print(io, "YarnNode: $(node.rack)/$(node.host):$(node.port) $(NODE_STATES[node.state])")
-    println(io, node.isrunning ? ", Used mem: $(node.memused)/$(node.mem), cores: $(node.coresused)/$(node.cores)" : "")
+    print(io, node.isrunning ? ", Used mem: $(node.memused)/$(node.mem), cores: $(node.coresused)/$(node.cores)" : "")
     nothing
 end
 
 
 
-@doc doc"""
+"""
 YarnNodes holds node information as visible to the application master.
 It also caches connection to node masters. Connection are reused if they are required before a set keepalivesecs time.
-""" ->
-type YarnNodes
+"""
+mutable struct YarnNodes
     count::Int32
     status::Dict{NodeIdProto,YarnNode}
     conn::Dict{NodeIdProto,Tuple}
@@ -140,6 +140,7 @@ function show(io::IO, nodes::YarnNodes)
     println(io, "YarnNodes: $(nodes.count) (connected to $(length(nodes.conn)))")
     for n in values(nodes.status)
         show(io, n)
+        println(io, "")
     end
     nothing
 end
@@ -228,21 +229,21 @@ function release_connection(nodes::YarnNodes, nodeid::NodeIdProto, conn::YarnAMN
 end
 
 
-@doc doc"""
+"""
 RequestPipeline holds entities while they are requested for from yarn resource manager.
 Application master thread extracts pending items and requests them from RM, whereupon they are moved on to the requested state.
-""" ->
-type RequestPipeline{T}
+"""
+mutable struct RequestPipeline{T}
     pending::Vector{T}
     requested::Vector{T}
 
-    function RequestPipeline()
+    function RequestPipeline{T}() where T
         new(T[], T[])
     end
 end
 
-pending{T}(pipe::RequestPipeline{T}, item::T) = push!(pipe.pending, item)
-function torequest{T}(pipe::RequestPipeline{T})
+pending(pipe::RequestPipeline{T}, item::T) where {T} = push!(pipe.pending, item)
+function torequest(pipe::RequestPipeline{T}) where T
     ret = pipe.pending
     if !isempty(ret)
         append!(pipe.requested, ret)
@@ -253,12 +254,12 @@ end
 haverequests(pipe::RequestPipeline) = !isempty(pipe.pending)
 
 
-@doc doc"""
+"""
 YarnContainers holds all containers related to the application.
 It also holds the allocation and release pipelines that are used by application master for requesting actions from resource manager.
 Also schedules callbacks as tasks when containers are allocated or terminated.
-""" ->
-type YarnContainers
+"""
+mutable struct YarnContainers
     containers::Dict{ContainerIdProto,ContainerProto}
     status::Dict{ContainerIdProto,ContainerStatusProto}
     active::Set{ContainerIdProto}

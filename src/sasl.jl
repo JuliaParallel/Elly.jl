@@ -1,4 +1,10 @@
 # DIGEST-MD5 mechanism
+function md5(v...)
+    iob = IOBuffer()
+    write(iob, v...)
+    digest(MD_MD5, take!(iob))
+end
+
 function digmd5_decode_challenge(challenge::AbstractString)
     comps = Dict{AbstractString,AbstractString}()
     for comp in split(challenge, ',')
@@ -52,7 +58,7 @@ function digmd5_respond(username::AbstractString, password::AbstractString, dige
                "maxbuf=",       SASL_DIGESTMD5_MAXBUF,  ',',
                "response=",     bytes2hex(response),    ',',
                "qop=",          qop)
-    takebuf_string(iob)
+    String(take!(iob))
 end
 
 function testdigmd5(username::AbstractString, password::AbstractString, protocol::AbstractString, serverid::AbstractString, challenge::AbstractString)
@@ -64,7 +70,7 @@ end
 
 function digmd5_respond(token::TokenProto, protocol::AbstractString, serverid::AbstractString, challenge::Vector{UInt8})
     isempty(challenge) && error("empty challenge")
-    parts = digmd5_decode_challenge(byte2str(challenge))
+    parts = digmd5_decode_challenge(String(challenge))
     digmd5_challenge_isvalid(parts) || error("invalid challenge params")
     digesturi = protocol * "/" * serverid
     digmd5_respond(base64encode(token.identifier), base64encode(token.password), digesturi, parts)

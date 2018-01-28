@@ -4,11 +4,11 @@
 # - applicationclient_protocol.proto
 # - application_history_client.proto
 
-@doc doc"""
+"""
 YarnClient holds a connection to the Yarn Resource Manager and provides
 APIs for application clients to interact with Yarn.
-""" ->
-type YarnClient
+"""
+mutable struct YarnClient
     rm_conn::YarnClientProtocol
 
     function YarnClient(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation())
@@ -38,10 +38,10 @@ end
 
 
 
-@doc doc"""
+"""
 YarnAppStatus wraps the protobuf type for ease of use
-""" ->
-type YarnAppStatus
+"""
+mutable struct YarnAppStatus
     report::ApplicationReportProto
     function YarnAppStatus(report::ApplicationReportProto)
         new(report)
@@ -84,10 +84,10 @@ end
 am_rm_token(status::YarnAppStatus) = status.report.am_rm_token
 
 
-@doc doc"""
+"""
 YarnAppAttemptStatus wraps the protobuf type for ease of use
-""" ->
-type YarnAppAttemptStatus
+"""
+mutable struct YarnAppAttemptStatus
     report::ApplicationAttemptReportProto
     function YarnAppAttemptStatus(report::ApplicationAttemptReportProto)
         new(report)
@@ -115,10 +115,10 @@ function show(io::IO, status::YarnAppAttemptStatus)
     nothing
 end
 
-@doc doc"""
+"""
 YarnApp represents one instance of application running on the yarn cluster
-""" ->
-type YarnApp
+"""
+mutable struct YarnApp
     client::YarnClient
     appid::ApplicationIdProto
     status::Nullable{YarnAppStatus}
@@ -129,19 +129,19 @@ type YarnApp
     end
 end
 
-@doc doc"""
+"""
 APP_STATES: enum value to state map. Used for converting state for display.
-""" ->
+"""
 const APP_STATES = [:new, :new_saving, :submitted, :accepted, :running, :finished, :failed, :killed]
 
-@doc doc"""
+"""
 FINAL_APP_STATES: enum value to state map. Used for converting state for display.
-""" ->
+"""
 const FINAL_APP_STATES = [:succeeded, :failed, :killed]
 
-@doc doc"""
+"""
 ATTEMPT_STATES: enum value to state map. Used for converting state for display.
-""" ->
+"""
 const ATTEMPT_STATES = [:new, :submitted, :scheduled, :scheduled, :allocated_saving, :allocated, :launched, :failed, :running, :finishing, :finished, :killed]
 
 function show(io::IO, app::YarnApp)

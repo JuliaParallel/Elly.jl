@@ -1,8 +1,9 @@
-using ..common
+# syntax: proto2
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
+using ..common
 
 # service methods for ApplicationClientProtocolService
 const _ApplicationClientProtocolService_methods = MethodDescriptor[
@@ -30,19 +31,19 @@ const _ApplicationClientProtocolService_methods = MethodDescriptor[
         MethodDescriptor("getLabelsToNodes", 22, GetLabelsToNodesRequestProto, GetLabelsToNodesResponseProto),
         MethodDescriptor("getClusterNodeLabels", 23, GetClusterNodeLabelsRequestProto, GetClusterNodeLabelsResponseProto)
     ] # const _ApplicationClientProtocolService_methods
-const _ApplicationClientProtocolService_desc = ServiceDescriptor("ApplicationClientProtocolService", 1, _ApplicationClientProtocolService_methods)
+const _ApplicationClientProtocolService_desc = ServiceDescriptor("hadoop.yarn.ApplicationClientProtocolService", 1, _ApplicationClientProtocolService_methods)
 
 ApplicationClientProtocolService(impl::Module) = ProtoService(_ApplicationClientProtocolService_desc, impl)
 
-type ApplicationClientProtocolServiceStub <: AbstractProtoServiceStub{false}
+mutable struct ApplicationClientProtocolServiceStub <: AbstractProtoServiceStub{false}
     impl::ProtoServiceStub
     ApplicationClientProtocolServiceStub(channel::ProtoRpcChannel) = new(ProtoServiceStub(_ApplicationClientProtocolService_desc, channel))
-end # type ApplicationClientProtocolServiceStub
+end # mutable struct ApplicationClientProtocolServiceStub
 
-type ApplicationClientProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
+mutable struct ApplicationClientProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
     impl::ProtoServiceBlockingStub
     ApplicationClientProtocolServiceBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ApplicationClientProtocolService_desc, channel))
-end # type ApplicationClientProtocolServiceBlockingStub
+end # mutable struct ApplicationClientProtocolServiceBlockingStub
 
 getNewApplication(stub::ApplicationClientProtocolServiceStub, controller::ProtoRpcController, inp::GetNewApplicationRequestProto, done::Function) = call_method(stub.impl, _ApplicationClientProtocolService_methods[1], controller, inp, done)
 getNewApplication(stub::ApplicationClientProtocolServiceBlockingStub, controller::ProtoRpcController, inp::GetNewApplicationRequestProto) = call_method(stub.impl, _ApplicationClientProtocolService_methods[1], controller, inp)

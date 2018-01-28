@@ -1,65 +1,66 @@
-using ..common
+# syntax: proto2
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
 import Base: hash, isequal, ==
+using ..common
 
-type __enum_StorageTypeProto <: ProtoEnum
+struct __enum_StorageTypeProto <: ProtoEnum
     DISK::Int32
     SSD::Int32
     ARCHIVE::Int32
     RAM_DISK::Int32
     __enum_StorageTypeProto() = new(1,2,3,4)
-end #type __enum_StorageTypeProto
+end #struct __enum_StorageTypeProto
 const StorageTypeProto = __enum_StorageTypeProto()
 
-type __enum_CipherSuiteProto <: ProtoEnum
+struct __enum_CipherSuiteProto <: ProtoEnum
     UNKNOWN::Int32
     AES_CTR_NOPADDING::Int32
     __enum_CipherSuiteProto() = new(1,2)
-end #type __enum_CipherSuiteProto
+end #struct __enum_CipherSuiteProto
 const CipherSuiteProto = __enum_CipherSuiteProto()
 
-type __enum_CryptoProtocolVersionProto <: ProtoEnum
+struct __enum_CryptoProtocolVersionProto <: ProtoEnum
     UNKNOWN_PROTOCOL_VERSION::Int32
     ENCRYPTION_ZONES::Int32
     __enum_CryptoProtocolVersionProto() = new(1,2)
-end #type __enum_CryptoProtocolVersionProto
+end #struct __enum_CryptoProtocolVersionProto
 const CryptoProtocolVersionProto = __enum_CryptoProtocolVersionProto()
 
-type __enum_ChecksumTypeProto <: ProtoEnum
+struct __enum_ChecksumTypeProto <: ProtoEnum
     CHECKSUM_NULL::Int32
     CHECKSUM_CRC32::Int32
     CHECKSUM_CRC32C::Int32
     __enum_ChecksumTypeProto() = new(0,1,2)
-end #type __enum_ChecksumTypeProto
+end #struct __enum_ChecksumTypeProto
 const ChecksumTypeProto = __enum_ChecksumTypeProto()
 
-type __enum_ReplicaStateProto <: ProtoEnum
+struct __enum_ReplicaStateProto <: ProtoEnum
     FINALIZED::Int32
     RBW::Int32
     RWR::Int32
     RUR::Int32
     TEMPORARY::Int32
     __enum_ReplicaStateProto() = new(0,1,2,3,4)
-end #type __enum_ReplicaStateProto
+end #struct __enum_ReplicaStateProto
 const ReplicaStateProto = __enum_ReplicaStateProto()
 
-type ExtendedBlockProto
+mutable struct ExtendedBlockProto <: ProtoType
     poolId::AbstractString
     blockId::UInt64
     generationStamp::UInt64
     numBytes::UInt64
-    ExtendedBlockProto() = (o=new(); fillunset(o); o)
-end #type ExtendedBlockProto
+    ExtendedBlockProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ExtendedBlockProto
 const __req_ExtendedBlockProto = Symbol[:poolId,:blockId,:generationStamp]
-const __val_ExtendedBlockProto = @compat Dict(:numBytes => 0)
-meta(t::Type{ExtendedBlockProto}) = meta(t, __req_ExtendedBlockProto, ProtoBuf.DEF_FNUM, __val_ExtendedBlockProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_ExtendedBlockProto = Dict(:numBytes => 0)
+meta(t::Type{ExtendedBlockProto}) = meta(t, __req_ExtendedBlockProto, ProtoBuf.DEF_FNUM, __val_ExtendedBlockProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::ExtendedBlockProto) = ProtoBuf.protohash(v)
 isequal(v1::ExtendedBlockProto, v2::ExtendedBlockProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ExtendedBlockProto, v2::ExtendedBlockProto) = ProtoBuf.protoeq(v1, v2)
 
-type DatanodeIDProto
+mutable struct DatanodeIDProto <: ProtoType
     ipAddr::AbstractString
     hostName::AbstractString
     datanodeUuid::AbstractString
@@ -67,36 +68,36 @@ type DatanodeIDProto
     infoPort::UInt32
     ipcPort::UInt32
     infoSecurePort::UInt32
-    DatanodeIDProto() = (o=new(); fillunset(o); o)
-end #type DatanodeIDProto
+    DatanodeIDProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct DatanodeIDProto
 const __req_DatanodeIDProto = Symbol[:ipAddr,:hostName,:datanodeUuid,:xferPort,:infoPort,:ipcPort]
-const __val_DatanodeIDProto = @compat Dict(:infoSecurePort => 0)
-meta(t::Type{DatanodeIDProto}) = meta(t, __req_DatanodeIDProto, ProtoBuf.DEF_FNUM, __val_DatanodeIDProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_DatanodeIDProto = Dict(:infoSecurePort => 0)
+meta(t::Type{DatanodeIDProto}) = meta(t, __req_DatanodeIDProto, ProtoBuf.DEF_FNUM, __val_DatanodeIDProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::DatanodeIDProto) = ProtoBuf.protohash(v)
 isequal(v1::DatanodeIDProto, v2::DatanodeIDProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DatanodeIDProto, v2::DatanodeIDProto) = ProtoBuf.protoeq(v1, v2)
 
-type DatanodeLocalInfoProto
+mutable struct DatanodeLocalInfoProto <: ProtoType
     softwareVersion::AbstractString
     configVersion::AbstractString
     uptime::UInt64
-    DatanodeLocalInfoProto() = (o=new(); fillunset(o); o)
-end #type DatanodeLocalInfoProto
+    DatanodeLocalInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct DatanodeLocalInfoProto
 const __req_DatanodeLocalInfoProto = Symbol[:softwareVersion,:configVersion,:uptime]
-meta(t::Type{DatanodeLocalInfoProto}) = meta(t, __req_DatanodeLocalInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{DatanodeLocalInfoProto}) = meta(t, __req_DatanodeLocalInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::DatanodeLocalInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::DatanodeLocalInfoProto, v2::DatanodeLocalInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DatanodeLocalInfoProto, v2::DatanodeLocalInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type __enum_DatanodeInfoProto_AdminState <: ProtoEnum
+struct __enum_DatanodeInfoProto_AdminState <: ProtoEnum
     NORMAL::Int32
     DECOMMISSION_INPROGRESS::Int32
     DECOMMISSIONED::Int32
     __enum_DatanodeInfoProto_AdminState() = new(0,1,2)
-end #type __enum_DatanodeInfoProto_AdminState
+end #struct __enum_DatanodeInfoProto_AdminState
 const DatanodeInfoProto_AdminState = __enum_DatanodeInfoProto_AdminState()
 
-type DatanodeInfoProto
+mutable struct DatanodeInfoProto <: ProtoType
     id::DatanodeIDProto
     capacity::UInt64
     dfsUsed::UInt64
@@ -109,45 +110,45 @@ type DatanodeInfoProto
     cacheCapacity::UInt64
     cacheUsed::UInt64
     lastUpdateMonotonic::UInt64
-    DatanodeInfoProto() = (o=new(); fillunset(o); o)
-end #type DatanodeInfoProto
+    DatanodeInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct DatanodeInfoProto
 const __req_DatanodeInfoProto = Symbol[:id]
-const __val_DatanodeInfoProto = @compat Dict(:capacity => 0, :dfsUsed => 0, :remaining => 0, :blockPoolUsed => 0, :lastUpdate => 0, :xceiverCount => 0, :adminState => DatanodeInfoProto_AdminState.NORMAL, :cacheCapacity => 0, :cacheUsed => 0, :lastUpdateMonotonic => 0)
+const __val_DatanodeInfoProto = Dict(:capacity => 0, :dfsUsed => 0, :remaining => 0, :blockPoolUsed => 0, :lastUpdate => 0, :xceiverCount => 0, :adminState => DatanodeInfoProto_AdminState.NORMAL, :cacheCapacity => 0, :cacheUsed => 0, :lastUpdateMonotonic => 0)
 const __fnum_DatanodeInfoProto = Int[1,2,3,4,5,6,7,8,10,11,12,13]
-meta(t::Type{DatanodeInfoProto}) = meta(t, __req_DatanodeInfoProto, __fnum_DatanodeInfoProto, __val_DatanodeInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{DatanodeInfoProto}) = meta(t, __req_DatanodeInfoProto, __fnum_DatanodeInfoProto, __val_DatanodeInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::DatanodeInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::DatanodeInfoProto, v2::DatanodeInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DatanodeInfoProto, v2::DatanodeInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type DatanodeInfosProto
-    datanodes::Array{DatanodeInfoProto,1}
-    DatanodeInfosProto() = (o=new(); fillunset(o); o)
-end #type DatanodeInfosProto
+mutable struct DatanodeInfosProto <: ProtoType
+    datanodes::Vector{DatanodeInfoProto}
+    DatanodeInfosProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct DatanodeInfosProto
 hash(v::DatanodeInfosProto) = ProtoBuf.protohash(v)
 isequal(v1::DatanodeInfosProto, v2::DatanodeInfosProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DatanodeInfosProto, v2::DatanodeInfosProto) = ProtoBuf.protoeq(v1, v2)
 
-type __enum_DatanodeStorageProto_StorageState <: ProtoEnum
+struct __enum_DatanodeStorageProto_StorageState <: ProtoEnum
     NORMAL::Int32
     READ_ONLY_SHARED::Int32
     __enum_DatanodeStorageProto_StorageState() = new(0,1)
-end #type __enum_DatanodeStorageProto_StorageState
+end #struct __enum_DatanodeStorageProto_StorageState
 const DatanodeStorageProto_StorageState = __enum_DatanodeStorageProto_StorageState()
 
-type DatanodeStorageProto
+mutable struct DatanodeStorageProto <: ProtoType
     storageUuid::AbstractString
     state::Int32
     storageType::Int32
-    DatanodeStorageProto() = (o=new(); fillunset(o); o)
-end #type DatanodeStorageProto
+    DatanodeStorageProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct DatanodeStorageProto
 const __req_DatanodeStorageProto = Symbol[:storageUuid]
-const __val_DatanodeStorageProto = @compat Dict(:state => DatanodeStorageProto_StorageState.NORMAL, :storageType => StorageTypeProto.DISK)
-meta(t::Type{DatanodeStorageProto}) = meta(t, __req_DatanodeStorageProto, ProtoBuf.DEF_FNUM, __val_DatanodeStorageProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_DatanodeStorageProto = Dict(:state => DatanodeStorageProto_StorageState.NORMAL, :storageType => StorageTypeProto.DISK)
+meta(t::Type{DatanodeStorageProto}) = meta(t, __req_DatanodeStorageProto, ProtoBuf.DEF_FNUM, __val_DatanodeStorageProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::DatanodeStorageProto) = ProtoBuf.protohash(v)
 isequal(v1::DatanodeStorageProto, v2::DatanodeStorageProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DatanodeStorageProto, v2::DatanodeStorageProto) = ProtoBuf.protoeq(v1, v2)
 
-type StorageReportProto
+mutable struct StorageReportProto <: ProtoType
     storageUuid::AbstractString
     failed::Bool
     capacity::UInt64
@@ -155,36 +156,36 @@ type StorageReportProto
     remaining::UInt64
     blockPoolUsed::UInt64
     storage::DatanodeStorageProto
-    StorageReportProto() = (o=new(); fillunset(o); o)
-end #type StorageReportProto
+    StorageReportProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct StorageReportProto
 const __req_StorageReportProto = Symbol[:storageUuid]
-const __val_StorageReportProto = @compat Dict(:failed => false, :capacity => 0, :dfsUsed => 0, :remaining => 0, :blockPoolUsed => 0)
-meta(t::Type{StorageReportProto}) = meta(t, __req_StorageReportProto, ProtoBuf.DEF_FNUM, __val_StorageReportProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_StorageReportProto = Dict(:failed => false, :capacity => 0, :dfsUsed => 0, :remaining => 0, :blockPoolUsed => 0)
+meta(t::Type{StorageReportProto}) = meta(t, __req_StorageReportProto, ProtoBuf.DEF_FNUM, __val_StorageReportProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::StorageReportProto) = ProtoBuf.protohash(v)
 isequal(v1::StorageReportProto, v2::StorageReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StorageReportProto, v2::StorageReportProto) = ProtoBuf.protoeq(v1, v2)
 
-type StorageTypeQuotaInfoProto
+mutable struct StorageTypeQuotaInfoProto <: ProtoType
     _type::Int32
     quota::UInt64
     consumed::UInt64
-    StorageTypeQuotaInfoProto() = (o=new(); fillunset(o); o)
-end #type StorageTypeQuotaInfoProto
+    StorageTypeQuotaInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct StorageTypeQuotaInfoProto
 const __req_StorageTypeQuotaInfoProto = Symbol[:_type,:quota,:consumed]
-meta(t::Type{StorageTypeQuotaInfoProto}) = meta(t, __req_StorageTypeQuotaInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{StorageTypeQuotaInfoProto}) = meta(t, __req_StorageTypeQuotaInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::StorageTypeQuotaInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::StorageTypeQuotaInfoProto, v2::StorageTypeQuotaInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StorageTypeQuotaInfoProto, v2::StorageTypeQuotaInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type StorageTypeQuotaInfosProto
-    typeQuotaInfo::Array{StorageTypeQuotaInfoProto,1}
-    StorageTypeQuotaInfosProto() = (o=new(); fillunset(o); o)
-end #type StorageTypeQuotaInfosProto
+mutable struct StorageTypeQuotaInfosProto <: ProtoType
+    typeQuotaInfo::Vector{StorageTypeQuotaInfoProto}
+    StorageTypeQuotaInfosProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct StorageTypeQuotaInfosProto
 hash(v::StorageTypeQuotaInfosProto) = ProtoBuf.protohash(v)
 isequal(v1::StorageTypeQuotaInfosProto, v2::StorageTypeQuotaInfosProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StorageTypeQuotaInfosProto, v2::StorageTypeQuotaInfosProto) = ProtoBuf.protoeq(v1, v2)
 
-type ContentSummaryProto
+mutable struct ContentSummaryProto <: ProtoType
     length::UInt64
     fileCount::UInt64
     directoryCount::UInt64
@@ -192,175 +193,175 @@ type ContentSummaryProto
     spaceConsumed::UInt64
     spaceQuota::UInt64
     typeQuotaInfos::StorageTypeQuotaInfosProto
-    ContentSummaryProto() = (o=new(); fillunset(o); o)
-end #type ContentSummaryProto
+    ContentSummaryProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ContentSummaryProto
 const __req_ContentSummaryProto = Symbol[:length,:fileCount,:directoryCount,:quota,:spaceConsumed,:spaceQuota]
-meta(t::Type{ContentSummaryProto}) = meta(t, __req_ContentSummaryProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{ContentSummaryProto}) = meta(t, __req_ContentSummaryProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::ContentSummaryProto) = ProtoBuf.protohash(v)
 isequal(v1::ContentSummaryProto, v2::ContentSummaryProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ContentSummaryProto, v2::ContentSummaryProto) = ProtoBuf.protoeq(v1, v2)
 
-type CorruptFileBlocksProto
-    files::Array{AbstractString,1}
+mutable struct CorruptFileBlocksProto <: ProtoType
+    files::Vector{AbstractString}
     cookie::AbstractString
-    CorruptFileBlocksProto() = (o=new(); fillunset(o); o)
-end #type CorruptFileBlocksProto
+    CorruptFileBlocksProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct CorruptFileBlocksProto
 const __req_CorruptFileBlocksProto = Symbol[:cookie]
-meta(t::Type{CorruptFileBlocksProto}) = meta(t, __req_CorruptFileBlocksProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{CorruptFileBlocksProto}) = meta(t, __req_CorruptFileBlocksProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::CorruptFileBlocksProto) = ProtoBuf.protohash(v)
 isequal(v1::CorruptFileBlocksProto, v2::CorruptFileBlocksProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CorruptFileBlocksProto, v2::CorruptFileBlocksProto) = ProtoBuf.protoeq(v1, v2)
 
-type FsPermissionProto
+mutable struct FsPermissionProto <: ProtoType
     perm::UInt32
-    FsPermissionProto() = (o=new(); fillunset(o); o)
-end #type FsPermissionProto
+    FsPermissionProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct FsPermissionProto
 const __req_FsPermissionProto = Symbol[:perm]
-meta(t::Type{FsPermissionProto}) = meta(t, __req_FsPermissionProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{FsPermissionProto}) = meta(t, __req_FsPermissionProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::FsPermissionProto) = ProtoBuf.protohash(v)
 isequal(v1::FsPermissionProto, v2::FsPermissionProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::FsPermissionProto, v2::FsPermissionProto) = ProtoBuf.protoeq(v1, v2)
 
-type StorageTypesProto
-    storageTypes::Array{Int32,1}
-    StorageTypesProto() = (o=new(); fillunset(o); o)
-end #type StorageTypesProto
+mutable struct StorageTypesProto <: ProtoType
+    storageTypes::Vector{Int32}
+    StorageTypesProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct StorageTypesProto
 hash(v::StorageTypesProto) = ProtoBuf.protohash(v)
 isequal(v1::StorageTypesProto, v2::StorageTypesProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StorageTypesProto, v2::StorageTypesProto) = ProtoBuf.protoeq(v1, v2)
 
-type BlockStoragePolicyProto
+mutable struct BlockStoragePolicyProto <: ProtoType
     policyId::UInt32
     name::AbstractString
     creationPolicy::StorageTypesProto
     creationFallbackPolicy::StorageTypesProto
     replicationFallbackPolicy::StorageTypesProto
-    BlockStoragePolicyProto() = (o=new(); fillunset(o); o)
-end #type BlockStoragePolicyProto
+    BlockStoragePolicyProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct BlockStoragePolicyProto
 const __req_BlockStoragePolicyProto = Symbol[:policyId,:name,:creationPolicy]
-meta(t::Type{BlockStoragePolicyProto}) = meta(t, __req_BlockStoragePolicyProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{BlockStoragePolicyProto}) = meta(t, __req_BlockStoragePolicyProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::BlockStoragePolicyProto) = ProtoBuf.protohash(v)
 isequal(v1::BlockStoragePolicyProto, v2::BlockStoragePolicyProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::BlockStoragePolicyProto, v2::BlockStoragePolicyProto) = ProtoBuf.protoeq(v1, v2)
 
-type StorageUuidsProto
-    storageUuids::Array{AbstractString,1}
-    StorageUuidsProto() = (o=new(); fillunset(o); o)
-end #type StorageUuidsProto
+mutable struct StorageUuidsProto <: ProtoType
+    storageUuids::Vector{AbstractString}
+    StorageUuidsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct StorageUuidsProto
 hash(v::StorageUuidsProto) = ProtoBuf.protohash(v)
 isequal(v1::StorageUuidsProto, v2::StorageUuidsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StorageUuidsProto, v2::StorageUuidsProto) = ProtoBuf.protoeq(v1, v2)
 
-type LocatedBlockProto
+mutable struct LocatedBlockProto <: ProtoType
     b::ExtendedBlockProto
     offset::UInt64
-    locs::Array{DatanodeInfoProto,1}
+    locs::Vector{DatanodeInfoProto}
     corrupt::Bool
     blockToken::TokenProto
-    isCached::Array{Bool,1}
-    storageTypes::Array{Int32,1}
-    storageIDs::Array{AbstractString,1}
-    LocatedBlockProto() = (o=new(); fillunset(o); o)
-end #type LocatedBlockProto
+    isCached::Vector{Bool}
+    storageTypes::Vector{Int32}
+    storageIDs::Vector{AbstractString}
+    LocatedBlockProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct LocatedBlockProto
 const __req_LocatedBlockProto = Symbol[:b,:offset,:corrupt,:blockToken]
 const __pack_LocatedBlockProto = Symbol[:isCached]
-meta(t::Type{LocatedBlockProto}) = meta(t, __req_LocatedBlockProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, __pack_LocatedBlockProto, ProtoBuf.DEF_WTYPES)
+meta(t::Type{LocatedBlockProto}) = meta(t, __req_LocatedBlockProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, __pack_LocatedBlockProto, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::LocatedBlockProto) = ProtoBuf.protohash(v)
 isequal(v1::LocatedBlockProto, v2::LocatedBlockProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::LocatedBlockProto, v2::LocatedBlockProto) = ProtoBuf.protoeq(v1, v2)
 
-type DataEncryptionKeyProto
+mutable struct DataEncryptionKeyProto <: ProtoType
     keyId::UInt32
     blockPoolId::AbstractString
     nonce::Array{UInt8,1}
     encryptionKey::Array{UInt8,1}
     expiryDate::UInt64
     encryptionAlgorithm::AbstractString
-    DataEncryptionKeyProto() = (o=new(); fillunset(o); o)
-end #type DataEncryptionKeyProto
+    DataEncryptionKeyProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct DataEncryptionKeyProto
 const __req_DataEncryptionKeyProto = Symbol[:keyId,:blockPoolId,:nonce,:encryptionKey,:expiryDate]
-meta(t::Type{DataEncryptionKeyProto}) = meta(t, __req_DataEncryptionKeyProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{DataEncryptionKeyProto}) = meta(t, __req_DataEncryptionKeyProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::DataEncryptionKeyProto) = ProtoBuf.protohash(v)
 isequal(v1::DataEncryptionKeyProto, v2::DataEncryptionKeyProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DataEncryptionKeyProto, v2::DataEncryptionKeyProto) = ProtoBuf.protoeq(v1, v2)
 
-type FileEncryptionInfoProto
+mutable struct FileEncryptionInfoProto <: ProtoType
     suite::Int32
     cryptoProtocolVersion::Int32
     key::Array{UInt8,1}
     iv::Array{UInt8,1}
     keyName::AbstractString
     ezKeyVersionName::AbstractString
-    FileEncryptionInfoProto() = (o=new(); fillunset(o); o)
-end #type FileEncryptionInfoProto
+    FileEncryptionInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct FileEncryptionInfoProto
 const __req_FileEncryptionInfoProto = Symbol[:suite,:cryptoProtocolVersion,:key,:iv,:keyName,:ezKeyVersionName]
-meta(t::Type{FileEncryptionInfoProto}) = meta(t, __req_FileEncryptionInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{FileEncryptionInfoProto}) = meta(t, __req_FileEncryptionInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::FileEncryptionInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::FileEncryptionInfoProto, v2::FileEncryptionInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::FileEncryptionInfoProto, v2::FileEncryptionInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type PerFileEncryptionInfoProto
+mutable struct PerFileEncryptionInfoProto <: ProtoType
     key::Array{UInt8,1}
     iv::Array{UInt8,1}
     ezKeyVersionName::AbstractString
-    PerFileEncryptionInfoProto() = (o=new(); fillunset(o); o)
-end #type PerFileEncryptionInfoProto
+    PerFileEncryptionInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct PerFileEncryptionInfoProto
 const __req_PerFileEncryptionInfoProto = Symbol[:key,:iv,:ezKeyVersionName]
-meta(t::Type{PerFileEncryptionInfoProto}) = meta(t, __req_PerFileEncryptionInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{PerFileEncryptionInfoProto}) = meta(t, __req_PerFileEncryptionInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::PerFileEncryptionInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::PerFileEncryptionInfoProto, v2::PerFileEncryptionInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::PerFileEncryptionInfoProto, v2::PerFileEncryptionInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type ZoneEncryptionInfoProto
+mutable struct ZoneEncryptionInfoProto <: ProtoType
     suite::Int32
     cryptoProtocolVersion::Int32
     keyName::AbstractString
-    ZoneEncryptionInfoProto() = (o=new(); fillunset(o); o)
-end #type ZoneEncryptionInfoProto
+    ZoneEncryptionInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ZoneEncryptionInfoProto
 const __req_ZoneEncryptionInfoProto = Symbol[:suite,:cryptoProtocolVersion,:keyName]
-meta(t::Type{ZoneEncryptionInfoProto}) = meta(t, __req_ZoneEncryptionInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{ZoneEncryptionInfoProto}) = meta(t, __req_ZoneEncryptionInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::ZoneEncryptionInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::ZoneEncryptionInfoProto, v2::ZoneEncryptionInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ZoneEncryptionInfoProto, v2::ZoneEncryptionInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type CipherOptionProto
+mutable struct CipherOptionProto <: ProtoType
     suite::Int32
     inKey::Array{UInt8,1}
     inIv::Array{UInt8,1}
     outKey::Array{UInt8,1}
     outIv::Array{UInt8,1}
-    CipherOptionProto() = (o=new(); fillunset(o); o)
-end #type CipherOptionProto
+    CipherOptionProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct CipherOptionProto
 const __req_CipherOptionProto = Symbol[:suite]
-meta(t::Type{CipherOptionProto}) = meta(t, __req_CipherOptionProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{CipherOptionProto}) = meta(t, __req_CipherOptionProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::CipherOptionProto) = ProtoBuf.protohash(v)
 isequal(v1::CipherOptionProto, v2::CipherOptionProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CipherOptionProto, v2::CipherOptionProto) = ProtoBuf.protoeq(v1, v2)
 
-type LocatedBlocksProto
+mutable struct LocatedBlocksProto <: ProtoType
     fileLength::UInt64
-    blocks::Array{LocatedBlockProto,1}
+    blocks::Vector{LocatedBlockProto}
     underConstruction::Bool
     lastBlock::LocatedBlockProto
     isLastBlockComplete::Bool
     fileEncryptionInfo::FileEncryptionInfoProto
-    LocatedBlocksProto() = (o=new(); fillunset(o); o)
-end #type LocatedBlocksProto
+    LocatedBlocksProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct LocatedBlocksProto
 const __req_LocatedBlocksProto = Symbol[:fileLength,:underConstruction,:isLastBlockComplete]
-meta(t::Type{LocatedBlocksProto}) = meta(t, __req_LocatedBlocksProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{LocatedBlocksProto}) = meta(t, __req_LocatedBlocksProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::LocatedBlocksProto) = ProtoBuf.protohash(v)
 isequal(v1::LocatedBlocksProto, v2::LocatedBlocksProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::LocatedBlocksProto, v2::LocatedBlocksProto) = ProtoBuf.protoeq(v1, v2)
 
-type __enum_HdfsFileStatusProto_FileType <: ProtoEnum
+struct __enum_HdfsFileStatusProto_FileType <: ProtoEnum
     IS_DIR::Int32
     IS_FILE::Int32
     IS_SYMLINK::Int32
     __enum_HdfsFileStatusProto_FileType() = new(1,2,3)
-end #type __enum_HdfsFileStatusProto_FileType
+end #struct __enum_HdfsFileStatusProto_FileType
 const HdfsFileStatusProto_FileType = __enum_HdfsFileStatusProto_FileType()
 
-type HdfsFileStatusProto
+mutable struct HdfsFileStatusProto <: ProtoType
     fileType::Int32
     path::Array{UInt8,1}
     length::UInt64
@@ -377,16 +378,16 @@ type HdfsFileStatusProto
     childrenNum::Int32
     fileEncryptionInfo::FileEncryptionInfoProto
     storagePolicy::UInt32
-    HdfsFileStatusProto() = (o=new(); fillunset(o); o)
-end #type HdfsFileStatusProto
+    HdfsFileStatusProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct HdfsFileStatusProto
 const __req_HdfsFileStatusProto = Symbol[:fileType,:path,:length,:permission,:owner,:group,:modification_time,:access_time]
-const __val_HdfsFileStatusProto = @compat Dict(:block_replication => 0, :blocksize => 0, :fileId => 0, :childrenNum => -1, :storagePolicy => 0)
-meta(t::Type{HdfsFileStatusProto}) = meta(t, __req_HdfsFileStatusProto, ProtoBuf.DEF_FNUM, __val_HdfsFileStatusProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_HdfsFileStatusProto = Dict(:block_replication => 0, :blocksize => 0, :fileId => 0, :childrenNum => -1, :storagePolicy => 0)
+meta(t::Type{HdfsFileStatusProto}) = meta(t, __req_HdfsFileStatusProto, ProtoBuf.DEF_FNUM, __val_HdfsFileStatusProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::HdfsFileStatusProto) = ProtoBuf.protohash(v)
 isequal(v1::HdfsFileStatusProto, v2::HdfsFileStatusProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::HdfsFileStatusProto, v2::HdfsFileStatusProto) = ProtoBuf.protoeq(v1, v2)
 
-type FsServerDefaultsProto
+mutable struct FsServerDefaultsProto <: ProtoType
     blockSize::UInt64
     bytesPerChecksum::UInt32
     writePacketSize::UInt32
@@ -395,297 +396,299 @@ type FsServerDefaultsProto
     encryptDataTransfer::Bool
     trashInterval::UInt64
     checksumType::Int32
-    FsServerDefaultsProto() = (o=new(); fillunset(o); o)
-end #type FsServerDefaultsProto
+    FsServerDefaultsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct FsServerDefaultsProto
 const __req_FsServerDefaultsProto = Symbol[:blockSize,:bytesPerChecksum,:writePacketSize,:replication,:fileBufferSize]
-const __val_FsServerDefaultsProto = @compat Dict(:encryptDataTransfer => false, :trashInterval => 0, :checksumType => ChecksumTypeProto.CHECKSUM_CRC32)
-meta(t::Type{FsServerDefaultsProto}) = meta(t, __req_FsServerDefaultsProto, ProtoBuf.DEF_FNUM, __val_FsServerDefaultsProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_FsServerDefaultsProto = Dict(:encryptDataTransfer => false, :trashInterval => 0, :checksumType => ChecksumTypeProto.CHECKSUM_CRC32)
+meta(t::Type{FsServerDefaultsProto}) = meta(t, __req_FsServerDefaultsProto, ProtoBuf.DEF_FNUM, __val_FsServerDefaultsProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::FsServerDefaultsProto) = ProtoBuf.protohash(v)
 isequal(v1::FsServerDefaultsProto, v2::FsServerDefaultsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::FsServerDefaultsProto, v2::FsServerDefaultsProto) = ProtoBuf.protoeq(v1, v2)
 
-type DirectoryListingProto
-    partialListing::Array{HdfsFileStatusProto,1}
+mutable struct DirectoryListingProto <: ProtoType
+    partialListing::Vector{HdfsFileStatusProto}
     remainingEntries::UInt32
-    DirectoryListingProto() = (o=new(); fillunset(o); o)
-end #type DirectoryListingProto
+    DirectoryListingProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct DirectoryListingProto
 const __req_DirectoryListingProto = Symbol[:remainingEntries]
-meta(t::Type{DirectoryListingProto}) = meta(t, __req_DirectoryListingProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{DirectoryListingProto}) = meta(t, __req_DirectoryListingProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::DirectoryListingProto) = ProtoBuf.protohash(v)
 isequal(v1::DirectoryListingProto, v2::DirectoryListingProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::DirectoryListingProto, v2::DirectoryListingProto) = ProtoBuf.protoeq(v1, v2)
 
-type SnapshottableDirectoryStatusProto
+mutable struct SnapshottableDirectoryStatusProto <: ProtoType
     dirStatus::HdfsFileStatusProto
     snapshot_quota::UInt32
     snapshot_number::UInt32
     parent_fullpath::Array{UInt8,1}
-    SnapshottableDirectoryStatusProto() = (o=new(); fillunset(o); o)
-end #type SnapshottableDirectoryStatusProto
+    SnapshottableDirectoryStatusProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct SnapshottableDirectoryStatusProto
 const __req_SnapshottableDirectoryStatusProto = Symbol[:dirStatus,:snapshot_quota,:snapshot_number,:parent_fullpath]
-meta(t::Type{SnapshottableDirectoryStatusProto}) = meta(t, __req_SnapshottableDirectoryStatusProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{SnapshottableDirectoryStatusProto}) = meta(t, __req_SnapshottableDirectoryStatusProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::SnapshottableDirectoryStatusProto) = ProtoBuf.protohash(v)
 isequal(v1::SnapshottableDirectoryStatusProto, v2::SnapshottableDirectoryStatusProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SnapshottableDirectoryStatusProto, v2::SnapshottableDirectoryStatusProto) = ProtoBuf.protoeq(v1, v2)
 
-type SnapshottableDirectoryListingProto
-    snapshottableDirListing::Array{SnapshottableDirectoryStatusProto,1}
-    SnapshottableDirectoryListingProto() = (o=new(); fillunset(o); o)
-end #type SnapshottableDirectoryListingProto
+mutable struct SnapshottableDirectoryListingProto <: ProtoType
+    snapshottableDirListing::Vector{SnapshottableDirectoryStatusProto}
+    SnapshottableDirectoryListingProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct SnapshottableDirectoryListingProto
 hash(v::SnapshottableDirectoryListingProto) = ProtoBuf.protohash(v)
 isequal(v1::SnapshottableDirectoryListingProto, v2::SnapshottableDirectoryListingProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SnapshottableDirectoryListingProto, v2::SnapshottableDirectoryListingProto) = ProtoBuf.protoeq(v1, v2)
 
-type SnapshotDiffReportEntryProto
+mutable struct SnapshotDiffReportEntryProto <: ProtoType
     fullpath::Array{UInt8,1}
     modificationLabel::AbstractString
     targetPath::Array{UInt8,1}
-    SnapshotDiffReportEntryProto() = (o=new(); fillunset(o); o)
-end #type SnapshotDiffReportEntryProto
+    SnapshotDiffReportEntryProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct SnapshotDiffReportEntryProto
 const __req_SnapshotDiffReportEntryProto = Symbol[:fullpath,:modificationLabel]
-meta(t::Type{SnapshotDiffReportEntryProto}) = meta(t, __req_SnapshotDiffReportEntryProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{SnapshotDiffReportEntryProto}) = meta(t, __req_SnapshotDiffReportEntryProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::SnapshotDiffReportEntryProto) = ProtoBuf.protohash(v)
 isequal(v1::SnapshotDiffReportEntryProto, v2::SnapshotDiffReportEntryProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SnapshotDiffReportEntryProto, v2::SnapshotDiffReportEntryProto) = ProtoBuf.protoeq(v1, v2)
 
-type SnapshotDiffReportProto
+mutable struct SnapshotDiffReportProto <: ProtoType
     snapshotRoot::AbstractString
     fromSnapshot::AbstractString
     toSnapshot::AbstractString
-    diffReportEntries::Array{SnapshotDiffReportEntryProto,1}
-    SnapshotDiffReportProto() = (o=new(); fillunset(o); o)
-end #type SnapshotDiffReportProto
+    diffReportEntries::Vector{SnapshotDiffReportEntryProto}
+    SnapshotDiffReportProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct SnapshotDiffReportProto
 const __req_SnapshotDiffReportProto = Symbol[:snapshotRoot,:fromSnapshot,:toSnapshot]
-meta(t::Type{SnapshotDiffReportProto}) = meta(t, __req_SnapshotDiffReportProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{SnapshotDiffReportProto}) = meta(t, __req_SnapshotDiffReportProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::SnapshotDiffReportProto) = ProtoBuf.protohash(v)
 isequal(v1::SnapshotDiffReportProto, v2::SnapshotDiffReportProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SnapshotDiffReportProto, v2::SnapshotDiffReportProto) = ProtoBuf.protoeq(v1, v2)
 
-type StorageInfoProto
+mutable struct StorageInfoProto <: ProtoType
     layoutVersion::UInt32
     namespceID::UInt32
     clusterID::AbstractString
     cTime::UInt64
-    StorageInfoProto() = (o=new(); fillunset(o); o)
-end #type StorageInfoProto
+    StorageInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct StorageInfoProto
 const __req_StorageInfoProto = Symbol[:layoutVersion,:namespceID,:clusterID,:cTime]
-meta(t::Type{StorageInfoProto}) = meta(t, __req_StorageInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{StorageInfoProto}) = meta(t, __req_StorageInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::StorageInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::StorageInfoProto, v2::StorageInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::StorageInfoProto, v2::StorageInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type __enum_NamenodeRegistrationProto_NamenodeRoleProto <: ProtoEnum
+struct __enum_NamenodeRegistrationProto_NamenodeRoleProto <: ProtoEnum
     NAMENODE::Int32
     BACKUP::Int32
     CHECKPOINT::Int32
     __enum_NamenodeRegistrationProto_NamenodeRoleProto() = new(1,2,3)
-end #type __enum_NamenodeRegistrationProto_NamenodeRoleProto
+end #struct __enum_NamenodeRegistrationProto_NamenodeRoleProto
 const NamenodeRegistrationProto_NamenodeRoleProto = __enum_NamenodeRegistrationProto_NamenodeRoleProto()
 
-type NamenodeRegistrationProto
+mutable struct NamenodeRegistrationProto <: ProtoType
     rpcAddress::AbstractString
     httpAddress::AbstractString
     storageInfo::StorageInfoProto
     role::Int32
-    NamenodeRegistrationProto() = (o=new(); fillunset(o); o)
-end #type NamenodeRegistrationProto
+    NamenodeRegistrationProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct NamenodeRegistrationProto
 const __req_NamenodeRegistrationProto = Symbol[:rpcAddress,:httpAddress,:storageInfo]
-const __val_NamenodeRegistrationProto = @compat Dict(:role => NamenodeRegistrationProto_NamenodeRoleProto.NAMENODE)
-meta(t::Type{NamenodeRegistrationProto}) = meta(t, __req_NamenodeRegistrationProto, ProtoBuf.DEF_FNUM, __val_NamenodeRegistrationProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_NamenodeRegistrationProto = Dict(:role => NamenodeRegistrationProto_NamenodeRoleProto.NAMENODE)
+meta(t::Type{NamenodeRegistrationProto}) = meta(t, __req_NamenodeRegistrationProto, ProtoBuf.DEF_FNUM, __val_NamenodeRegistrationProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::NamenodeRegistrationProto) = ProtoBuf.protohash(v)
 isequal(v1::NamenodeRegistrationProto, v2::NamenodeRegistrationProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NamenodeRegistrationProto, v2::NamenodeRegistrationProto) = ProtoBuf.protoeq(v1, v2)
 
-type CheckpointSignatureProto
+mutable struct CheckpointSignatureProto <: ProtoType
     blockPoolId::AbstractString
     mostRecentCheckpointTxId::UInt64
     curSegmentTxId::UInt64
     storageInfo::StorageInfoProto
-    CheckpointSignatureProto() = (o=new(); fillunset(o); o)
-end #type CheckpointSignatureProto
+    CheckpointSignatureProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct CheckpointSignatureProto
 const __req_CheckpointSignatureProto = Symbol[:blockPoolId,:mostRecentCheckpointTxId,:curSegmentTxId,:storageInfo]
-meta(t::Type{CheckpointSignatureProto}) = meta(t, __req_CheckpointSignatureProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{CheckpointSignatureProto}) = meta(t, __req_CheckpointSignatureProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::CheckpointSignatureProto) = ProtoBuf.protohash(v)
 isequal(v1::CheckpointSignatureProto, v2::CheckpointSignatureProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CheckpointSignatureProto, v2::CheckpointSignatureProto) = ProtoBuf.protoeq(v1, v2)
 
-type CheckpointCommandProto
+mutable struct CheckpointCommandProto <: ProtoType
     signature::CheckpointSignatureProto
     needToReturnImage::Bool
-    CheckpointCommandProto() = (o=new(); fillunset(o); o)
-end #type CheckpointCommandProto
+    CheckpointCommandProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct CheckpointCommandProto
 const __req_CheckpointCommandProto = Symbol[:signature,:needToReturnImage]
-meta(t::Type{CheckpointCommandProto}) = meta(t, __req_CheckpointCommandProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{CheckpointCommandProto}) = meta(t, __req_CheckpointCommandProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::CheckpointCommandProto) = ProtoBuf.protohash(v)
 isequal(v1::CheckpointCommandProto, v2::CheckpointCommandProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::CheckpointCommandProto, v2::CheckpointCommandProto) = ProtoBuf.protoeq(v1, v2)
 
-type __enum_NamenodeCommandProto_Type <: ProtoEnum
+struct __enum_NamenodeCommandProto_Type <: ProtoEnum
     NamenodeCommand::Int32
     CheckPointCommand::Int32
     __enum_NamenodeCommandProto_Type() = new(0,1)
-end #type __enum_NamenodeCommandProto_Type
+end #struct __enum_NamenodeCommandProto_Type
 const NamenodeCommandProto_Type = __enum_NamenodeCommandProto_Type()
 
-type NamenodeCommandProto
+mutable struct NamenodeCommandProto <: ProtoType
     action::UInt32
     _type::Int32
     checkpointCmd::CheckpointCommandProto
-    NamenodeCommandProto() = (o=new(); fillunset(o); o)
-end #type NamenodeCommandProto
+    NamenodeCommandProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct NamenodeCommandProto
 const __req_NamenodeCommandProto = Symbol[:action,:_type]
-meta(t::Type{NamenodeCommandProto}) = meta(t, __req_NamenodeCommandProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{NamenodeCommandProto}) = meta(t, __req_NamenodeCommandProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::NamenodeCommandProto) = ProtoBuf.protohash(v)
 isequal(v1::NamenodeCommandProto, v2::NamenodeCommandProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NamenodeCommandProto, v2::NamenodeCommandProto) = ProtoBuf.protoeq(v1, v2)
 
-type BlockProto
+mutable struct BlockProto <: ProtoType
     blockId::UInt64
     genStamp::UInt64
     numBytes::UInt64
-    BlockProto() = (o=new(); fillunset(o); o)
-end #type BlockProto
+    BlockProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct BlockProto
 const __req_BlockProto = Symbol[:blockId,:genStamp]
-const __val_BlockProto = @compat Dict(:numBytes => 0)
-meta(t::Type{BlockProto}) = meta(t, __req_BlockProto, ProtoBuf.DEF_FNUM, __val_BlockProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_BlockProto = Dict(:numBytes => 0)
+meta(t::Type{BlockProto}) = meta(t, __req_BlockProto, ProtoBuf.DEF_FNUM, __val_BlockProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::BlockProto) = ProtoBuf.protohash(v)
 isequal(v1::BlockProto, v2::BlockProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::BlockProto, v2::BlockProto) = ProtoBuf.protoeq(v1, v2)
 
-type BlockWithLocationsProto
+mutable struct BlockWithLocationsProto <: ProtoType
     block::BlockProto
-    datanodeUuids::Array{AbstractString,1}
-    storageUuids::Array{AbstractString,1}
-    storageTypes::Array{Int32,1}
-    BlockWithLocationsProto() = (o=new(); fillunset(o); o)
-end #type BlockWithLocationsProto
+    datanodeUuids::Vector{AbstractString}
+    storageUuids::Vector{AbstractString}
+    storageTypes::Vector{Int32}
+    BlockWithLocationsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct BlockWithLocationsProto
 const __req_BlockWithLocationsProto = Symbol[:block]
-meta(t::Type{BlockWithLocationsProto}) = meta(t, __req_BlockWithLocationsProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{BlockWithLocationsProto}) = meta(t, __req_BlockWithLocationsProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::BlockWithLocationsProto) = ProtoBuf.protohash(v)
 isequal(v1::BlockWithLocationsProto, v2::BlockWithLocationsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::BlockWithLocationsProto, v2::BlockWithLocationsProto) = ProtoBuf.protoeq(v1, v2)
 
-type BlocksWithLocationsProto
-    blocks::Array{BlockWithLocationsProto,1}
-    BlocksWithLocationsProto() = (o=new(); fillunset(o); o)
-end #type BlocksWithLocationsProto
+mutable struct BlocksWithLocationsProto <: ProtoType
+    blocks::Vector{BlockWithLocationsProto}
+    BlocksWithLocationsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct BlocksWithLocationsProto
 hash(v::BlocksWithLocationsProto) = ProtoBuf.protohash(v)
 isequal(v1::BlocksWithLocationsProto, v2::BlocksWithLocationsProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::BlocksWithLocationsProto, v2::BlocksWithLocationsProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoteEditLogProto
+mutable struct RemoteEditLogProto <: ProtoType
     startTxId::UInt64
     endTxId::UInt64
     isInProgress::Bool
-    RemoteEditLogProto() = (o=new(); fillunset(o); o)
-end #type RemoteEditLogProto
+    RemoteEditLogProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct RemoteEditLogProto
 const __req_RemoteEditLogProto = Symbol[:startTxId,:endTxId]
-const __val_RemoteEditLogProto = @compat Dict(:isInProgress => false)
-meta(t::Type{RemoteEditLogProto}) = meta(t, __req_RemoteEditLogProto, ProtoBuf.DEF_FNUM, __val_RemoteEditLogProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_RemoteEditLogProto = Dict(:isInProgress => false)
+meta(t::Type{RemoteEditLogProto}) = meta(t, __req_RemoteEditLogProto, ProtoBuf.DEF_FNUM, __val_RemoteEditLogProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::RemoteEditLogProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoteEditLogProto, v2::RemoteEditLogProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoteEditLogProto, v2::RemoteEditLogProto) = ProtoBuf.protoeq(v1, v2)
 
-type RemoteEditLogManifestProto
-    logs::Array{RemoteEditLogProto,1}
-    RemoteEditLogManifestProto() = (o=new(); fillunset(o); o)
-end #type RemoteEditLogManifestProto
+mutable struct RemoteEditLogManifestProto <: ProtoType
+    logs::Vector{RemoteEditLogProto}
+    RemoteEditLogManifestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct RemoteEditLogManifestProto
 hash(v::RemoteEditLogManifestProto) = ProtoBuf.protohash(v)
 isequal(v1::RemoteEditLogManifestProto, v2::RemoteEditLogManifestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RemoteEditLogManifestProto, v2::RemoteEditLogManifestProto) = ProtoBuf.protoeq(v1, v2)
 
-type NamespaceInfoProto
+mutable struct NamespaceInfoProto <: ProtoType
     buildVersion::AbstractString
     unused::UInt32
     blockPoolID::AbstractString
     storageInfo::StorageInfoProto
     softwareVersion::AbstractString
     capabilities::UInt64
-    NamespaceInfoProto() = (o=new(); fillunset(o); o)
-end #type NamespaceInfoProto
+    NamespaceInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct NamespaceInfoProto
 const __req_NamespaceInfoProto = Symbol[:buildVersion,:unused,:blockPoolID,:storageInfo,:softwareVersion]
-const __val_NamespaceInfoProto = @compat Dict(:capabilities => 0)
-meta(t::Type{NamespaceInfoProto}) = meta(t, __req_NamespaceInfoProto, ProtoBuf.DEF_FNUM, __val_NamespaceInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_NamespaceInfoProto = Dict(:capabilities => 0)
+meta(t::Type{NamespaceInfoProto}) = meta(t, __req_NamespaceInfoProto, ProtoBuf.DEF_FNUM, __val_NamespaceInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::NamespaceInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::NamespaceInfoProto, v2::NamespaceInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::NamespaceInfoProto, v2::NamespaceInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type BlockKeyProto
+mutable struct BlockKeyProto <: ProtoType
     keyId::UInt32
     expiryDate::UInt64
     keyBytes::Array{UInt8,1}
-    BlockKeyProto() = (o=new(); fillunset(o); o)
-end #type BlockKeyProto
+    BlockKeyProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct BlockKeyProto
 const __req_BlockKeyProto = Symbol[:keyId,:expiryDate]
-meta(t::Type{BlockKeyProto}) = meta(t, __req_BlockKeyProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{BlockKeyProto}) = meta(t, __req_BlockKeyProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::BlockKeyProto) = ProtoBuf.protohash(v)
 isequal(v1::BlockKeyProto, v2::BlockKeyProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::BlockKeyProto, v2::BlockKeyProto) = ProtoBuf.protoeq(v1, v2)
 
-type ExportedBlockKeysProto
+mutable struct ExportedBlockKeysProto <: ProtoType
     isBlockTokenEnabled::Bool
     keyUpdateInterval::UInt64
     tokenLifeTime::UInt64
     currentKey::BlockKeyProto
-    allKeys::Array{BlockKeyProto,1}
-    ExportedBlockKeysProto() = (o=new(); fillunset(o); o)
-end #type ExportedBlockKeysProto
+    allKeys::Vector{BlockKeyProto}
+    ExportedBlockKeysProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ExportedBlockKeysProto
 const __req_ExportedBlockKeysProto = Symbol[:isBlockTokenEnabled,:keyUpdateInterval,:tokenLifeTime,:currentKey]
-meta(t::Type{ExportedBlockKeysProto}) = meta(t, __req_ExportedBlockKeysProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{ExportedBlockKeysProto}) = meta(t, __req_ExportedBlockKeysProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::ExportedBlockKeysProto) = ProtoBuf.protohash(v)
 isequal(v1::ExportedBlockKeysProto, v2::ExportedBlockKeysProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::ExportedBlockKeysProto, v2::ExportedBlockKeysProto) = ProtoBuf.protoeq(v1, v2)
 
-type RecoveringBlockProto
+mutable struct RecoveringBlockProto <: ProtoType
     newGenStamp::UInt64
     block::LocatedBlockProto
     truncateBlock::BlockProto
-    RecoveringBlockProto() = (o=new(); fillunset(o); o)
-end #type RecoveringBlockProto
+    RecoveringBlockProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct RecoveringBlockProto
 const __req_RecoveringBlockProto = Symbol[:newGenStamp,:block]
-meta(t::Type{RecoveringBlockProto}) = meta(t, __req_RecoveringBlockProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{RecoveringBlockProto}) = meta(t, __req_RecoveringBlockProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::RecoveringBlockProto) = ProtoBuf.protohash(v)
 isequal(v1::RecoveringBlockProto, v2::RecoveringBlockProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RecoveringBlockProto, v2::RecoveringBlockProto) = ProtoBuf.protoeq(v1, v2)
 
-type VersionRequestProto
-    VersionRequestProto() = (o=new(); fillunset(o); o)
-end #type VersionRequestProto
+mutable struct VersionRequestProto <: ProtoType
+    VersionRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct VersionRequestProto
 hash(v::VersionRequestProto) = ProtoBuf.protohash(v)
 isequal(v1::VersionRequestProto, v2::VersionRequestProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::VersionRequestProto, v2::VersionRequestProto) = ProtoBuf.protoeq(v1, v2)
 
-type VersionResponseProto
+mutable struct VersionResponseProto <: ProtoType
     info::NamespaceInfoProto
-    VersionResponseProto() = (o=new(); fillunset(o); o)
-end #type VersionResponseProto
+    VersionResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct VersionResponseProto
 const __req_VersionResponseProto = Symbol[:info]
-meta(t::Type{VersionResponseProto}) = meta(t, __req_VersionResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{VersionResponseProto}) = meta(t, __req_VersionResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::VersionResponseProto) = ProtoBuf.protohash(v)
 isequal(v1::VersionResponseProto, v2::VersionResponseProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::VersionResponseProto, v2::VersionResponseProto) = ProtoBuf.protoeq(v1, v2)
 
-type SnapshotInfoProto
+mutable struct SnapshotInfoProto <: ProtoType
     snapshotName::AbstractString
     snapshotRoot::AbstractString
     permission::FsPermissionProto
     owner::AbstractString
     group::AbstractString
     createTime::AbstractString
-    SnapshotInfoProto() = (o=new(); fillunset(o); o)
-end #type SnapshotInfoProto
+    SnapshotInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct SnapshotInfoProto
 const __req_SnapshotInfoProto = Symbol[:snapshotName,:snapshotRoot,:permission,:owner,:group,:createTime]
-meta(t::Type{SnapshotInfoProto}) = meta(t, __req_SnapshotInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+meta(t::Type{SnapshotInfoProto}) = meta(t, __req_SnapshotInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::SnapshotInfoProto) = ProtoBuf.protohash(v)
 isequal(v1::SnapshotInfoProto, v2::SnapshotInfoProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::SnapshotInfoProto, v2::SnapshotInfoProto) = ProtoBuf.protoeq(v1, v2)
 
-type RollingUpgradeStatusProto
+mutable struct RollingUpgradeStatusProto <: ProtoType
     blockPoolId::AbstractString
-    RollingUpgradeStatusProto() = (o=new(); fillunset(o); o)
-end #type RollingUpgradeStatusProto
+    finalized::Bool
+    RollingUpgradeStatusProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct RollingUpgradeStatusProto
 const __req_RollingUpgradeStatusProto = Symbol[:blockPoolId]
-meta(t::Type{RollingUpgradeStatusProto}) = meta(t, __req_RollingUpgradeStatusProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES)
+const __val_RollingUpgradeStatusProto = Dict(:finalized => false)
+meta(t::Type{RollingUpgradeStatusProto}) = meta(t, __req_RollingUpgradeStatusProto, ProtoBuf.DEF_FNUM, __val_RollingUpgradeStatusProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 hash(v::RollingUpgradeStatusProto) = ProtoBuf.protohash(v)
 isequal(v1::RollingUpgradeStatusProto, v2::RollingUpgradeStatusProto) = ProtoBuf.protoisequal(v1, v2)
 ==(v1::RollingUpgradeStatusProto, v2::RollingUpgradeStatusProto) = ProtoBuf.protoeq(v1, v2)

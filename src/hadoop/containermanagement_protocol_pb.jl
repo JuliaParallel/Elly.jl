@@ -1,3 +1,4 @@
+# syntax: proto2
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
@@ -9,19 +10,19 @@ const _ContainerManagementProtocolService_methods = MethodDescriptor[
         MethodDescriptor("stopContainers", 2, StopContainersRequestProto, StopContainersResponseProto),
         MethodDescriptor("getContainerStatuses", 3, GetContainerStatusesRequestProto, GetContainerStatusesResponseProto)
     ] # const _ContainerManagementProtocolService_methods
-const _ContainerManagementProtocolService_desc = ServiceDescriptor("ContainerManagementProtocolService", 1, _ContainerManagementProtocolService_methods)
+const _ContainerManagementProtocolService_desc = ServiceDescriptor("hadoop.yarn.ContainerManagementProtocolService", 1, _ContainerManagementProtocolService_methods)
 
 ContainerManagementProtocolService(impl::Module) = ProtoService(_ContainerManagementProtocolService_desc, impl)
 
-type ContainerManagementProtocolServiceStub <: AbstractProtoServiceStub{false}
+mutable struct ContainerManagementProtocolServiceStub <: AbstractProtoServiceStub{false}
     impl::ProtoServiceStub
     ContainerManagementProtocolServiceStub(channel::ProtoRpcChannel) = new(ProtoServiceStub(_ContainerManagementProtocolService_desc, channel))
-end # type ContainerManagementProtocolServiceStub
+end # mutable struct ContainerManagementProtocolServiceStub
 
-type ContainerManagementProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
+mutable struct ContainerManagementProtocolServiceBlockingStub <: AbstractProtoServiceStub{true}
     impl::ProtoServiceBlockingStub
     ContainerManagementProtocolServiceBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ContainerManagementProtocolService_desc, channel))
-end # type ContainerManagementProtocolServiceBlockingStub
+end # mutable struct ContainerManagementProtocolServiceBlockingStub
 
 startContainers(stub::ContainerManagementProtocolServiceStub, controller::ProtoRpcController, inp::StartContainersRequestProto, done::Function) = call_method(stub.impl, _ContainerManagementProtocolService_methods[1], controller, inp, done)
 startContainers(stub::ContainerManagementProtocolServiceBlockingStub, controller::ProtoRpcController, inp::StartContainersRequestProto) = call_method(stub.impl, _ContainerManagementProtocolService_methods[1], controller, inp)

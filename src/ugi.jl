@@ -1,5 +1,5 @@
 # Basic UserGroupInformation to store user information and tokens,
-type UserGroupInformation
+mutable struct UserGroupInformation
     userinfo::UserInformationProto
     tokens::Dict{AbstractString,TokenProto}
     function UserGroupInformation(username::AbstractString="")
@@ -34,5 +34,5 @@ function show(io::IO, ugi::UserGroupInformation)
     isfilled(uinfo, :realUser) && print(io, ' ', uinfo.realUser)
     isfilled(uinfo, :effectiveUser) && print(io, " (", uinfo.effectiveUser, ')')
     isempty(ugi.tokens) || print(io, " with ", length(ugi.tokens), " tokens")
-    println(io, "")
+    nothing
 end
