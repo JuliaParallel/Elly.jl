@@ -53,14 +53,12 @@ mutable struct YarnAppMaster
     end
 end
 
-macro locked(yam, ex)
-    quote
-        try
-            take!(yam.lck)
-            $(esc(ex))
-        finally
-            put!(yam.lck, 1)
-        end
+function withlock(fn, yam)
+    try
+        take!(yam.lck)
+        return fn()
+    finally
+        put!(yam.lck, 1)
     end
 end
 
@@ -107,7 +105,9 @@ function register(yam::YarnAppMaster)
     end
     !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
 
-    resp = @locked(yam, registerApplicationMaster(yam.amrm_conn, inp))
+    resp = withlock(yam) do
+        registerApplicationMaster(yam.amrm_conn, inp)
+    end
     yam.registration = Nullable(resp)
 
     if isfilled(resp, :maximumCapability)
@@ -137,7 +137,9 @@ function _unregister(yam::YarnAppMaster, finalstatus::Int32, diagnostics::Abstra
     !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
     !isempty(diagnostics) && set_field!(inp, :diagnostics, diagnostics)
   
-    resp = @locked(yam, finishApplicationMaster(yam.amrm_conn, inp))
+    resp = withlock(yam) do
+        finishApplicationMaster(yam.amrm_conn, inp)
+    end
     resp.isUnregistered && (yam.registration = Nullable{RegisterApplicationMasterResponseProto}())
     resp.isUnregistered
 end
@@ -216,7 +218,9 @@ function _update_rm(yam::YarnAppMaster)
     set_field!(inp, :response_id, yam.response_id)
 
     @logmsg(inp)
-    resp = @locked(yam, allocate(yam.amrm_conn, inp))
+    resp = withlock(yam) do
+        allocate(yam.amrm_conn, inp)
+    end
     @logmsg(resp)
 
     # store/update tokens
