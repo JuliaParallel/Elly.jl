@@ -2,13 +2,12 @@
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
-import Base: hash, isequal, ==
 
 # service methods for ContainerManagementProtocolService
 const _ContainerManagementProtocolService_methods = MethodDescriptor[
-        MethodDescriptor("startContainers", 1, StartContainersRequestProto, StartContainersResponseProto),
-        MethodDescriptor("stopContainers", 2, StopContainersRequestProto, StopContainersResponseProto),
-        MethodDescriptor("getContainerStatuses", 3, GetContainerStatusesRequestProto, GetContainerStatusesResponseProto)
+        MethodDescriptor("startContainers", 1, hadoop.yarn.StartContainersRequestProto, hadoop.yarn.StartContainersResponseProto),
+        MethodDescriptor("stopContainers", 2, hadoop.yarn.StopContainersRequestProto, hadoop.yarn.StopContainersResponseProto),
+        MethodDescriptor("getContainerStatuses", 3, hadoop.yarn.GetContainerStatusesRequestProto, hadoop.yarn.GetContainerStatusesResponseProto)
     ] # const _ContainerManagementProtocolService_methods
 const _ContainerManagementProtocolService_desc = ServiceDescriptor("hadoop.yarn.ContainerManagementProtocolService", 1, _ContainerManagementProtocolService_methods)
 
@@ -24,13 +23,13 @@ mutable struct ContainerManagementProtocolServiceBlockingStub <: AbstractProtoSe
     ContainerManagementProtocolServiceBlockingStub(channel::ProtoRpcChannel) = new(ProtoServiceBlockingStub(_ContainerManagementProtocolService_desc, channel))
 end # mutable struct ContainerManagementProtocolServiceBlockingStub
 
-startContainers(stub::ContainerManagementProtocolServiceStub, controller::ProtoRpcController, inp::StartContainersRequestProto, done::Function) = call_method(stub.impl, _ContainerManagementProtocolService_methods[1], controller, inp, done)
-startContainers(stub::ContainerManagementProtocolServiceBlockingStub, controller::ProtoRpcController, inp::StartContainersRequestProto) = call_method(stub.impl, _ContainerManagementProtocolService_methods[1], controller, inp)
+startContainers(stub::ContainerManagementProtocolServiceStub, controller::ProtoRpcController, inp::hadoop.yarn.StartContainersRequestProto, done::Function) = call_method(stub.impl, _ContainerManagementProtocolService_methods[1], controller, inp, done)
+startContainers(stub::ContainerManagementProtocolServiceBlockingStub, controller::ProtoRpcController, inp::hadoop.yarn.StartContainersRequestProto) = call_method(stub.impl, _ContainerManagementProtocolService_methods[1], controller, inp)
 
-stopContainers(stub::ContainerManagementProtocolServiceStub, controller::ProtoRpcController, inp::StopContainersRequestProto, done::Function) = call_method(stub.impl, _ContainerManagementProtocolService_methods[2], controller, inp, done)
-stopContainers(stub::ContainerManagementProtocolServiceBlockingStub, controller::ProtoRpcController, inp::StopContainersRequestProto) = call_method(stub.impl, _ContainerManagementProtocolService_methods[2], controller, inp)
+stopContainers(stub::ContainerManagementProtocolServiceStub, controller::ProtoRpcController, inp::hadoop.yarn.StopContainersRequestProto, done::Function) = call_method(stub.impl, _ContainerManagementProtocolService_methods[2], controller, inp, done)
+stopContainers(stub::ContainerManagementProtocolServiceBlockingStub, controller::ProtoRpcController, inp::hadoop.yarn.StopContainersRequestProto) = call_method(stub.impl, _ContainerManagementProtocolService_methods[2], controller, inp)
 
-getContainerStatuses(stub::ContainerManagementProtocolServiceStub, controller::ProtoRpcController, inp::GetContainerStatusesRequestProto, done::Function) = call_method(stub.impl, _ContainerManagementProtocolService_methods[3], controller, inp, done)
-getContainerStatuses(stub::ContainerManagementProtocolServiceBlockingStub, controller::ProtoRpcController, inp::GetContainerStatusesRequestProto) = call_method(stub.impl, _ContainerManagementProtocolService_methods[3], controller, inp)
+getContainerStatuses(stub::ContainerManagementProtocolServiceStub, controller::ProtoRpcController, inp::hadoop.yarn.GetContainerStatusesRequestProto, done::Function) = call_method(stub.impl, _ContainerManagementProtocolService_methods[3], controller, inp, done)
+getContainerStatuses(stub::ContainerManagementProtocolServiceBlockingStub, controller::ProtoRpcController, inp::hadoop.yarn.GetContainerStatusesRequestProto) = call_method(stub.impl, _ContainerManagementProtocolService_methods[3], controller, inp)
 
 export ContainerManagementProtocolService, ContainerManagementProtocolServiceStub, ContainerManagementProtocolServiceBlockingStub, startContainers, stopContainers, getContainerStatuses

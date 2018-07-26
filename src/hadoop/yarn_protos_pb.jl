@@ -2,8 +2,7 @@
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
-import Base: hash, isequal, ==
-using ..common
+import ..hadoop
 
 struct __enum_ContainerStateProto <: ProtoEnum
     C_NEW::Int32
@@ -131,27 +130,18 @@ mutable struct SerializedExceptionProto <: ProtoType
     cause::SerializedExceptionProto
     SerializedExceptionProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct SerializedExceptionProto
-hash(v::SerializedExceptionProto) = ProtoBuf.protohash(v)
-isequal(v1::SerializedExceptionProto, v2::SerializedExceptionProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::SerializedExceptionProto, v2::SerializedExceptionProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ApplicationIdProto <: ProtoType
     id::Int32
     cluster_timestamp::Int64
     ApplicationIdProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ApplicationIdProto
-hash(v::ApplicationIdProto) = ProtoBuf.protohash(v)
-isequal(v1::ApplicationIdProto, v2::ApplicationIdProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ApplicationIdProto, v2::ApplicationIdProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ApplicationAttemptIdProto <: ProtoType
     application_id::ApplicationIdProto
     attemptId::Int32
     ApplicationAttemptIdProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ApplicationAttemptIdProto
-hash(v::ApplicationAttemptIdProto) = ProtoBuf.protohash(v)
-isequal(v1::ApplicationAttemptIdProto, v2::ApplicationAttemptIdProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ApplicationAttemptIdProto, v2::ApplicationAttemptIdProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ContainerIdProto <: ProtoType
     app_id::ApplicationIdProto
@@ -159,35 +149,23 @@ mutable struct ContainerIdProto <: ProtoType
     id::Int64
     ContainerIdProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ContainerIdProto
-hash(v::ContainerIdProto) = ProtoBuf.protohash(v)
-isequal(v1::ContainerIdProto, v2::ContainerIdProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ContainerIdProto, v2::ContainerIdProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ResourceProto <: ProtoType
     memory::Int32
     virtual_cores::Int32
     ResourceProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ResourceProto
-hash(v::ResourceProto) = ProtoBuf.protohash(v)
-isequal(v1::ResourceProto, v2::ResourceProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ResourceProto, v2::ResourceProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ResourceOptionProto <: ProtoType
     resource::ResourceProto
     over_commit_timeout::Int32
     ResourceOptionProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ResourceOptionProto
-hash(v::ResourceOptionProto) = ProtoBuf.protohash(v)
-isequal(v1::ResourceOptionProto, v2::ResourceOptionProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ResourceOptionProto, v2::ResourceOptionProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct PriorityProto <: ProtoType
     priority::Int32
     PriorityProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct PriorityProto
-hash(v::PriorityProto) = ProtoBuf.protohash(v)
-isequal(v1::PriorityProto, v2::PriorityProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::PriorityProto, v2::PriorityProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct URLProto <: ProtoType
     scheme::AbstractString
@@ -197,9 +175,6 @@ mutable struct URLProto <: ProtoType
     userInfo::AbstractString
     URLProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct URLProto
-hash(v::URLProto) = ProtoBuf.protohash(v)
-isequal(v1::URLProto, v2::URLProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::URLProto, v2::URLProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct LocalResourceProto <: ProtoType
     resource::URLProto
@@ -211,9 +186,6 @@ mutable struct LocalResourceProto <: ProtoType
     should_be_uploaded_to_shared_cache::Bool
     LocalResourceProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct LocalResourceProto
-hash(v::LocalResourceProto) = ProtoBuf.protohash(v)
-isequal(v1::LocalResourceProto, v2::LocalResourceProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::LocalResourceProto, v2::LocalResourceProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ApplicationResourceUsageReportProto <: ProtoType
     num_used_containers::Int32
@@ -225,9 +197,6 @@ mutable struct ApplicationResourceUsageReportProto <: ProtoType
     vcore_seconds::Int64
     ApplicationResourceUsageReportProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ApplicationResourceUsageReportProto
-hash(v::ApplicationResourceUsageReportProto) = ProtoBuf.protohash(v)
-isequal(v1::ApplicationResourceUsageReportProto, v2::ApplicationResourceUsageReportProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ApplicationResourceUsageReportProto, v2::ApplicationResourceUsageReportProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ApplicationReportProto <: ProtoType
     applicationId::ApplicationIdProto
@@ -236,7 +205,7 @@ mutable struct ApplicationReportProto <: ProtoType
     name::AbstractString
     host::AbstractString
     rpc_port::Int32
-    client_to_am_token::TokenProto
+    client_to_am_token::hadoop.common.TokenProto
     yarn_application_state::Int32
     trackingUrl::AbstractString
     diagnostics::AbstractString
@@ -248,15 +217,12 @@ mutable struct ApplicationReportProto <: ProtoType
     currentApplicationAttemptId::ApplicationAttemptIdProto
     progress::Float32
     applicationType::AbstractString
-    am_rm_token::TokenProto
-    applicationTags::Vector{AbstractString}
+    am_rm_token::hadoop.common.TokenProto
+    applicationTags::Base.Vector{AbstractString}
     ApplicationReportProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ApplicationReportProto
 const __val_ApplicationReportProto = Dict(:diagnostics => "N/A")
 meta(t::Type{ApplicationReportProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ApplicationReportProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ApplicationReportProto) = ProtoBuf.protohash(v)
-isequal(v1::ApplicationReportProto, v2::ApplicationReportProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ApplicationReportProto, v2::ApplicationReportProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ApplicationAttemptReportProto <: ProtoType
     application_attempt_id::ApplicationAttemptIdProto
@@ -271,27 +237,18 @@ mutable struct ApplicationAttemptReportProto <: ProtoType
 end #mutable struct ApplicationAttemptReportProto
 const __val_ApplicationAttemptReportProto = Dict(:diagnostics => "N/A")
 meta(t::Type{ApplicationAttemptReportProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ApplicationAttemptReportProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ApplicationAttemptReportProto) = ProtoBuf.protohash(v)
-isequal(v1::ApplicationAttemptReportProto, v2::ApplicationAttemptReportProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ApplicationAttemptReportProto, v2::ApplicationAttemptReportProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct NodeIdProto <: ProtoType
     host::AbstractString
     port::Int32
     NodeIdProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct NodeIdProto
-hash(v::NodeIdProto) = ProtoBuf.protohash(v)
-isequal(v1::NodeIdProto, v2::NodeIdProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::NodeIdProto, v2::NodeIdProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct NodeResourceMapProto <: ProtoType
     node_id::NodeIdProto
     resource_option::ResourceOptionProto
     NodeResourceMapProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct NodeResourceMapProto
-hash(v::NodeResourceMapProto) = ProtoBuf.protohash(v)
-isequal(v1::NodeResourceMapProto, v2::NodeResourceMapProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::NodeResourceMapProto, v2::NodeResourceMapProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ContainerReportProto <: ProtoType
     container_id::ContainerIdProto
@@ -309,9 +266,6 @@ mutable struct ContainerReportProto <: ProtoType
 end #mutable struct ContainerReportProto
 const __val_ContainerReportProto = Dict(:diagnostics_info => "N/A")
 meta(t::Type{ContainerReportProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ContainerReportProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ContainerReportProto) = ProtoBuf.protohash(v)
-isequal(v1::ContainerReportProto, v2::ContainerReportProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ContainerReportProto, v2::ContainerReportProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ContainerProto <: ProtoType
     id::ContainerIdProto
@@ -319,12 +273,9 @@ mutable struct ContainerProto <: ProtoType
     node_http_address::AbstractString
     resource::ResourceProto
     priority::PriorityProto
-    container_token::TokenProto
+    container_token::hadoop.common.TokenProto
     ContainerProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ContainerProto
-hash(v::ContainerProto) = ProtoBuf.protohash(v)
-isequal(v1::ContainerProto, v2::ContainerProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ContainerProto, v2::ContainerProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct NodeReportProto <: ProtoType
     nodeId::NodeIdProto
@@ -336,30 +287,21 @@ mutable struct NodeReportProto <: ProtoType
     node_state::Int32
     health_report::AbstractString
     last_health_report_time::Int64
-    node_labels::Vector{AbstractString}
+    node_labels::Base.Vector{AbstractString}
     NodeReportProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct NodeReportProto
-hash(v::NodeReportProto) = ProtoBuf.protohash(v)
-isequal(v1::NodeReportProto, v2::NodeReportProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::NodeReportProto, v2::NodeReportProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct NodeIdToLabelsProto <: ProtoType
     nodeId::NodeIdProto
-    nodeLabels::Vector{AbstractString}
+    nodeLabels::Base.Vector{AbstractString}
     NodeIdToLabelsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct NodeIdToLabelsProto
-hash(v::NodeIdToLabelsProto) = ProtoBuf.protohash(v)
-isequal(v1::NodeIdToLabelsProto, v2::NodeIdToLabelsProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::NodeIdToLabelsProto, v2::NodeIdToLabelsProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct LabelsToNodeIdsProto <: ProtoType
     nodeLabels::AbstractString
-    nodeId::Vector{NodeIdProto}
+    nodeId::Base.Vector{NodeIdProto}
     LabelsToNodeIdsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct LabelsToNodeIdsProto
-hash(v::LabelsToNodeIdsProto) = ProtoBuf.protohash(v)
-isequal(v1::LabelsToNodeIdsProto, v2::LabelsToNodeIdsProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::LabelsToNodeIdsProto, v2::LabelsToNodeIdsProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ResourceRequestProto <: ProtoType
     priority::PriorityProto
@@ -372,60 +314,39 @@ mutable struct ResourceRequestProto <: ProtoType
 end #mutable struct ResourceRequestProto
 const __val_ResourceRequestProto = Dict(:relax_locality => true)
 meta(t::Type{ResourceRequestProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ResourceRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ResourceRequestProto) = ProtoBuf.protohash(v)
-isequal(v1::ResourceRequestProto, v2::ResourceRequestProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ResourceRequestProto, v2::ResourceRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct PreemptionContainerProto <: ProtoType
     id::ContainerIdProto
     PreemptionContainerProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct PreemptionContainerProto
-hash(v::PreemptionContainerProto) = ProtoBuf.protohash(v)
-isequal(v1::PreemptionContainerProto, v2::PreemptionContainerProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::PreemptionContainerProto, v2::PreemptionContainerProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct StrictPreemptionContractProto <: ProtoType
-    container::Vector{PreemptionContainerProto}
+    container::Base.Vector{PreemptionContainerProto}
     StrictPreemptionContractProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct StrictPreemptionContractProto
-hash(v::StrictPreemptionContractProto) = ProtoBuf.protohash(v)
-isequal(v1::StrictPreemptionContractProto, v2::StrictPreemptionContractProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::StrictPreemptionContractProto, v2::StrictPreemptionContractProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct PreemptionResourceRequestProto <: ProtoType
     resource::ResourceRequestProto
     PreemptionResourceRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct PreemptionResourceRequestProto
-hash(v::PreemptionResourceRequestProto) = ProtoBuf.protohash(v)
-isequal(v1::PreemptionResourceRequestProto, v2::PreemptionResourceRequestProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::PreemptionResourceRequestProto, v2::PreemptionResourceRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct PreemptionContractProto <: ProtoType
-    resource::Vector{PreemptionResourceRequestProto}
-    container::Vector{PreemptionContainerProto}
+    resource::Base.Vector{PreemptionResourceRequestProto}
+    container::Base.Vector{PreemptionContainerProto}
     PreemptionContractProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct PreemptionContractProto
-hash(v::PreemptionContractProto) = ProtoBuf.protohash(v)
-isequal(v1::PreemptionContractProto, v2::PreemptionContractProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::PreemptionContractProto, v2::PreemptionContractProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct PreemptionMessageProto <: ProtoType
     strictContract::StrictPreemptionContractProto
     contract::PreemptionContractProto
     PreemptionMessageProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct PreemptionMessageProto
-hash(v::PreemptionMessageProto) = ProtoBuf.protohash(v)
-isequal(v1::PreemptionMessageProto, v2::PreemptionMessageProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::PreemptionMessageProto, v2::PreemptionMessageProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ResourceBlacklistRequestProto <: ProtoType
-    blacklist_additions::Vector{AbstractString}
-    blacklist_removals::Vector{AbstractString}
+    blacklist_additions::Base.Vector{AbstractString}
+    blacklist_removals::Base.Vector{AbstractString}
     ResourceBlacklistRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ResourceBlacklistRequestProto
-hash(v::ResourceBlacklistRequestProto) = ProtoBuf.protohash(v)
-isequal(v1::ResourceBlacklistRequestProto, v2::ResourceBlacklistRequestProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ResourceBlacklistRequestProto, v2::ResourceBlacklistRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct LogAggregationContextProto <: ProtoType
     include_pattern::AbstractString
@@ -436,9 +357,6 @@ mutable struct LogAggregationContextProto <: ProtoType
 end #mutable struct LogAggregationContextProto
 const __val_LogAggregationContextProto = Dict(:include_pattern => ".*", :rolled_logs_exclude_pattern => ".*")
 meta(t::Type{LogAggregationContextProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_LogAggregationContextProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::LogAggregationContextProto) = ProtoBuf.protohash(v)
-isequal(v1::LogAggregationContextProto, v2::LogAggregationContextProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::LogAggregationContextProto, v2::LogAggregationContextProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ApplicationACLMapProto <: ProtoType
     accessType::Int32
@@ -447,17 +365,11 @@ mutable struct ApplicationACLMapProto <: ProtoType
 end #mutable struct ApplicationACLMapProto
 const __val_ApplicationACLMapProto = Dict(:acl => " ")
 meta(t::Type{ApplicationACLMapProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ApplicationACLMapProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ApplicationACLMapProto) = ProtoBuf.protohash(v)
-isequal(v1::ApplicationACLMapProto, v2::ApplicationACLMapProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ApplicationACLMapProto, v2::ApplicationACLMapProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct YarnClusterMetricsProto <: ProtoType
     num_node_managers::Int32
     YarnClusterMetricsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct YarnClusterMetricsProto
-hash(v::YarnClusterMetricsProto) = ProtoBuf.protohash(v)
-isequal(v1::YarnClusterMetricsProto, v2::YarnClusterMetricsProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::YarnClusterMetricsProto, v2::YarnClusterMetricsProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct QueueInfoProto <: ProtoType
     queueName::AbstractString
@@ -465,33 +377,24 @@ mutable struct QueueInfoProto <: ProtoType
     maximumCapacity::Float32
     currentCapacity::Float32
     state::Int32
-    childQueues::Vector{QueueInfoProto}
-    applications::Vector{ApplicationReportProto}
-    accessibleNodeLabels::Vector{AbstractString}
+    childQueues::Base.Vector{QueueInfoProto}
+    applications::Base.Vector{ApplicationReportProto}
+    accessibleNodeLabels::Base.Vector{AbstractString}
     defaultNodeLabelExpression::AbstractString
     QueueInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct QueueInfoProto
-hash(v::QueueInfoProto) = ProtoBuf.protohash(v)
-isequal(v1::QueueInfoProto, v2::QueueInfoProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::QueueInfoProto, v2::QueueInfoProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct QueueUserACLInfoProto <: ProtoType
     queueName::AbstractString
-    userAcls::Vector{Int32}
+    userAcls::Base.Vector{Int32}
     QueueUserACLInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct QueueUserACLInfoProto
-hash(v::QueueUserACLInfoProto) = ProtoBuf.protohash(v)
-isequal(v1::QueueUserACLInfoProto, v2::QueueUserACLInfoProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::QueueUserACLInfoProto, v2::QueueUserACLInfoProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ReservationIdProto <: ProtoType
     id::Int64
     cluster_timestamp::Int64
     ReservationIdProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ReservationIdProto
-hash(v::ReservationIdProto) = ProtoBuf.protohash(v)
-isequal(v1::ReservationIdProto, v2::ReservationIdProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ReservationIdProto, v2::ReservationIdProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ReservationRequestProto <: ProtoType
     capability::ResourceProto
@@ -502,20 +405,14 @@ mutable struct ReservationRequestProto <: ProtoType
 end #mutable struct ReservationRequestProto
 const __val_ReservationRequestProto = Dict(:num_containers => 1, :concurrency => 1, :duration => -1)
 meta(t::Type{ReservationRequestProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ReservationRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ReservationRequestProto) = ProtoBuf.protohash(v)
-isequal(v1::ReservationRequestProto, v2::ReservationRequestProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ReservationRequestProto, v2::ReservationRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ReservationRequestsProto <: ProtoType
-    reservation_resources::Vector{ReservationRequestProto}
+    reservation_resources::Base.Vector{ReservationRequestProto}
     interpreter::Int32
     ReservationRequestsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ReservationRequestsProto
 const __val_ReservationRequestsProto = Dict(:interpreter => ReservationRequestInterpreterProto.R_ALL)
 meta(t::Type{ReservationRequestsProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ReservationRequestsProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ReservationRequestsProto) = ProtoBuf.protohash(v)
-isequal(v1::ReservationRequestsProto, v2::ReservationRequestsProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ReservationRequestsProto, v2::ReservationRequestsProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ReservationDefinitionProto <: ProtoType
     reservation_requests::ReservationRequestsProto
@@ -524,9 +421,6 @@ mutable struct ReservationDefinitionProto <: ProtoType
     reservation_name::AbstractString
     ReservationDefinitionProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ReservationDefinitionProto
-hash(v::ReservationDefinitionProto) = ProtoBuf.protohash(v)
-isequal(v1::ReservationDefinitionProto, v2::ReservationDefinitionProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ReservationDefinitionProto, v2::ReservationDefinitionProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ContainerStatusProto <: ProtoType
     container_id::ContainerIdProto
@@ -537,77 +431,53 @@ mutable struct ContainerStatusProto <: ProtoType
 end #mutable struct ContainerStatusProto
 const __val_ContainerStatusProto = Dict(:diagnostics => "N/A", :exit_status => -1000)
 meta(t::Type{ContainerStatusProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ContainerStatusProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ContainerStatusProto) = ProtoBuf.protohash(v)
-isequal(v1::ContainerStatusProto, v2::ContainerStatusProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ContainerStatusProto, v2::ContainerStatusProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ContainerResourceIncreaseRequestProto <: ProtoType
     container_id::ContainerIdProto
     capability::ResourceProto
     ContainerResourceIncreaseRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ContainerResourceIncreaseRequestProto
-hash(v::ContainerResourceIncreaseRequestProto) = ProtoBuf.protohash(v)
-isequal(v1::ContainerResourceIncreaseRequestProto, v2::ContainerResourceIncreaseRequestProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ContainerResourceIncreaseRequestProto, v2::ContainerResourceIncreaseRequestProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ContainerResourceIncreaseProto <: ProtoType
     container_id::ContainerIdProto
     capability::ResourceProto
-    container_token::TokenProto
+    container_token::hadoop.common.TokenProto
     ContainerResourceIncreaseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ContainerResourceIncreaseProto
-hash(v::ContainerResourceIncreaseProto) = ProtoBuf.protohash(v)
-isequal(v1::ContainerResourceIncreaseProto, v2::ContainerResourceIncreaseProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ContainerResourceIncreaseProto, v2::ContainerResourceIncreaseProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ContainerResourceDecreaseProto <: ProtoType
     container_id::ContainerIdProto
     capability::ResourceProto
     ContainerResourceDecreaseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ContainerResourceDecreaseProto
-hash(v::ContainerResourceDecreaseProto) = ProtoBuf.protohash(v)
-isequal(v1::ContainerResourceDecreaseProto, v2::ContainerResourceDecreaseProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ContainerResourceDecreaseProto, v2::ContainerResourceDecreaseProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct StringLocalResourceMapProto <: ProtoType
     key::AbstractString
     value::LocalResourceProto
     StringLocalResourceMapProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct StringLocalResourceMapProto
-hash(v::StringLocalResourceMapProto) = ProtoBuf.protohash(v)
-isequal(v1::StringLocalResourceMapProto, v2::StringLocalResourceMapProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::StringLocalResourceMapProto, v2::StringLocalResourceMapProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct StringStringMapProto <: ProtoType
     key::AbstractString
     value::AbstractString
     StringStringMapProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct StringStringMapProto
-hash(v::StringStringMapProto) = ProtoBuf.protohash(v)
-isequal(v1::StringStringMapProto, v2::StringStringMapProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::StringStringMapProto, v2::StringStringMapProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct StringBytesMapProto <: ProtoType
     key::AbstractString
     value::Array{UInt8,1}
     StringBytesMapProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct StringBytesMapProto
-hash(v::StringBytesMapProto) = ProtoBuf.protohash(v)
-isequal(v1::StringBytesMapProto, v2::StringBytesMapProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::StringBytesMapProto, v2::StringBytesMapProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ContainerLaunchContextProto <: ProtoType
-    localResources::Vector{StringLocalResourceMapProto}
+    localResources::Base.Vector{StringLocalResourceMapProto}
     tokens::Array{UInt8,1}
-    service_data::Vector{StringBytesMapProto}
-    environment::Vector{StringStringMapProto}
-    command::Vector{AbstractString}
-    application_ACLs::Vector{ApplicationACLMapProto}
+    service_data::Base.Vector{StringBytesMapProto}
+    environment::Base.Vector{StringStringMapProto}
+    command::Base.Vector{AbstractString}
+    application_ACLs::Base.Vector{ApplicationACLMapProto}
     ContainerLaunchContextProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ContainerLaunchContextProto
-hash(v::ContainerLaunchContextProto) = ProtoBuf.protohash(v)
-isequal(v1::ContainerLaunchContextProto, v2::ContainerLaunchContextProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ContainerLaunchContextProto, v2::ContainerLaunchContextProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct ApplicationSubmissionContextProto <: ProtoType
     application_id::ApplicationIdProto
@@ -621,7 +491,7 @@ mutable struct ApplicationSubmissionContextProto <: ProtoType
     resource::ResourceProto
     applicationType::AbstractString
     keep_containers_across_application_attempts::Bool
-    applicationTags::Vector{AbstractString}
+    applicationTags::Base.Vector{AbstractString}
     attempt_failures_validity_interval::Int64
     log_aggregation_context::LogAggregationContextProto
     reservation_id::ReservationIdProto
@@ -631,8 +501,5 @@ mutable struct ApplicationSubmissionContextProto <: ProtoType
 end #mutable struct ApplicationSubmissionContextProto
 const __val_ApplicationSubmissionContextProto = Dict(:application_name => "N/A", :queue => "default", :cancel_tokens_when_complete => true, :unmanaged_am => false, :maxAppAttempts => 0, :applicationType => "YARN", :keep_containers_across_application_attempts => false, :attempt_failures_validity_interval => -1)
 meta(t::Type{ApplicationSubmissionContextProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ApplicationSubmissionContextProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::ApplicationSubmissionContextProto) = ProtoBuf.protohash(v)
-isequal(v1::ApplicationSubmissionContextProto, v2::ApplicationSubmissionContextProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::ApplicationSubmissionContextProto, v2::ApplicationSubmissionContextProto) = ProtoBuf.protoeq(v1, v2)
 
 export ContainerStateProto, YarnApplicationStateProto, YarnApplicationAttemptStateProto, FinalApplicationStatusProto, LocalResourceVisibilityProto, LocalResourceTypeProto, NodeStateProto, AMCommandProto, ApplicationAccessTypeProto, QueueStateProto, QueueACLProto, ReservationRequestInterpreterProto, ContainerExitStatusProto, SerializedExceptionProto, ApplicationIdProto, ApplicationAttemptIdProto, ContainerIdProto, ResourceProto, ResourceOptionProto, NodeResourceMapProto, PriorityProto, ContainerProto, ContainerReportProto, URLProto, LocalResourceProto, ApplicationResourceUsageReportProto, ApplicationReportProto, ApplicationAttemptReportProto, NodeIdProto, NodeReportProto, NodeIdToLabelsProto, LabelsToNodeIdsProto, ResourceRequestProto, PreemptionMessageProto, StrictPreemptionContractProto, PreemptionContractProto, PreemptionContainerProto, PreemptionResourceRequestProto, ResourceBlacklistRequestProto, ApplicationSubmissionContextProto, LogAggregationContextProto, ApplicationACLMapProto, YarnClusterMetricsProto, QueueInfoProto, QueueUserACLInfoProto, ReservationIdProto, ReservationRequestProto, ReservationRequestsProto, ReservationDefinitionProto, ContainerLaunchContextProto, ContainerStatusProto, ContainerResourceIncreaseRequestProto, ContainerResourceIncreaseProto, ContainerResourceDecreaseProto, StringLocalResourceMapProto, StringStringMapProto, StringBytesMapProto
