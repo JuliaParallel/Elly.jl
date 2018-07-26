@@ -2,7 +2,6 @@
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
-import Base: hash, isequal, ==
 
 struct __enum_EventType <: ProtoEnum
     EVENT_CREATE::Int32
@@ -41,20 +40,14 @@ mutable struct EventProto <: ProtoType
 end #mutable struct EventProto
 const __req_EventProto = Symbol[:_type,:contents]
 meta(t::Type{EventProto}) = meta(t, __req_EventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::EventProto) = ProtoBuf.protohash(v)
-isequal(v1::EventProto, v2::EventProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::EventProto, v2::EventProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct EventBatchProto <: ProtoType
     txid::Int64
-    events::Vector{EventProto}
+    events::Base.Vector{EventProto}
     EventBatchProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct EventBatchProto
 const __req_EventBatchProto = Symbol[:txid]
 meta(t::Type{EventBatchProto}) = meta(t, __req_EventBatchProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::EventBatchProto) = ProtoBuf.protohash(v)
-isequal(v1::EventBatchProto, v2::EventBatchProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::EventBatchProto, v2::EventBatchProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct CreateEventProto <: ProtoType
     _type::Int32
@@ -72,9 +65,6 @@ end #mutable struct CreateEventProto
 const __req_CreateEventProto = Symbol[:_type,:path,:ctime,:ownerName,:groupName,:perms]
 const __val_CreateEventProto = Dict(:defaultBlockSize => 0)
 meta(t::Type{CreateEventProto}) = meta(t, __req_CreateEventProto, ProtoBuf.DEF_FNUM, __val_CreateEventProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::CreateEventProto) = ProtoBuf.protohash(v)
-isequal(v1::CreateEventProto, v2::CreateEventProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::CreateEventProto, v2::CreateEventProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct CloseEventProto <: ProtoType
     path::AbstractString
@@ -84,9 +74,6 @@ mutable struct CloseEventProto <: ProtoType
 end #mutable struct CloseEventProto
 const __req_CloseEventProto = Symbol[:path,:fileSize,:timestamp]
 meta(t::Type{CloseEventProto}) = meta(t, __req_CloseEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::CloseEventProto) = ProtoBuf.protohash(v)
-isequal(v1::CloseEventProto, v2::CloseEventProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::CloseEventProto, v2::CloseEventProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct AppendEventProto <: ProtoType
     path::AbstractString
@@ -96,9 +83,6 @@ end #mutable struct AppendEventProto
 const __req_AppendEventProto = Symbol[:path]
 const __val_AppendEventProto = Dict(:newBlock => false)
 meta(t::Type{AppendEventProto}) = meta(t, __req_AppendEventProto, ProtoBuf.DEF_FNUM, __val_AppendEventProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::AppendEventProto) = ProtoBuf.protohash(v)
-isequal(v1::AppendEventProto, v2::AppendEventProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::AppendEventProto, v2::AppendEventProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct RenameEventProto <: ProtoType
     srcPath::AbstractString
@@ -108,9 +92,6 @@ mutable struct RenameEventProto <: ProtoType
 end #mutable struct RenameEventProto
 const __req_RenameEventProto = Symbol[:srcPath,:destPath,:timestamp]
 meta(t::Type{RenameEventProto}) = meta(t, __req_RenameEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::RenameEventProto) = ProtoBuf.protohash(v)
-isequal(v1::RenameEventProto, v2::RenameEventProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::RenameEventProto, v2::RenameEventProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct MetadataUpdateEventProto <: ProtoType
     path::AbstractString
@@ -121,16 +102,13 @@ mutable struct MetadataUpdateEventProto <: ProtoType
     ownerName::AbstractString
     groupName::AbstractString
     perms::FsPermissionProto
-    acls::Vector{AclEntryProto}
-    xAttrs::Vector{XAttrProto}
+    acls::Base.Vector{AclEntryProto}
+    xAttrs::Base.Vector{XAttrProto}
     xAttrsRemoved::Bool
     MetadataUpdateEventProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct MetadataUpdateEventProto
 const __req_MetadataUpdateEventProto = Symbol[:path,:_type]
 meta(t::Type{MetadataUpdateEventProto}) = meta(t, __req_MetadataUpdateEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::MetadataUpdateEventProto) = ProtoBuf.protohash(v)
-isequal(v1::MetadataUpdateEventProto, v2::MetadataUpdateEventProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::MetadataUpdateEventProto, v2::MetadataUpdateEventProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct UnlinkEventProto <: ProtoType
     path::AbstractString
@@ -139,22 +117,16 @@ mutable struct UnlinkEventProto <: ProtoType
 end #mutable struct UnlinkEventProto
 const __req_UnlinkEventProto = Symbol[:path,:timestamp]
 meta(t::Type{UnlinkEventProto}) = meta(t, __req_UnlinkEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::UnlinkEventProto) = ProtoBuf.protohash(v)
-isequal(v1::UnlinkEventProto, v2::UnlinkEventProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::UnlinkEventProto, v2::UnlinkEventProto) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct EventsListProto <: ProtoType
-    events::Vector{EventProto}
+    events::Base.Vector{EventProto}
     firstTxid::Int64
     lastTxid::Int64
     syncTxid::Int64
-    batch::Vector{EventBatchProto}
+    batch::Base.Vector{EventBatchProto}
     EventsListProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct EventsListProto
 const __req_EventsListProto = Symbol[:firstTxid,:lastTxid,:syncTxid]
 meta(t::Type{EventsListProto}) = meta(t, __req_EventsListProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::EventsListProto) = ProtoBuf.protohash(v)
-isequal(v1::EventsListProto, v2::EventsListProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::EventsListProto, v2::EventsListProto) = ProtoBuf.protoeq(v1, v2)
 
 export EventType, INodeType, MetadataUpdateType, EventProto, EventBatchProto, CreateEventProto, CloseEventProto, AppendEventProto, RenameEventProto, MetadataUpdateEventProto, UnlinkEventProto, EventsListProto

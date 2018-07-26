@@ -2,7 +2,6 @@
 using Compat
 using ProtoBuf
 import ProtoBuf.meta
-import Base: hash, isequal, ==
 
 struct __enum_RpcKindProto <: ProtoEnum
     RPC_BUILTIN::Int32
@@ -17,9 +16,6 @@ mutable struct RPCTraceInfoProto <: ProtoType
     parentId::Int64
     RPCTraceInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RPCTraceInfoProto
-hash(v::RPCTraceInfoProto) = ProtoBuf.protohash(v)
-isequal(v1::RPCTraceInfoProto, v2::RPCTraceInfoProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::RPCTraceInfoProto, v2::RPCTraceInfoProto) = ProtoBuf.protoeq(v1, v2)
 
 struct __enum_RpcRequestHeaderProto_OperationProto <: ProtoEnum
     RPC_FINAL_PACKET::Int32
@@ -42,9 +38,6 @@ const __req_RpcRequestHeaderProto = Symbol[:callId,:clientId]
 const __val_RpcRequestHeaderProto = Dict(:retryCount => -1)
 const __wtype_RpcRequestHeaderProto = Dict(:callId => :sint32, :retryCount => :sint32)
 meta(t::Type{RpcRequestHeaderProto}) = meta(t, __req_RpcRequestHeaderProto, ProtoBuf.DEF_FNUM, __val_RpcRequestHeaderProto, true, ProtoBuf.DEF_PACK, __wtype_RpcRequestHeaderProto, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::RpcRequestHeaderProto) = ProtoBuf.protohash(v)
-isequal(v1::RpcRequestHeaderProto, v2::RpcRequestHeaderProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::RpcRequestHeaderProto, v2::RpcRequestHeaderProto) = ProtoBuf.protoeq(v1, v2)
 
 struct __enum_RpcResponseHeaderProto_RpcStatusProto <: ProtoEnum
     SUCCESS::Int32
@@ -86,9 +79,6 @@ const __req_RpcResponseHeaderProto = Symbol[:callId,:status]
 const __val_RpcResponseHeaderProto = Dict(:retryCount => -1)
 const __wtype_RpcResponseHeaderProto = Dict(:retryCount => :sint32)
 meta(t::Type{RpcResponseHeaderProto}) = meta(t, __req_RpcResponseHeaderProto, ProtoBuf.DEF_FNUM, __val_RpcResponseHeaderProto, true, ProtoBuf.DEF_PACK, __wtype_RpcResponseHeaderProto, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::RpcResponseHeaderProto) = ProtoBuf.protohash(v)
-isequal(v1::RpcResponseHeaderProto, v2::RpcResponseHeaderProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::RpcResponseHeaderProto, v2::RpcResponseHeaderProto) = ProtoBuf.protoeq(v1, v2)
 
 struct __enum_RpcSaslProto_SaslState <: ProtoEnum
     SUCCESS::Int32
@@ -111,21 +101,15 @@ mutable struct RpcSaslProto_SaslAuth <: ProtoType
 end #mutable struct RpcSaslProto_SaslAuth
 const __req_RpcSaslProto_SaslAuth = Symbol[:method,:mechanism]
 meta(t::Type{RpcSaslProto_SaslAuth}) = meta(t, __req_RpcSaslProto_SaslAuth, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::RpcSaslProto_SaslAuth) = ProtoBuf.protohash(v)
-isequal(v1::RpcSaslProto_SaslAuth, v2::RpcSaslProto_SaslAuth) = ProtoBuf.protoisequal(v1, v2)
-==(v1::RpcSaslProto_SaslAuth, v2::RpcSaslProto_SaslAuth) = ProtoBuf.protoeq(v1, v2)
 
 mutable struct RpcSaslProto <: ProtoType
     version::UInt32
     state::Int32
     token::Array{UInt8,1}
-    auths::Vector{RpcSaslProto_SaslAuth}
+    auths::Base.Vector{RpcSaslProto_SaslAuth}
     RpcSaslProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RpcSaslProto
 const __req_RpcSaslProto = Symbol[:state]
 meta(t::Type{RpcSaslProto}) = meta(t, __req_RpcSaslProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-hash(v::RpcSaslProto) = ProtoBuf.protohash(v)
-isequal(v1::RpcSaslProto, v2::RpcSaslProto) = ProtoBuf.protoisequal(v1, v2)
-==(v1::RpcSaslProto, v2::RpcSaslProto) = ProtoBuf.protoeq(v1, v2)
 
 export RpcKindProto, RPCTraceInfoProto, RpcRequestHeaderProto_OperationProto, RpcRequestHeaderProto, RpcResponseHeaderProto_RpcStatusProto, RpcResponseHeaderProto_RpcErrorCodeProto, RpcResponseHeaderProto, RpcSaslProto_SaslState, RpcSaslProto_SaslAuth, RpcSaslProto
