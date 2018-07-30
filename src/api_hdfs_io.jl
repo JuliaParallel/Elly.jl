@@ -92,7 +92,7 @@ end
 
 isconnected(reader::HDFSFileReader) = (reader.blk_reader !== nothing)
 function disconnect(reader::HDFSFileReader, reuse::Bool)
-    @logmsg("disconnecting $(URI(reader,true)) reuse:$reuse")
+    @debug("disconnecting", uri=URI(reader,true), reuse=reuse)
     reader.blocks = nothing
     if reader.blk_reader !== nothing
         isconnected(reader.blk_reader) && disconnect(reader.blk_reader, reuse)
@@ -103,13 +103,13 @@ function disconnect(reader::HDFSFileReader, reuse::Bool)
 end
  
 function connect(reader::HDFSFileReader)
-    @logmsg("connect if required $(URI(reader,true))")
+    @debug("connect if required", uri=URI(reader,true))
     eof(reader) && return
     isconnected(reader) && return
 
-    @logmsg("connecting $(URI(reader,true))")
+    @debug("connecting", uri=URI(reader,true))
     if !(reader.fptr in _current_window(reader))
-        @logmsg("moving block window for  $(URI(reader,true))")
+        @debug("moving block window", uri=URI(reader,true))
         len = min(bytesavailable(reader), HDFS_READER_WINDOW_LENGTH)
         blocks = _get_block_locations(reader.client, reader.path, reader.fptr, len)
         (blocks === nothing) && throw(HDFSException("Could not get block metadata for $(URI(reader,true))"))
@@ -156,7 +156,7 @@ function _read_and_buffer(reader::HDFSFileReader, out::Vector{UInt8}, offset::UI
             if ret < 0
                 pkt_len = len + UInt64(abs(ret))                            # bytes in this packet
                 buff = Vector{UInt8}(undef, pkt_len)                        # allocate a temporary array
-                @logmsg("allocated temporary array of size $pkt_len, len:$len, ret:$ret, offset:$offset, bufflen:$(length(buff)), outlen:$(length(out))")
+                @debug("allocated temporary array", size=pkt_len, len=len, ret=ret, offset=offset, bufflen=length(buff), outlen=length(out))
                 ret = read_packet!(blk_reader, buff, UInt64(1))             # read complete packet
                 copyto!(out, offset, buff, 1, len)                          # copy len bytes to output
                 Base.write_sub(reader.buffer, buff, len+1, pkt_len-len)     # copy remaining data to buffer
@@ -173,9 +173,9 @@ function _read_and_buffer(reader::HDFSFileReader, out::Vector{UInt8}, offset::UI
         if reader.blk_reader !== nothing
             blk_reader = reader.blk_reader
             channel = blk_reader.channel
-            @logmsg("exception receiving from $(channel.host):$(channel.port): $ex")
+            @debug("exception receiving from $(channel.host):$(channel.port)", ex=ex)
         else
-            @logmsg("exception receiving: $ex")
+            @debug("exception receiving", ex=ex)
         end
         disconnect(reader, false)
         rethrow(ex)
@@ -216,7 +216,7 @@ function read!(reader::HDFSFileReader, a::Vector{UInt8})
             end
         else
             nbytes = min(navlb, remaining)
-            @logmsg("reading $nbytes from buffer. navlb:$navlb remaining:$remaining, offset:$offset")
+            @debug("reading $nbytes from buffer", nbytes=nbytes, navlb=navlb, remaining=remaining, offset=offset)
             Base.read_sub(reader.buffer, a, offset, nbytes)
             reader.fptr += nbytes
         end
@@ -384,7 +384,7 @@ function cp(frompath::Union{HDFSFile,AbstractString}, topath::Union{HDFSFile,Abs
         read!(fromfile, buff)
         write(tofile, buff)
         brem -= bread
-        @logmsg("remaining $brem/$btot")
+        @debug("remaining $brem/$btot")
     end
     close(fromfile)
     close(tofile)

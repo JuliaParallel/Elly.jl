@@ -77,7 +77,7 @@ callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_con
     callback(yam.containers, on_container_alloc, on_container_finish)
 
 function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
-    @logmsg("submitting unmanaged application")
+    @debug("submitting unmanaged application")
     clc = launchcontext()
     app = submit(client, clc, YARN_CONTAINER_MEM_DEFAULT, YARN_CONTAINER_CPU_DEFAULT; unmanaged=true)
 
@@ -116,7 +116,7 @@ function register(yam::YarnAppMaster)
         yam.max_mem = resp.maximumCapability.memory
         yam.max_cores = resp.maximumCapability.virtual_cores
     end
-    @logmsg("max capability: mem:$(yam.max_mem), cores:$(yam.max_cores)")
+    @debug("max capability: mem:$(yam.max_mem), cores:$(yam.max_cores)")
     if isfilled(resp, :queue)
         yam.queue = resp.queue
     end
@@ -155,7 +155,7 @@ container_release(yam::YarnAppMaster, cids::ContainerIdProto...) = request_relea
 
 container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cid], container_spec)
 function container_start(yam::YarnAppMaster, container::ContainerProto, container_spec::ContainerLaunchContextProto)
-    @logmsg("starting container $(container)")
+    @debug("starting container $(container)")
     req = protobuild(StartContainerRequestProto, Dict(:container_launch_context => container_spec, :container_token => container.container_token))
     inp = protobuild(StartContainersRequestProto, Dict(:start_container_request => [req]))
 
@@ -181,7 +181,7 @@ end
 
 container_stop(yam::YarnAppMaster, cid::ContainerIdProto) = container_stop(yam, yam.containers.containers[cid])
 function container_stop(yam::YarnAppMaster, container::ContainerProto)
-    @logmsg("stopping container $container")
+    @debug("stopping container $container")
 
     inp = protobuild(StopContainersRequestProto, Dict(:container_id => [container.id]))
     nodeid = container.nodeId
@@ -205,13 +205,13 @@ function container_stop(yam::YarnAppMaster, container::ContainerProto)
 end
 
 function _update_rm(yam::YarnAppMaster)
-    @logmsg("started processing am-rm messages")
+    @debug("started processing am-rm messages")
     inp = AllocateRequestProto()
 
     # allocation and release requests
     (alloc_pending,release_pending) = torequest(yam.containers)
-    @logmsg("alloc pending: $alloc_pending")
-    @logmsg("release pending: $release_pending")
+    @debug("alloc pending: $alloc_pending")
+    @debug("release pending: $release_pending")
     !isempty(alloc_pending) && set_field!(inp, :ask, alloc_pending)
     !isempty(release_pending) && set_field!(inp, :release, release_pending)
 
@@ -223,11 +223,11 @@ function _update_rm(yam::YarnAppMaster)
     end
     set_field!(inp, :response_id, yam.response_id)
 
-    #@logmsg(inp)
+    #@debug(inp)
     resp = withlock(yam) do
         allocate(yam.amrm_conn, inp)
     end
-    #@logmsg(resp)
+    #@debug(resp)
 
     # store/update tokens
     channel = yam.amrm_conn.channel
@@ -248,15 +248,15 @@ function _update_rm(yam::YarnAppMaster)
     # update node and container status
     update(yam.nodes, resp)
     update(yam.containers, resp)
-    @logmsg("finished processing am-rm messages")
-    #@logmsg(yam)
+    @debug("finished processing am-rm messages")
+    #@debug(yam)
     nothing
 end
 
 haverequests(yam::YarnAppMaster) = haverequests(yam.containers)
 
 function process_am_rm(yam::YarnAppMaster)
-    @logmsg("started am-rm processor task")
+    @debug("started am-rm processor task")
     stopped = ()->(yam.registration === nothing)
     stopwaiting = ()->(haverequests(yam) || (yam.registration === nothing))
     waittime = 10.
@@ -272,6 +272,6 @@ function process_am_rm(yam::YarnAppMaster)
             (waittime < 10) && sleep(10-waittime)
         end
     end
-    @logmsg("stopped am-rm processor task")
+    @debug("stopped am-rm processor task")
     nothing
 end

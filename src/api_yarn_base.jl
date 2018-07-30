@@ -310,20 +310,20 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
             id = cont.id
             contlist[id] = cont
             push!(active, id)
-            @logmsg("calling callback for alloc")
+            @debug("calling callback for alloc")
             (cballoc === nothing) || @async cballoc(id)
         end
     end
     if isfilled(arp, :completed_container_statuses)
-        @logmsg("have completed containers")
+        @debug("have completed containers")
         for contst in arp.completed_container_statuses
             id = contst.container_id
-            @logmsg("container $id is finished")
+            @debug("container $id is finished")
             status[id] = contst
-            @logmsg("id in active: $(id in active)")
+            @debug("id in active: $(id in active)")
             (id in active) && pop!(active, id)
             (id in busy) && pop!(busy, id)
-            @logmsg("calling callback for finish")
+            @debug("calling callback for finish")
             (cbfinish === nothing) || @async cbfinish(id)
         end
     end
