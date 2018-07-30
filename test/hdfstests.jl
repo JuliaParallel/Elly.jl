@@ -92,7 +92,7 @@ function test_hdfs(host="localhost", port=9000)
     @test filesize(bar_file) == sizeof(A) * nloops
 
     println("read and verify...")
-    B = Array{UInt8}(size_bytes)
+    B = Array{UInt8}(undef, size_bytes)
     open(bar_file, "r") do f
         for idx in 1:nloops
             t1 = time()
@@ -103,7 +103,7 @@ function test_hdfs(host="localhost", port=9000)
     end
 
     println("read and verify with crc...")
-    B = Array{UInt8}(size_bytes)
+    B = Array{UInt8}(undef, size_bytes)
     open(bar_file, "r"; crc=true) do f
         for idx in 1:nloops
             t1 = time()

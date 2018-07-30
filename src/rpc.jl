@@ -372,7 +372,7 @@ function _get(pool::HadoopDataChannelPool, host::AbstractString, port::Integer)
 
     timediff = _dcpool.keepalivesecs
     while !isempty(free) && (timediff >= _dcpool.keepalivesecs)
-        channel,lastusetime = shift!(free)
+        channel,lastusetime = popfirst!(free)
         timediff = round(UInt64, time() - lastusetime)
     end
 

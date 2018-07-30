@@ -15,11 +15,11 @@ mutable struct HDFSFileReader <: IO
     path::AbstractString
     size::UInt64
     block_sz::UInt64
-    crc_check::Bool                         # whether to check CRC with file operations
-    buffer::IOBuffer                        # to hold excess data read from HDFSBlockReader (should use a bucket brigade)
-    fptr::UInt64                            # absolute offset in file we start (0:filesize. filesize => eof)
-    blocks::Union{Nothing,LocatedBlocksProto}    # block metadata around the current fptr (if connected)
-    blk_reader::Union{Nothing,HDFSBlockReader}   # current block reader (if connected)
+    crc_check::Bool                             # whether to check CRC with file operations
+    buffer::IOBuffer                            # to hold excess data read from HDFSBlockReader (should use a bucket brigade)
+    fptr::UInt64                                # absolute offset in file we start (0:filesize. filesize => eof)
+    blocks::Union{Nothing,LocatedBlocksProto}   # block metadata around the current fptr (if connected)
+    blk_reader::Union{Nothing,HDFSBlockReader}  # current block reader (if connected)
 
     function HDFSFileReader(client::HDFSClient, path::AbstractString, offset::UInt64=zero(UInt64), check_crc::Bool=false)
         path = abspath(client, path)
@@ -155,10 +155,10 @@ function _read_and_buffer(reader::HDFSFileReader, out::Vector{UInt8}, offset::UI
             ret = read_packet!(blk_reader, out, offset)                     # try to read directly into output
             if ret < 0
                 pkt_len = len + UInt64(abs(ret))                            # bytes in this packet
-                buff = Vector{UInt8}(undef, pkt_len)                               # allocate a temporary array
+                buff = Vector{UInt8}(undef, pkt_len)                        # allocate a temporary array
                 @logmsg("allocated temporary array of size $pkt_len, len:$len, ret:$ret, offset:$offset, bufflen:$(length(buff)), outlen:$(length(out))")
                 ret = read_packet!(blk_reader, buff, UInt64(1))             # read complete packet
-                copy!(out, offset, buff, 1, len)                            # copy len bytes to output
+                copyto!(out, offset, buff, 1, len)                          # copy len bytes to output
                 Base.write_sub(reader.buffer, buff, len+1, pkt_len-len)     # copy remaining data to buffer
                 copylen = len
                 len = 0                                                     # we definitely do not need to read any more
@@ -210,7 +210,7 @@ function read!(reader::HDFSFileReader, a::Vector{UInt8})
                 canread = reader.size - reader.fptr
                 tb = Vector{UInt8}(undef, Int(canread/sizeof(UInt8)))
                 nbytes = _read_and_buffer(reader, tb, UInt64(1), canread)
-                copy!(a, offset, tb, 1, length(tb))
+                copyto!(a, offset, tb, 1, length(tb))
             else
                 nbytes = _read_and_buffer(reader, a, offset, remaining)
             end

@@ -46,10 +46,10 @@ export YarnManager, launch, manage
 const Lock = Channel
 makelock() = Channel{Int}(1)
 
-function tstr()
-    t = time()
-    string(Libc.strftime("%Y-%m-%dT%H:%M:%S",t), Libc.strftime("%z",t)[1:end-2], ":", Libc.strftime("%z",t)[end-1:end])
-end
+#function tstr()
+#    t = time()
+#    string(Libc.strftime("%Y-%m-%dT%H:%M:%S",t), Libc.strftime("%z",t)[1:end-2], ":", Libc.strftime("%z",t)[end-1:end])
+#end
 
 # enable logging only during debugging
 #using Logging
