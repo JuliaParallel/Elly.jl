@@ -47,14 +47,14 @@ function setup_worker(host, port, cookie)
     redirect_stdout(c)
     redirect_stderr(c)
     # identify container id so that rmprocs can clean things up nicely if required
-    Base.serialize(c, ENV[CONTAINER_ID])
+    serialize(c, ENV[CONTAINER_ID])
     if cookie == nothing
-        Base.start_worker(c)
+        start_worker(c)
     else
         if isa(cookie, Symbol)
             cookie = string(cookie)[8:end] # strip the leading "cookie_"
         end
-        Base.start_worker(c, cookie)
+        start_worker(c, cookie)
     end
 end
 
@@ -73,7 +73,7 @@ function _container(cid::String)
 end
 
 _envdict(envdict::Dict) = envdict
-function _envdict(envhash::Base.EnvHash)
+function _envdict(envhash::Base.EnvDict)
     envdict = Dict{String,String}()
     for (n,v) in envhash
         envdict[n] = v
@@ -82,7 +82,7 @@ function _envdict(envhash::Base.EnvHash)
 end
 
 function _currprocname()
-    p = joinpath(Base.JULIA_HOME, Sys.get_process_title())
+    p = joinpath(Sys.BINDIR, Sys.get_process_title())
     exists(p) && (return p)
 
     ("_" in keys(ENV)) && contains(ENV["_"], "julia") && (return ENV["_"])
@@ -103,27 +103,28 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     priority    = (:priority in paramkeys)  ? params[:priority]         : YARN_CONTAINER_PRIORITY_DEFAULT
 
     stdout_ios = manager.stdout_ios
-    (port, server) = listenany(11000)
-    rcv_stdouts = @schedule begin
+    ipaddr = getipaddr()
+    (port, server) = listenany(ipaddr, 11000)
+    rcv_stdouts = @async begin
         while length(stdout_ios) < np
             sock = accept(server)
             push!(stdout_ios, sock)
         end
     end
 
-    cookie = string(":cookie_", Base.cluster_cookie())
-    initargs = "using Elly; Elly.setup_worker($(getipaddr().host), $(port), $(cookie))"
+    cookie = ":cookie_" * cluster_cookie()
+    initargs = "using Elly; Elly.setup_worker($(ipaddr.host), $(port), $(cookie))"
     clc = launchcontext(cmd="$cmd -e '$initargs'", env=appenv)
 
     @logmsg("YarnManager launch: initargs: $initargs")
     @logmsg("YarnManager launch: context: $clc")
     on_alloc = (cid) -> container_start(manager.am, cid, clc)
-    callback(manager.am, Nullable(on_alloc), Nullable())
+    callback(manager.am, on_alloc, nothing)
 
     container_allocate(manager.am, convert(Int, np); mem=mem, cpu=cpu, loc=loc, priority=priority)
 
     tend = time() + manager.launch_timeout
-    while (time() < tend) && !Base.istaskdone(rcv_stdouts)
+    while (time() < tend) && !istaskdone(rcv_stdouts)
         sleep(1)
     end
 
@@ -137,9 +138,9 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
                 config.io = io
 
                 # keep the container id in userdata to be used with rmprocs if required
-                cidstr = Base.deserialize(io)
+                cidstr = deserialize(io)
                 userdata = Dict(:container_id => _container(cidstr))
-                config.userdata = Nullable(userdata)
+                config.userdata = userdata
 
                 push!(configs, config)
             end

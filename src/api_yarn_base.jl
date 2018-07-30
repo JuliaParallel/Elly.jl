@@ -174,6 +174,8 @@ function _new_or_existing_conn(nodes::YarnNodes, nodeid::NodeIdProto)
         if t > (lastusetime + nodes.keepalivesecs)
             try
                 disconnect(conn.channel)
+            catch
+                # ignore exception
             finally
                 conn = YarnAMNMProtocol(nodeid.host, nodeid.port, nodes.ugi)
                 lastusetime = t
@@ -181,6 +183,8 @@ function _new_or_existing_conn(nodes::YarnNodes, nodeid::NodeIdProto)
         end
         nodes.conn[nodeid] = (conn, lastusetime, lck)
         return (conn, lastusetime, lck)
+    catch ex
+        rethrow(ex)
     finally
         unlock(nodes.lck)
     end
@@ -204,6 +208,8 @@ function release_connection(nodes::YarnNodes, nodeid::NodeIdProto, conn::YarnAMN
         if !reuse
             try
                 disconnect(conn.channel)
+            catch
+                # ignore exceptions
             end
         end
 
@@ -222,6 +228,8 @@ function release_connection(nodes::YarnNodes, nodeid::NodeIdProto, conn::YarnAMN
                 nodes.conn[nodeid] = (conn, time(), ReentrantLock())
             end
         end
+    catch ex
+        rethrow(ex)
     finally
         unlock(nodes.lck)
     end
@@ -269,13 +277,12 @@ mutable struct YarnContainers
     release_pipeline::RequestPipeline{ContainerIdProto}
     ndesired::Int
 
-    on_container_alloc::Nullable{Function}
-    on_container_finish::Nullable{Function}
+    on_container_alloc::Union{Nothing,Function}
+    on_container_finish::Union{Nothing,Function}
 
     function YarnContainers()
         new(Dict{ContainerIdProto,ContainerProto}(), Dict{ContainerIdProto,ContainerStatusProto}(), Set{ContainerIdProto}(), Set{ContainerIdProto}(),
-            RequestPipeline{ResourceRequestProto}(), RequestPipeline{ContainerIdProto}(), 0,
-            Nullable{Function}(), Nullable{Function}())
+            RequestPipeline{ResourceRequestProto}(), RequestPipeline{ContainerIdProto}(), 0, nothing, nothing)
     end
 end
 
@@ -284,7 +291,7 @@ function show(io::IO, containers::YarnContainers)
     nothing
 end
 
-function callback(containers::YarnContainers, on_container_alloc::Nullable, on_container_finish::Nullable)
+function callback(containers::YarnContainers, on_container_alloc::Union{Nothing,Function}, on_container_finish::Union{Nothing,Function})
     containers.on_container_alloc = on_container_alloc
     containers.on_container_finish = on_container_finish
     nothing
@@ -304,8 +311,7 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
             contlist[id] = cont
             push!(active, id)
             @logmsg("calling callback for alloc")
-            isnull(cballoc) || @async(get(cballoc)(id))
-            #isnull(cballoc) || get(cballoc)(id)
+            (cballoc === nothing) || @async cballoc(id)
         end
     end
     if isfilled(arp, :completed_container_statuses)
@@ -318,8 +324,7 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
             (id in active) && pop!(active, id)
             (id in busy) && pop!(busy, id)
             @logmsg("calling callback for finish")
-            isnull(cbfinish) || @async(get(cbfinish)(id))
-            #isnull(cbfinish) || get(cbfinish)(id)
+            (cbfinish === nothing) || @async cbfinish(id)
         end
     end
     nothing

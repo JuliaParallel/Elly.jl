@@ -36,7 +36,7 @@ mutable struct YarnAppMaster
 
     response_id::Int32
     
-    registration::Nullable{RegisterApplicationMasterResponseProto}
+    registration::Union{Nothing,RegisterApplicationMasterResponseProto}
     lck::Lock
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
@@ -49,7 +49,7 @@ mutable struct YarnAppMaster
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(ugi), YarnContainers(),
             "", true, 1,
-            Nullable{RegisterApplicationMasterResponseProto}(), lck)
+            nothing, lck)
     end
 end
 
@@ -57,6 +57,8 @@ function withlock(fn, yam)
     try
         take!(yam.lck)
         return fn()
+    catch ex
+        rethrow(ex)
     finally
         put!(yam.lck, 1)
     end
@@ -71,7 +73,7 @@ function show(io::IO, yam::YarnAppMaster)
     show(io, yam.containers)
 end
 
-callback(yam::YarnAppMaster, on_container_alloc::Nullable, on_container_finish::Nullable) = 
+callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_container_finish::Union{Nothing,Function}) = 
     callback(yam.containers, on_container_alloc, on_container_finish)
 
 function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
@@ -108,7 +110,7 @@ function register(yam::YarnAppMaster)
     resp = withlock(yam) do
         registerApplicationMaster(yam.amrm_conn, inp)
     end
-    yam.registration = Nullable(resp)
+    yam.registration = resp
 
     if isfilled(resp, :maximumCapability)
         yam.max_mem = resp.maximumCapability.memory
@@ -140,7 +142,7 @@ function _unregister(yam::YarnAppMaster, finalstatus::Int32, diagnostics::Abstra
     resp = withlock(yam) do
         finishApplicationMaster(yam.amrm_conn, inp)
     end
-    resp.isUnregistered && (yam.registration = Nullable{RegisterApplicationMasterResponseProto}())
+    resp.isUnregistered && (yam.registration = nothing)
     resp.isUnregistered
 end
 
@@ -164,6 +166,8 @@ function container_start(yam::YarnAppMaster, container::ContainerProto, containe
     try
         resp = startContainers(nm_conn, inp)
         success = true
+    catch ex
+        rethrow(ex)
     finally
         release_connection(yam.nodes, nodeid, nm_conn, success)
     end
@@ -187,6 +191,8 @@ function container_stop(yam::YarnAppMaster, container::ContainerProto)
     try
         resp = stopContainers(nm_conn, inp)
         success = true
+    catch ex
+        rethrow(ex)
     finally
         release_connection(yam.nodes, nodeid, nm_conn, success)
     end
@@ -217,11 +223,11 @@ function _update_rm(yam::YarnAppMaster)
     end
     set_field!(inp, :response_id, yam.response_id)
 
-    @logmsg(inp)
+    #@logmsg(inp)
     resp = withlock(yam) do
         allocate(yam.amrm_conn, inp)
     end
-    @logmsg(resp)
+    #@logmsg(resp)
 
     # store/update tokens
     channel = yam.amrm_conn.channel
@@ -243,7 +249,7 @@ function _update_rm(yam::YarnAppMaster)
     update(yam.nodes, resp)
     update(yam.containers, resp)
     @logmsg("finished processing am-rm messages")
-    @logmsg(yam)
+    #@logmsg(yam)
     nothing
 end
 
@@ -251,8 +257,8 @@ haverequests(yam::YarnAppMaster) = haverequests(yam.containers)
 
 function process_am_rm(yam::YarnAppMaster)
     @logmsg("started am-rm processor task")
-    stopped = ()->isnull(yam.registration)
-    stopwaiting = ()->(haverequests(yam) || isnull(yam.registration))
+    stopped = ()->(yam.registration === nothing)
+    stopwaiting = ()->(haverequests(yam) || (yam.registration === nothing))
     waittime = 10.
     while !stopped()
         t1 = time()

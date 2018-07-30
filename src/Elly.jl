@@ -5,19 +5,25 @@ module Elly
 using Compat
 using ProtoBuf
 using URIParser
-using CRC
 using MbedTLS
 
-import Base: connect, readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, mkpath,
-        mv, rm, abspath, cd, pwd, touch, open, nb_available, cp, joinpath, dirname,
-        eof, position, seek, seekend, seekstart, skip, read, write, read!, close,
-        launch, manage, convert
+# using from stdlib
+using CRC32c
+using Random
+using UUIDs
+using Base64
+using Dates
+using Sockets
+using Serialization
+import Sockets: connect
+using Distributed
+import Distributed: launch, manage
+
+import Base: readdir, show, isfile, isdir, islink, stat, filesize, filemode, mtime, mkdir, mkpath,
+        mv, rm, abspath, cd, pwd, touch, open, bytesavailable, cp, joinpath, dirname,
+        eof, position, seek, seekend, seekstart, skip, read, write, read!, close, convert
 import ProtoBuf: write_bytes, read_bytes, call_method
 import URIParser: URI
-
-if VERSION >= v"0.7.0-"
-    using CRC32c
-end
 
 export show, convert, URI
 
@@ -28,7 +34,7 @@ export HDFSClient, HDFSFile, HDFSFileInfo,
         hdfs_status, hdfs_capacity, hdfs_capacity_used, hdfs_capacity_remaining, hdfs_renewlease, 
         isfile, isdir, islink, stat, filesize, filemode, mtime, atime, du, exists, readdir,
         mkdir, mkpath, touch, mv, rm, abspath, cd, pwd, joinpath, dirname,
-        eof, position, seek, seekend, seekstart, skip, nb_available,
+        eof, position, seek, seekend, seekstart, skip, bytesavailable,
         read!, read, write, readbytes, readall, open, close, cp
 
 export YarnClient, YarnNode, YarnApp, YarnAppStatus, YarnAppAttemptStatus, nodecount, nodes, launchcontext, submit, kill, status, attempts, am_rm_token
@@ -51,7 +57,7 @@ end
 #const logger = Logging.configure(level=DEBUG)
 #macro logmsg(s)
 #    quote
-#        debug("[", myid(), "-", "] ", $(esc(s)))
+#        @info("[$(myid())-] " * $(esc(s)))
 #    end
 #end
 macro logmsg(s)

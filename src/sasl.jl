@@ -157,7 +157,7 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
 
     begin_send(channel)
     buffer_sasl_reqhdr(channel)
-    buffer_sasl_message(channel, RpcSaslProto_SaslState.INITIATE, [respauth;], convert(Vector{UInt8}, response))
+    buffer_sasl_message(channel, RpcSaslProto_SaslState.INITIATE, [respauth], convert(Vector{UInt8}, codeunits(response)))
     send_buffered(channel, true)
     resp = recv_sasl_message(channel)
 
