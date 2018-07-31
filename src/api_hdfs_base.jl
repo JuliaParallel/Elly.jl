@@ -27,11 +27,11 @@ It also stores the folder context for using relative paths in APIs that use the 
 mutable struct HDFSClient
     nn_conn::HDFSProtocol
     wd::AbstractString
-    server_defaults::Nullable{FsServerDefaultsProto}
+    server_defaults::Union{Nothing,FsServerDefaultsProto}
 
     function HDFSClient(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation())
         nn_conn = HDFSProtocol(host, port, ugi)
-        new(nn_conn, "/", Nullable{FsServerDefaultsProto}())
+        new(nn_conn, "/", nothing)
     end
 end
 
@@ -98,7 +98,7 @@ mutable struct HDFSFileInfo
     last_mod::UInt64
     last_access::UInt64
 
-    HDFSFileInfo(fs::HdfsFileStatusProto) = new(fs.fileType, String(fs.path),
+    HDFSFileInfo(fs::HdfsFileStatusProto) = new(fs.fileType, String(copy(fs.path)),
                     fs.length, fs.block_replication, fs.blocksize,
                     fs.owner, fs.group, fs.permission.perm,
                     fs.modification_time, fs.access_time)
@@ -163,7 +163,7 @@ function _get_file_info(client::HDFSClient, path::AbstractString)
     path = abspath(client, path)
     inp = protobuild(GetFileInfoRequestProto, Dict(:src => path))
     resp = getFileInfo(client.nn_conn, inp)
-    isfilled(resp, :fs) ? Nullable{HdfsFileStatusProto}(resp.fs) : Nullable{HdfsFileStatusProto}()
+    isfilled(resp, :fs) ? resp.fs : nothing
 end
 
 function _get_block_locations(client::HDFSClient, path::AbstractString, offset::UInt64=zero(UInt64), length::UInt64=zero(UInt64))
@@ -175,18 +175,18 @@ function _get_block_locations(client::HDFSClient, path::AbstractString, offset::
                 :offset => offset,
                 :length => length))
     resp = getBlockLocations(client.nn_conn, inp)
-    isfilled(resp, :locations) ? Nullable{LocatedBlocksProto}(resp.locations) : Nullable{LocatedBlocksProto}()
+    isfilled(resp, :locations) ? resp.locations : nothing
 end
 
 #
 # Server defaults
 function _get_server_defaults(client::HDFSClient)
-    if isnull(client.server_defaults)
+    if client.server_defaults === nothing
         inp = GetServerDefaultsRequestProto()
         resp = getServerDefaults(client.nn_conn, inp)
-        client.server_defaults = Nullable(resp.serverDefaults)
+        client.server_defaults = resp.serverDefaults
     end
-    get(client.server_defaults)
+    client.server_defaults
 end
 
 hdfs_server_defaults(client::HDFSClient) = _as_dict(_get_server_defaults(client))
@@ -208,14 +208,14 @@ hdfs_capacity_remaining(client::HDFSClient) = _get_fs_status(client).remaining
 stat(file::HDFSFile) = stat(file.client, file.path)
 function stat(client::HDFSClient, path::AbstractString)
     fileinfo = _get_file_info(client, path)
-    isnull(fileinfo) && throw(HDFSException("Path not found $path"))
-    hdfs_file_info = HDFSFileInfo(get(fileinfo))
+    (fileinfo === nothing) && throw(HDFSException("Path not found $path"))
+    hdfs_file_info = HDFSFileInfo(fileinfo)
     hdfs_file_info.name = path
     hdfs_file_info
 end
 
 exists(file::HDFSFile) = exists(file.client, file.path)
-exists(client::HDFSClient, path::AbstractString) = !isnull(_get_file_info(client, path))
+exists(client::HDFSClient, path::AbstractString) = (_get_file_info(client, path) !== nothing)
 
 isdir(file::HDFSFile) = isdir(file.client, file.path)
 isdir(client::HDFSClient, path::AbstractString) = isdir(stat(client, path))
@@ -248,9 +248,8 @@ atime(fileinfo::HDFSFileInfo) = fileinfo.last_access
 hdfs_blocks(file::HDFSFile, offset::Integer=0, length::Integer=typemax(Int)) = hdfs_blocks(file.client, file.path, offset, length)
 function hdfs_blocks(client::HDFSClient, path::AbstractString, offset::Integer=0, length::Integer=typemax(Int))
     blocks = Tuple{UInt64,Array}[]
-    _locations = _get_block_locations(client, path, UInt64(offset), UInt64(length))
-    isnull(_locations) && (return blocks)
-    locations = get(_locations)
+    locations = _get_block_locations(client, path, UInt64(offset), UInt64(length))
+    (locations === nothing) && (return blocks)
     for block in locations.blocks
         block.corrupt && throw(HDFSException("Corrupt block found at offset $(block.offset)"))
         node_ips = AbstractString[]
@@ -283,10 +282,10 @@ function _get_content_summary(client::HDFSClient, path::AbstractString)
     resp.summary
 end
 
-du(file::HDFSFile, details::Nullable{Dict{Symbol,Any}}=Nullable{Dict{Symbol,Any}}()) = du(file.client, file.path, details)
-function du(client::HDFSClient, path::AbstractString=".", details::Nullable{Dict{Symbol,Any}}=Nullable{Dict{Symbol,Any}}())
+du(file::HDFSFile, details::Union{Nothing,Dict{Symbol,Any}}=nothing) = du(file.client, file.path, details)
+function du(client::HDFSClient, path::AbstractString=".", details::Union{Nothing,Dict{Symbol,Any}}=nothing)
     summary = _get_content_summary(client, path)
-    isnull(details) || _as_dict(summary, get(details))
+    (details === nothing) || _as_dict(summary, details)
     summary.length
 end
 
@@ -294,9 +293,9 @@ end
 # File create, delete, list
 readdir(file::HDFSFile, limit::Int=typemax(Int)) = readdir(file.client, file.path, limit)
 function readdir(client::HDFSClient, path::AbstractString=".", limit::Int=typemax(Int))
-    result = AbstractString[]
+    result = String[]
     _walkdir(client, path, (filestatus)->begin
-                push!(result, String(filestatus.path))
+                push!(result, String(copy(filestatus.path)))
                 (length(result) < limit)
             end)
     result
@@ -376,40 +375,40 @@ function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=
                 :blockSize => blocksz))
 
     resp = create(client.nn_conn, inp)
-    isfilled(resp, :fs) || (return Nullable{HdfsFileStatusProto}())
+    isfilled(resp, :fs) || (return nothing)
 
     if docomplete
-        _complete_file(client, path) || (return Nullable{HdfsFileStatusProto}())
+        _complete_file(client, path) || (return nothing)
     end
 
-    return Nullable(resp.fs)
+    return resp.fs
 end
 
-function _complete_file(client::HDFSClient, path::AbstractString, last::Nullable{ExtendedBlockProto}=Nullable{ExtendedBlockProto}())
+function _complete_file(client::HDFSClient, path::AbstractString, last::Union{Nothing,ExtendedBlockProto}=nothing)
     path = abspath(client, path)
 
     endinp = protobuild(CompleteRequestProto, Dict(:src => path,
                 :clientName => ELLY_CLIENTNAME))
-    if !isnull(last)
-        set_field!(endinp, :last, get(last))
-        @logmsg("setting last block as $(get(last))")
+    if last !== nothing
+        set_field!(endinp, :last, last)
+        @debug("setting last block as $(last)")
     end
 
     endresp = complete(client.nn_conn, endinp)
     endresp.result
 end
 
-function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}()) where T<:LocatedBlockProto
-    isnull(previous) && (return _add_block(ExtendedBlockProto, client, path))
-    @logmsg("adding next block to $(get(previous).b)")
-    _add_block(ExtendedBlockProto, client, path, Nullable(get(previous).b))
+function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Union{Nothing,T}=nothing) where T<:LocatedBlockProto
+    (previous === nothing) && (return _add_block(ExtendedBlockProto, client, path))
+    @debug("adding next block to $(previous.b)")
+    _add_block(ExtendedBlockProto, client, path, previous.b)
 end
-function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Nullable{T}=Nullable{T}()) where T<:ExtendedBlockProto
+function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Union{Nothing,T}=nothing) where T<:ExtendedBlockProto
     path = abspath(client, path)
 
     inp = protobuild(AddBlockRequestProto, Dict(:src => path,
                 :clientName => ELLY_CLIENTNAME))
-    isnull(previous) || set_field!(inp, :previous, get(previous))
+    (previous === nothing) || set_field!(inp, :previous, previous)
 
     resp = addBlock(client.nn_conn, inp)
     return resp.block
@@ -430,7 +429,7 @@ touch(file::HDFSFile, replication::UInt32=zero(UInt32), blocksz::UInt64=zero(UIn
 function touch(client::HDFSClient, path::AbstractString, replication::UInt32=zero(UInt32), blocksz::UInt64=zero(UInt64), mode::UInt32=DEFAULT_FILE_MODE)
     if exists(client, path)
         path = abspath(client, path)
-        t = UInt64(Base.Dates.datetime2unix(now(Base.Dates.UTC))*1000)
+        t = UInt64(datetime2unix(now(UTC))*1000)
         inp = protobuild(SetTimesRequestProto, Dict(:src => path,
                     :mtime => t,
                     :atime => t))
@@ -438,7 +437,7 @@ function touch(client::HDFSClient, path::AbstractString, replication::UInt32=zer
         setTimes(client.nn_conn, inp)
     else
         fs = _create_file(client, path, false, replication, blocksz, mode)
-        isnull(fs) && throw(HDFSException("Could not create file $path"))
+        (fs === nothing) && throw(HDFSException("Could not create file $path"))
     end
     nothing
 end

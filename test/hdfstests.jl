@@ -1,5 +1,6 @@
 using Elly
-using Base.Test
+using Test
+using Random
 
 function test_hdfs(host="localhost", port=9000)
     limitedtestenv = (get(ENV, "CI", "false") == "true")
@@ -49,13 +50,13 @@ function test_hdfs(host="localhost", port=9000)
     bar_file = HDFSFile(hdfsclnt, "bar")
     teststr = "hello world\n"
     nloops = 1000
-    tic()
+    t1 = time()
     open(bar_file, "w") do f
         for idx in 1:nloops
             write(f, teststr)
         end
     end
-    println("...done in $(toc()) secs")
+    println("...done in $(time() - t1) secs")
     println("verify file size to be $(length(teststr)*nloops)...")
     @test filesize(bar_file) == length(teststr) * nloops
 
@@ -82,32 +83,32 @@ function test_hdfs(host="localhost", port=9000)
     A = rand(UInt8, size_bytes)
     open(bar_file, "w"; blocksz=UInt64(size_bytes)) do f
         for idx in 1:nloops
-            tic()
+            t1 = time()
             write(f, A)
-            println("...block written in $(toc()) secs")
+            println("...block written in $(time() - t1) secs")
         end
     end
     println("verify file size to be $(sizeof(A) * nloops)...")
     @test filesize(bar_file) == sizeof(A) * nloops
 
     println("read and verify...")
-    B = Array{UInt8}(size_bytes)
+    B = Array{UInt8}(undef, size_bytes)
     open(bar_file, "r") do f
         for idx in 1:nloops
-            tic()
+            t1 = time()
             read!(f, B)
-            println("...block read in $(toc()) secs")
+            println("...block read in $(time() - t1) secs")
             @test A == B
         end
     end
 
     println("read and verify with crc...")
-    B = Array{UInt8}(size_bytes)
+    B = Array{UInt8}(undef, size_bytes)
     open(bar_file, "r"; crc=true) do f
         for idx in 1:nloops
-            tic()
+            t1 = time()
             read!(f, B)
-            println("...block read in $(toc()) secs")
+            println("...block read in $(time() - t1) secs")
             @test A == B
         end
     end
@@ -120,7 +121,7 @@ function test_hdfs(host="localhost", port=9000)
     @test hdfs_set_replication(bar_file, 2)
 
     cd(hdfsclnt, "/tmp/foo")
-    NFILES = limitedtestenv ? 100 : 1000
+    NFILES = limitedtestenv ? 10 : 1000
     println("create many ($NFILES) files...")
     for fidx in 1:NFILES
         bar_file = HDFSFile(hdfsclnt, "bar$fidx")
@@ -131,6 +132,7 @@ function test_hdfs(host="localhost", port=9000)
         end
         ((fidx % 10) == 0) && println("...created file #$fidx")
     end
+    println("reading directory...")
     allfiles = readdir(hdfsclnt, "/tmp/foo")
     println("delete many ($NFILES) files...")
     for idx in 1:NFILES

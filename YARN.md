@@ -76,7 +76,7 @@ julia> function on_finish(cid)
        end
 on_finish (generic function with 1 method)
 
-julia> callback(yarnam, Nullable(on_alloc), Nullable(on_finish))
+julia> callback(yarnam, on_alloc, on_finish)
 
 julia> yarnapp = submit(yarnclnt, yarnam)
 YarnApp YARN (EllyApp/2): accepted-0.0

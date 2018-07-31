@@ -121,11 +121,11 @@ YarnApp represents one instance of application running on the yarn cluster
 mutable struct YarnApp
     client::YarnClient
     appid::ApplicationIdProto
-    status::Nullable{YarnAppStatus}
+    status::Union{Nothing,YarnAppStatus}
     attempts::Array{YarnAppAttemptStatus}
 
     function YarnApp(client::YarnClient, appid::ApplicationIdProto)
-        new(client, appid, Nullable{YarnAppStatus}(), YarnAppAttemptStatus[])
+        new(client, appid, nothing, YarnAppAttemptStatus[])
     end
 end
 
@@ -145,10 +145,10 @@ ATTEMPT_STATES: enum value to state map. Used for converting state for display.
 const ATTEMPT_STATES = [:new, :submitted, :scheduled, :scheduled, :allocated_saving, :allocated, :launched, :failed, :running, :finishing, :finished, :killed]
 
 function show(io::IO, app::YarnApp)
-    if isnull(app.status)
+    if app.status === nothing
         println(io, "YarnApp: $(app.appid.id)")
     else
-        show(io, get(app.status))
+        show(io, app.status)
     end
     nothing
 end
@@ -192,25 +192,25 @@ function kill(app::YarnApp)
 end
 
 function status(app::YarnApp, refresh::Bool=true)
-    if refresh || isnull(app.status)
+    if refresh || (app.status === nothing)
         client = app.client
         inp = protobuild(GetApplicationReportRequestProto, Dict(:application_id => app.appid))
 
         resp = getApplicationReport(client.rm_conn, inp) 
-        app.status = isfilled(resp.application_report) ?  Nullable(YarnAppStatus(resp.application_report)) : Nullable{YarnAppStatus}()
+        app.status = isfilled(resp.application_report) ?  YarnAppStatus(resp.application_report) : nothing
     end
     app.status
 end
 
 function wait_for_state(app::YarnApp, state::Int32, timeout_secs::Int=60)
-    @logmsg("waiting for application to reach $(APP_STATES[state]) ($state) state")
+    @debug("waiting for application to reach $(APP_STATES[state]) ($state) state")
     t1 = time() + timeout_secs
     finalstates = (YarnApplicationStateProto.KILLED, YarnApplicationStateProto.FAILED, YarnApplicationStateProto.FINISHED)
     isfinalstate = state in finalstates
     while time() < t1
         nst = status(app)
-        if !isnull(nst)
-            appstate = get(nst).report.yarn_application_state
+        if nst !== nothing
+            appstate = nst.report.yarn_application_state
             (appstate == state) && (return true)
             isfinalstate || ((appstate in finalstates) && (return false))
         end
@@ -222,11 +222,11 @@ end
 # get am-rm token for an unmanaged app
 function am_rm_token(app::YarnApp)
     wait_for_state(app, YarnApplicationStateProto.ACCEPTED) || throw(YarnException("Application was not accepted"))
-    am_rm_token(get(status(app)))
+    am_rm_token(status(app))
 end
 
 function attempts(app::YarnApp, refresh::Bool=true)
-    if refresh || isnull(app.attempts)
+    if refresh || isempty(app.attempts)
         client = app.client
         inp = protobuild(GetApplicationAttemptsRequestProto, Dict(:application_id => app.appid))
 
@@ -243,7 +243,7 @@ function attempts(app::YarnApp, refresh::Bool=true)
 end
 
 function wait_for_attempt_state(app::YarnApp, attemptid::Int32, state::Int32, timeout_secs::Int=60)
-    @logmsg("waiting for application attempt $attemptid to reach $(ATTEMPT_STATES[state]) ($state) state")
+    @debug("waiting for application attempt $attemptid to reach $(ATTEMPT_STATES[state]) ($state) state")
     t1 = time() + timeout_secs
     finalstates = (YarnApplicationAttemptStateProto.APP_ATTEMPT_KILLED, YarnApplicationAttemptStateProto.APP_ATTEMPT_FAILED, YarnApplicationAttemptStateProto.APP_ATTEMPT_FINISHED)
     isfinalstate = state in finalstates
@@ -255,7 +255,7 @@ function wait_for_attempt_state(app::YarnApp, attemptid::Int32, state::Int32, ti
                 atmptstate = report.yarn_application_attempt_state
                 (atmptstate == state) && (return true)
                 isfinalstate || ((atmptstate in finalstates) && (return false))
-                @logmsg("application attempt $attemptid is in state $(ATTEMPT_STATES[atmptstate]) ($atmptstate) state")
+                @debug("application attempt $attemptid is in state $(ATTEMPT_STATES[atmptstate]) ($atmptstate) state")
                 break
             end
         end
