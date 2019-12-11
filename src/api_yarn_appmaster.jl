@@ -102,10 +102,10 @@ end
 function register(yam::YarnAppMaster)
     inp = RegisterApplicationMasterRequestProto()
     if !isempty(yam.host) && (yam.port > 0)
-        set_field!(inp, :host, yam.host)
-        set_field!(inp, :port, convert(Int32,yam.port))
+        setproperty!(inp, :host, yam.host)
+        setproperty!(inp, :port, convert(Int32,yam.port))
     end
-    !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
+    !isempty(yam.tracking_url) && setproperty!(inp, :tracking_url, yam.tracking_url)
 
     resp = withlock(yam) do
         registerApplicationMaster(yam.amrm_conn, inp)
@@ -136,8 +136,8 @@ end
 
 function _unregister(yam::YarnAppMaster, finalstatus::Int32, diagnostics::AbstractString)
     inp = protobuild(FinishApplicationMasterRequestProto, Dict(:final_application_status => finalstatus))
-    !isempty(yam.tracking_url) && set_field!(inp, :tracking_url, yam.tracking_url)
-    !isempty(diagnostics) && set_field!(inp, :diagnostics, diagnostics)
+    !isempty(yam.tracking_url) && setproperty!(inp, :tracking_url, yam.tracking_url)
+    !isempty(diagnostics) && setproperty!(inp, :diagnostics, diagnostics)
   
     resp = withlock(yam) do
         finishApplicationMaster(yam.amrm_conn, inp)
@@ -212,8 +212,8 @@ function _update_rm(yam::YarnAppMaster)
     (alloc_pending,release_pending) = torequest(yam.containers)
     @debug("alloc pending: $alloc_pending")
     @debug("release pending: $release_pending")
-    !isempty(alloc_pending) && set_field!(inp, :ask, alloc_pending)
-    !isempty(release_pending) && set_field!(inp, :release, release_pending)
+    !isempty(alloc_pending) && setproperty!(inp, :ask, alloc_pending)
+    !isempty(release_pending) && setproperty!(inp, :release, release_pending)
 
     # send one-up response id
     if yam.response_id == typemax(Int32)
@@ -221,7 +221,7 @@ function _update_rm(yam::YarnAppMaster)
     else
         yam.response_id += 1
     end
-    set_field!(inp, :response_id, yam.response_id)
+    setproperty!(inp, :response_id, yam.response_id)
 
     #@debug(inp)
     resp = withlock(yam) do

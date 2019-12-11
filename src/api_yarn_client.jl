@@ -27,9 +27,9 @@ end
 function nodes(client::YarnClient; all::Bool=false, nodelist::YarnNodes=YarnNodes(client.rm_conn.channel.ugi))
     inp = GetClusterNodesRequestProto()
     if all
-        set_field!(inp, :nodeStates, [NodeStateProto.NS_NEW, NodeStateProto.NS_RUNNING, NodeStateProto.NS_UNHEALTHY, NodeStateProto.NS_DECOMMISSIONED, NodeStateProto.NS_LOST, NodeStateProto.NS_REBOOTED])
+        setproperty!(inp, :nodeStates, [NodeStateProto.NS_NEW, NodeStateProto.NS_RUNNING, NodeStateProto.NS_UNHEALTHY, NodeStateProto.NS_DECOMMISSIONED, NodeStateProto.NS_LOST, NodeStateProto.NS_REBOOTED])
     else
-        set_field!(inp, :nodeStates, [NodeStateProto.NS_RUNNING])
+        setproperty!(inp, :nodeStates, [NodeStateProto.NS_RUNNING])
     end
     resp = getClusterNodes(client.rm_conn, inp)
     update(nodelist, resp)

@@ -390,7 +390,7 @@ function _complete_file(client::HDFSClient, path::AbstractString, last::Union{No
     endinp = protobuild(CompleteRequestProto, Dict(:src => path,
                 :clientName => ELLY_CLIENTNAME))
     if last !== nothing
-        set_field!(endinp, :last, last)
+        setproperty!(endinp, :last, last)
         @debug("setting last block as $(last)")
     end
 
@@ -408,7 +408,7 @@ function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previou
 
     inp = protobuild(AddBlockRequestProto, Dict(:src => path,
                 :clientName => ELLY_CLIENTNAME))
-    (previous === nothing) || set_field!(inp, :previous, previous)
+    (previous === nothing) || setproperty!(inp, :previous, previous)
 
     resp = addBlock(client.nn_conn, inp)
     return resp.block

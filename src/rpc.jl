@@ -471,12 +471,12 @@ function buffer_readblock(reader::HDFSBlockReader)
 
     token = TokenProto()
     for fld in (:identifier, :password, :kind, :service)
-        set_field!(token, fld, get_field(block.blockToken, fld))
+        setproperty!(token, fld, get_field(block.blockToken, fld))
     end
 
     exblock = ExtendedBlockProto()
     for fld in (:poolId, :blockId, :generationStamp)
-        set_field!(exblock, fld, get_field(block.b, fld))
+        setproperty!(exblock, fld, get_field(block.b, fld))
     end
 
     basehdr = protobuild(BaseHeaderProto, Dict(:block => exblock, :token => token))
@@ -963,14 +963,14 @@ function buffer_writeblock(writer::HDFSBlockWriter)
 
     token = TokenProto()
     for fld in (:identifier, :password, :kind, :service)
-        set_field!(token, fld, get_field(block.blockToken, fld))
+        setproperty!(token, fld, get_field(block.blockToken, fld))
     end
 
     exblock = ExtendedBlockProto()
     for fld in (:poolId, :blockId, :generationStamp)
-        set_field!(exblock, fld, get_field(block.b, fld))
+        setproperty!(exblock, fld, get_field(block.b, fld))
     end
-    set_field!(exblock, :numBytes, zero(UInt64))
+    setproperty!(exblock, :numBytes, zero(UInt64))
 
     basehdr = protobuild(BaseHeaderProto, Dict(:block => exblock, :token => token))
     hdr = protobuild(ClientOperationHeaderProto, Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
@@ -1112,7 +1112,7 @@ function read_packet_ack(writer::HDFSBlockWriter)
     ackrcvd(pipeline, ack.seqno, ack.reply)
 
     exblk = writer.block.b
-    set_field!(exblk, :numBytes, pipeline.acked_bytes)
+    setproperty!(exblk, :numBytes, pipeline.acked_bytes)
 
     #@debug("received ack for seqno: $(ack.seqno), status: $(ack.reply) bytes acked: $(exblk.numBytes)")
     nothing
