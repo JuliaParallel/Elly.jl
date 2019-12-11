@@ -2,7 +2,6 @@ __precompile__(true)
 
 module Elly
 
-using Compat
 using ProtoBuf
 using URIParser
 using MbedTLS

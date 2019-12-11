@@ -43,7 +43,11 @@ end
 function setup_worker(host, port, cookie)
     @debug("YarnManager setup_worker: host:$host port:$port cookie:$cookie for container $(ENV[CONTAINER_ID])")
     c = connect(IPv4(host), port)
-    Base.wait_connected(c)
+    if :wait_connected in names(Base; all=true) # < Julia 1.3
+        Base.wait_connected(c)
+    else
+        Sockets.wait_connected(c) # >= Julia 1.3
+    end
     redirect_stdout(c)
     redirect_stderr(c)
     # identify container id so that rmprocs can clean things up nicely if required

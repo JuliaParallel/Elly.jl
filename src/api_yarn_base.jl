@@ -380,7 +380,7 @@ haverequests(containers::YarnContainers) = containers.ndesired != length(contain
 function launchcontext(;cmd::AbstractString="", env::Dict=Dict(), service_data::Dict=Dict())
     clc = ContainerLaunchContextProto()
     if !isempty(cmd)
-        set_field!(clc, :command, AbstractString[cmd])
+        setproperty!(clc, :command, AbstractString[cmd])
     end
     if !isempty(env)
         envproto = StringStringMapProto[]
@@ -388,7 +388,7 @@ function launchcontext(;cmd::AbstractString="", env::Dict=Dict(), service_data::
             (isa(n, AbstractString) && isa(v, AbstractString)) || throw(ArgumentError("non string environment variable specified: $(typeof(n)) => $(typeof(v))"))
             push!(envproto, protobuild(StringStringMapProto, Dict(:key => n, :value => v)))
         end
-        set_field!(clc, :environment, envproto)
+        setproperty!(clc, :environment, envproto)
     end
     if !isempty(service_data)
         svcdataproto = StringBytesMapProto[]
@@ -396,7 +396,7 @@ function launchcontext(;cmd::AbstractString="", env::Dict=Dict(), service_data::
             (isa(n, AbstractString) && isa(v, Vector{UInt8})) || throw(ArgumentError("incompatible service data type specified: $(typeof(n)) => $(typeof(v))"))
             push!(svcdataproto, protobuild(StringBytesMapProto, Dict(:key => n, :value => v)))
         end
-        set_field!(clc, :service_data, servicedataproto)
+        setproperty!(clc, :service_data, servicedataproto)
     end
     clc
 end
