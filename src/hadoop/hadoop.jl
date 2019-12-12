@@ -2,6 +2,7 @@ module hadoop
   const _ProtoBuf_Top_ = @static isdefined(parentmodule(@__MODULE__), :_ProtoBuf_Top_) ? (parentmodule(@__MODULE__))._ProtoBuf_Top_ : parentmodule(@__MODULE__)
   module common
     const _ProtoBuf_Top_ = @static isdefined(parentmodule(@__MODULE__), :_ProtoBuf_Top_) ? (parentmodule(@__MODULE__))._ProtoBuf_Top_ : parentmodule(@__MODULE__)
+    include("HAServiceProtocol_pb.jl")
     include("ProtobufRpcEngine_pb.jl")
     include("RpcHeader_pb.jl")
     include("Security_pb.jl")

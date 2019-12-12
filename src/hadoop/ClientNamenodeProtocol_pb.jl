@@ -13,12 +13,20 @@ struct __enum_CreateFlagProto <: ProtoEnum
 end #struct __enum_CreateFlagProto
 const CreateFlagProto = __enum_CreateFlagProto()
 
+struct __enum_AddBlockFlagProto <: ProtoEnum
+    NO_LOCAL_WRITE::Int32
+    __enum_AddBlockFlagProto() = new(1)
+end #struct __enum_AddBlockFlagProto
+const AddBlockFlagProto = __enum_AddBlockFlagProto()
+
 struct __enum_DatanodeReportTypeProto <: ProtoEnum
     ALL::Int32
     LIVE::Int32
     DEAD::Int32
     DECOMMISSIONING::Int32
-    __enum_DatanodeReportTypeProto() = new(1,2,3,4)
+    ENTERING_MAINTENANCE::Int32
+    IN_MAINTENANCE::Int32
+    __enum_DatanodeReportTypeProto() = new(1,2,3,4,5,6)
 end #struct __enum_DatanodeReportTypeProto
 const DatanodeReportTypeProto = __enum_DatanodeReportTypeProto()
 
@@ -26,7 +34,8 @@ struct __enum_SafeModeActionProto <: ProtoEnum
     SAFEMODE_LEAVE::Int32
     SAFEMODE_ENTER::Int32
     SAFEMODE_GET::Int32
-    __enum_SafeModeActionProto() = new(1,2,3)
+    SAFEMODE_FORCE_EXIT::Int32
+    __enum_SafeModeActionProto() = new(1,2,3,4)
 end #struct __enum_SafeModeActionProto
 const SafeModeActionProto = __enum_SafeModeActionProto()
 
@@ -130,6 +139,31 @@ mutable struct SetStoragePolicyResponseProto <: ProtoType
     SetStoragePolicyResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct SetStoragePolicyResponseProto
 
+mutable struct UnsetStoragePolicyRequestProto <: ProtoType
+    src::AbstractString
+    UnsetStoragePolicyRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UnsetStoragePolicyRequestProto
+const __req_UnsetStoragePolicyRequestProto = Symbol[:src]
+meta(t::Type{UnsetStoragePolicyRequestProto}) = meta(t, __req_UnsetStoragePolicyRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct UnsetStoragePolicyResponseProto <: ProtoType
+    UnsetStoragePolicyResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UnsetStoragePolicyResponseProto
+
+mutable struct GetStoragePolicyRequestProto <: ProtoType
+    path::AbstractString
+    GetStoragePolicyRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct GetStoragePolicyRequestProto
+const __req_GetStoragePolicyRequestProto = Symbol[:path]
+meta(t::Type{GetStoragePolicyRequestProto}) = meta(t, __req_GetStoragePolicyRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct GetStoragePolicyResponseProto <: ProtoType
+    storagePolicy::BlockStoragePolicyProto
+    GetStoragePolicyResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct GetStoragePolicyResponseProto
+const __req_GetStoragePolicyResponseProto = Symbol[:storagePolicy]
+meta(t::Type{GetStoragePolicyResponseProto}) = meta(t, __req_GetStoragePolicyResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
 mutable struct GetStoragePoliciesRequestProto <: ProtoType
     GetStoragePoliciesRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct GetStoragePoliciesRequestProto
@@ -186,6 +220,7 @@ mutable struct AddBlockRequestProto <: ProtoType
     excludeNodes::Base.Vector{DatanodeInfoProto}
     fileId::UInt64
     favoredNodes::Base.Vector{AbstractString}
+    flags::Base.Vector{Int32}
     AddBlockRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct AddBlockRequestProto
 const __req_AddBlockRequestProto = Symbol[:src,:clientName]
@@ -295,6 +330,7 @@ mutable struct Rename2RequestProto <: ProtoType
     src::AbstractString
     dst::AbstractString
     overwriteDest::Bool
+    moveToTrash::Bool
     Rename2RequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct Rename2RequestProto
 const __req_Rename2RequestProto = Symbol[:src,:dst,:overwriteDest]
@@ -412,6 +448,8 @@ mutable struct GetFsStatsResponseProto <: ProtoType
     corrupt_blocks::UInt64
     missing_blocks::UInt64
     missing_repl_one_blocks::UInt64
+    blocks_in_future::UInt64
+    pending_deletion_blocks::UInt64
     GetFsStatsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct GetFsStatsResponseProto
 const __req_GetFsStatsResponseProto = Symbol[:capacity,:used,:remaining,:under_replicated,:corrupt_blocks,:missing_blocks]
@@ -699,8 +737,11 @@ mutable struct CachePoolInfoProto <: ProtoType
     mode::Int32
     limit::Int64
     maxRelativeExpiry::Int64
+    defaultReplication::UInt32
     CachePoolInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct CachePoolInfoProto
+const __val_CachePoolInfoProto = Dict(:defaultReplication => 1)
+meta(t::Type{CachePoolInfoProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_CachePoolInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
 mutable struct CachePoolStatsProto <: ProtoType
     bytesNeeded::Int64
@@ -794,6 +835,20 @@ mutable struct GetContentSummaryResponseProto <: ProtoType
 end #mutable struct GetContentSummaryResponseProto
 const __req_GetContentSummaryResponseProto = Symbol[:summary]
 meta(t::Type{GetContentSummaryResponseProto}) = meta(t, __req_GetContentSummaryResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct GetQuotaUsageRequestProto <: ProtoType
+    path::AbstractString
+    GetQuotaUsageRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct GetQuotaUsageRequestProto
+const __req_GetQuotaUsageRequestProto = Symbol[:path]
+meta(t::Type{GetQuotaUsageRequestProto}) = meta(t, __req_GetQuotaUsageRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct GetQuotaUsageResponseProto <: ProtoType
+    usage::QuotaUsageProto
+    GetQuotaUsageResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct GetQuotaUsageResponseProto
+const __req_GetQuotaUsageResponseProto = Symbol[:usage]
+meta(t::Type{GetQuotaUsageResponseProto}) = meta(t, __req_GetQuotaUsageResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
 mutable struct SetQuotaRequestProto <: ProtoType
     path::AbstractString
@@ -1013,6 +1068,50 @@ end #mutable struct GetEditsFromTxidResponseProto
 const __req_GetEditsFromTxidResponseProto = Symbol[:eventsList]
 meta(t::Type{GetEditsFromTxidResponseProto}) = meta(t, __req_GetEditsFromTxidResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
+mutable struct ListOpenFilesRequestProto <: ProtoType
+    id::Int64
+    ListOpenFilesRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ListOpenFilesRequestProto
+const __req_ListOpenFilesRequestProto = Symbol[:id]
+meta(t::Type{ListOpenFilesRequestProto}) = meta(t, __req_ListOpenFilesRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct OpenFilesBatchResponseProto <: ProtoType
+    id::Int64
+    path::AbstractString
+    clientName::AbstractString
+    clientMachine::AbstractString
+    OpenFilesBatchResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct OpenFilesBatchResponseProto
+const __req_OpenFilesBatchResponseProto = Symbol[:id,:path,:clientName,:clientMachine]
+meta(t::Type{OpenFilesBatchResponseProto}) = meta(t, __req_OpenFilesBatchResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct ListOpenFilesResponseProto <: ProtoType
+    entries::Base.Vector{OpenFilesBatchResponseProto}
+    hasMore::Bool
+    ListOpenFilesResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ListOpenFilesResponseProto
+const __req_ListOpenFilesResponseProto = Symbol[:hasMore]
+meta(t::Type{ListOpenFilesResponseProto}) = meta(t, __req_ListOpenFilesResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct MsyncRequestProto <: ProtoType
+    MsyncRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct MsyncRequestProto
+
+mutable struct MsyncResponseProto <: ProtoType
+    MsyncResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct MsyncResponseProto
+
+mutable struct HAServiceStateRequestProto <: ProtoType
+    HAServiceStateRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct HAServiceStateRequestProto
+
+mutable struct HAServiceStateResponseProto <: ProtoType
+    state::Int32
+    HAServiceStateResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct HAServiceStateResponseProto
+const __req_HAServiceStateResponseProto = Symbol[:state]
+meta(t::Type{HAServiceStateResponseProto}) = meta(t, __req_HAServiceStateResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
 # service methods for ClientNamenodeProtocol
 const _ClientNamenodeProtocol_methods = MethodDescriptor[
         MethodDescriptor("getBlockLocations", 1, hadoop.hdfs.GetBlockLocationsRequestProto, hadoop.hdfs.GetBlockLocationsResponseProto),
@@ -1021,83 +1120,89 @@ const _ClientNamenodeProtocol_methods = MethodDescriptor[
         MethodDescriptor("append", 4, hadoop.hdfs.AppendRequestProto, hadoop.hdfs.AppendResponseProto),
         MethodDescriptor("setReplication", 5, hadoop.hdfs.SetReplicationRequestProto, hadoop.hdfs.SetReplicationResponseProto),
         MethodDescriptor("setStoragePolicy", 6, hadoop.hdfs.SetStoragePolicyRequestProto, hadoop.hdfs.SetStoragePolicyResponseProto),
-        MethodDescriptor("getStoragePolicies", 7, hadoop.hdfs.GetStoragePoliciesRequestProto, hadoop.hdfs.GetStoragePoliciesResponseProto),
-        MethodDescriptor("setPermission", 8, hadoop.hdfs.SetPermissionRequestProto, hadoop.hdfs.SetPermissionResponseProto),
-        MethodDescriptor("setOwner", 9, hadoop.hdfs.SetOwnerRequestProto, hadoop.hdfs.SetOwnerResponseProto),
-        MethodDescriptor("abandonBlock", 10, hadoop.hdfs.AbandonBlockRequestProto, hadoop.hdfs.AbandonBlockResponseProto),
-        MethodDescriptor("addBlock", 11, hadoop.hdfs.AddBlockRequestProto, hadoop.hdfs.AddBlockResponseProto),
-        MethodDescriptor("getAdditionalDatanode", 12, hadoop.hdfs.GetAdditionalDatanodeRequestProto, hadoop.hdfs.GetAdditionalDatanodeResponseProto),
-        MethodDescriptor("complete", 13, hadoop.hdfs.CompleteRequestProto, hadoop.hdfs.CompleteResponseProto),
-        MethodDescriptor("reportBadBlocks", 14, hadoop.hdfs.ReportBadBlocksRequestProto, hadoop.hdfs.ReportBadBlocksResponseProto),
-        MethodDescriptor("concat", 15, hadoop.hdfs.ConcatRequestProto, hadoop.hdfs.ConcatResponseProto),
-        MethodDescriptor("truncate", 16, hadoop.hdfs.TruncateRequestProto, hadoop.hdfs.TruncateResponseProto),
-        MethodDescriptor("rename", 17, hadoop.hdfs.RenameRequestProto, hadoop.hdfs.RenameResponseProto),
-        MethodDescriptor("rename2", 18, hadoop.hdfs.Rename2RequestProto, hadoop.hdfs.Rename2ResponseProto),
-        MethodDescriptor("delete", 19, hadoop.hdfs.DeleteRequestProto, hadoop.hdfs.DeleteResponseProto),
-        MethodDescriptor("mkdirs", 20, hadoop.hdfs.MkdirsRequestProto, hadoop.hdfs.MkdirsResponseProto),
-        MethodDescriptor("getListing", 21, hadoop.hdfs.GetListingRequestProto, hadoop.hdfs.GetListingResponseProto),
-        MethodDescriptor("renewLease", 22, hadoop.hdfs.RenewLeaseRequestProto, hadoop.hdfs.RenewLeaseResponseProto),
-        MethodDescriptor("recoverLease", 23, hadoop.hdfs.RecoverLeaseRequestProto, hadoop.hdfs.RecoverLeaseResponseProto),
-        MethodDescriptor("getFsStats", 24, hadoop.hdfs.GetFsStatusRequestProto, hadoop.hdfs.GetFsStatsResponseProto),
-        MethodDescriptor("getDatanodeReport", 25, hadoop.hdfs.GetDatanodeReportRequestProto, hadoop.hdfs.GetDatanodeReportResponseProto),
-        MethodDescriptor("getDatanodeStorageReport", 26, hadoop.hdfs.GetDatanodeStorageReportRequestProto, hadoop.hdfs.GetDatanodeStorageReportResponseProto),
-        MethodDescriptor("getPreferredBlockSize", 27, hadoop.hdfs.GetPreferredBlockSizeRequestProto, hadoop.hdfs.GetPreferredBlockSizeResponseProto),
-        MethodDescriptor("setSafeMode", 28, hadoop.hdfs.SetSafeModeRequestProto, hadoop.hdfs.SetSafeModeResponseProto),
-        MethodDescriptor("saveNamespace", 29, hadoop.hdfs.SaveNamespaceRequestProto, hadoop.hdfs.SaveNamespaceResponseProto),
-        MethodDescriptor("rollEdits", 30, hadoop.hdfs.RollEditsRequestProto, hadoop.hdfs.RollEditsResponseProto),
-        MethodDescriptor("restoreFailedStorage", 31, hadoop.hdfs.RestoreFailedStorageRequestProto, hadoop.hdfs.RestoreFailedStorageResponseProto),
-        MethodDescriptor("refreshNodes", 32, hadoop.hdfs.RefreshNodesRequestProto, hadoop.hdfs.RefreshNodesResponseProto),
-        MethodDescriptor("finalizeUpgrade", 33, hadoop.hdfs.FinalizeUpgradeRequestProto, hadoop.hdfs.FinalizeUpgradeResponseProto),
-        MethodDescriptor("rollingUpgrade", 34, hadoop.hdfs.RollingUpgradeRequestProto, hadoop.hdfs.RollingUpgradeResponseProto),
-        MethodDescriptor("listCorruptFileBlocks", 35, hadoop.hdfs.ListCorruptFileBlocksRequestProto, hadoop.hdfs.ListCorruptFileBlocksResponseProto),
-        MethodDescriptor("metaSave", 36, hadoop.hdfs.MetaSaveRequestProto, hadoop.hdfs.MetaSaveResponseProto),
-        MethodDescriptor("getFileInfo", 37, hadoop.hdfs.GetFileInfoRequestProto, hadoop.hdfs.GetFileInfoResponseProto),
-        MethodDescriptor("addCacheDirective", 38, hadoop.hdfs.AddCacheDirectiveRequestProto, hadoop.hdfs.AddCacheDirectiveResponseProto),
-        MethodDescriptor("modifyCacheDirective", 39, hadoop.hdfs.ModifyCacheDirectiveRequestProto, hadoop.hdfs.ModifyCacheDirectiveResponseProto),
-        MethodDescriptor("removeCacheDirective", 40, hadoop.hdfs.RemoveCacheDirectiveRequestProto, hadoop.hdfs.RemoveCacheDirectiveResponseProto),
-        MethodDescriptor("listCacheDirectives", 41, hadoop.hdfs.ListCacheDirectivesRequestProto, hadoop.hdfs.ListCacheDirectivesResponseProto),
-        MethodDescriptor("addCachePool", 42, hadoop.hdfs.AddCachePoolRequestProto, hadoop.hdfs.AddCachePoolResponseProto),
-        MethodDescriptor("modifyCachePool", 43, hadoop.hdfs.ModifyCachePoolRequestProto, hadoop.hdfs.ModifyCachePoolResponseProto),
-        MethodDescriptor("removeCachePool", 44, hadoop.hdfs.RemoveCachePoolRequestProto, hadoop.hdfs.RemoveCachePoolResponseProto),
-        MethodDescriptor("listCachePools", 45, hadoop.hdfs.ListCachePoolsRequestProto, hadoop.hdfs.ListCachePoolsResponseProto),
-        MethodDescriptor("getFileLinkInfo", 46, hadoop.hdfs.GetFileLinkInfoRequestProto, hadoop.hdfs.GetFileLinkInfoResponseProto),
-        MethodDescriptor("getContentSummary", 47, hadoop.hdfs.GetContentSummaryRequestProto, hadoop.hdfs.GetContentSummaryResponseProto),
-        MethodDescriptor("setQuota", 48, hadoop.hdfs.SetQuotaRequestProto, hadoop.hdfs.SetQuotaResponseProto),
-        MethodDescriptor("fsync", 49, hadoop.hdfs.FsyncRequestProto, hadoop.hdfs.FsyncResponseProto),
-        MethodDescriptor("setTimes", 50, hadoop.hdfs.SetTimesRequestProto, hadoop.hdfs.SetTimesResponseProto),
-        MethodDescriptor("createSymlink", 51, hadoop.hdfs.CreateSymlinkRequestProto, hadoop.hdfs.CreateSymlinkResponseProto),
-        MethodDescriptor("getLinkTarget", 52, hadoop.hdfs.GetLinkTargetRequestProto, hadoop.hdfs.GetLinkTargetResponseProto),
-        MethodDescriptor("updateBlockForPipeline", 53, hadoop.hdfs.UpdateBlockForPipelineRequestProto, hadoop.hdfs.UpdateBlockForPipelineResponseProto),
-        MethodDescriptor("updatePipeline", 54, hadoop.hdfs.UpdatePipelineRequestProto, hadoop.hdfs.UpdatePipelineResponseProto),
-        MethodDescriptor("getDelegationToken", 55, hadoop.common.GetDelegationTokenRequestProto, hadoop.common.GetDelegationTokenResponseProto),
-        MethodDescriptor("renewDelegationToken", 56, hadoop.common.RenewDelegationTokenRequestProto, hadoop.common.RenewDelegationTokenResponseProto),
-        MethodDescriptor("cancelDelegationToken", 57, hadoop.common.CancelDelegationTokenRequestProto, hadoop.common.CancelDelegationTokenResponseProto),
-        MethodDescriptor("setBalancerBandwidth", 58, hadoop.hdfs.SetBalancerBandwidthRequestProto, hadoop.hdfs.SetBalancerBandwidthResponseProto),
-        MethodDescriptor("getDataEncryptionKey", 59, hadoop.hdfs.GetDataEncryptionKeyRequestProto, hadoop.hdfs.GetDataEncryptionKeyResponseProto),
-        MethodDescriptor("createSnapshot", 60, hadoop.hdfs.CreateSnapshotRequestProto, hadoop.hdfs.CreateSnapshotResponseProto),
-        MethodDescriptor("renameSnapshot", 61, hadoop.hdfs.RenameSnapshotRequestProto, hadoop.hdfs.RenameSnapshotResponseProto),
-        MethodDescriptor("allowSnapshot", 62, hadoop.hdfs.AllowSnapshotRequestProto, hadoop.hdfs.AllowSnapshotResponseProto),
-        MethodDescriptor("disallowSnapshot", 63, hadoop.hdfs.DisallowSnapshotRequestProto, hadoop.hdfs.DisallowSnapshotResponseProto),
-        MethodDescriptor("getSnapshottableDirListing", 64, hadoop.hdfs.GetSnapshottableDirListingRequestProto, hadoop.hdfs.GetSnapshottableDirListingResponseProto),
-        MethodDescriptor("deleteSnapshot", 65, hadoop.hdfs.DeleteSnapshotRequestProto, hadoop.hdfs.DeleteSnapshotResponseProto),
-        MethodDescriptor("getSnapshotDiffReport", 66, hadoop.hdfs.GetSnapshotDiffReportRequestProto, hadoop.hdfs.GetSnapshotDiffReportResponseProto),
-        MethodDescriptor("isFileClosed", 67, hadoop.hdfs.IsFileClosedRequestProto, hadoop.hdfs.IsFileClosedResponseProto),
-        MethodDescriptor("modifyAclEntries", 68, hadoop.hdfs.ModifyAclEntriesRequestProto, hadoop.hdfs.ModifyAclEntriesResponseProto),
-        MethodDescriptor("removeAclEntries", 69, hadoop.hdfs.RemoveAclEntriesRequestProto, hadoop.hdfs.RemoveAclEntriesResponseProto),
-        MethodDescriptor("removeDefaultAcl", 70, hadoop.hdfs.RemoveDefaultAclRequestProto, hadoop.hdfs.RemoveDefaultAclResponseProto),
-        MethodDescriptor("removeAcl", 71, hadoop.hdfs.RemoveAclRequestProto, hadoop.hdfs.RemoveAclResponseProto),
-        MethodDescriptor("setAcl", 72, hadoop.hdfs.SetAclRequestProto, hadoop.hdfs.SetAclResponseProto),
-        MethodDescriptor("getAclStatus", 73, hadoop.hdfs.GetAclStatusRequestProto, hadoop.hdfs.GetAclStatusResponseProto),
-        MethodDescriptor("setXAttr", 74, hadoop.hdfs.SetXAttrRequestProto, hadoop.hdfs.SetXAttrResponseProto),
-        MethodDescriptor("getXAttrs", 75, hadoop.hdfs.GetXAttrsRequestProto, hadoop.hdfs.GetXAttrsResponseProto),
-        MethodDescriptor("listXAttrs", 76, hadoop.hdfs.ListXAttrsRequestProto, hadoop.hdfs.ListXAttrsResponseProto),
-        MethodDescriptor("removeXAttr", 77, hadoop.hdfs.RemoveXAttrRequestProto, hadoop.hdfs.RemoveXAttrResponseProto),
-        MethodDescriptor("checkAccess", 78, hadoop.hdfs.CheckAccessRequestProto, hadoop.hdfs.CheckAccessResponseProto),
-        MethodDescriptor("createEncryptionZone", 79, hadoop.hdfs.CreateEncryptionZoneRequestProto, hadoop.hdfs.CreateEncryptionZoneResponseProto),
-        MethodDescriptor("listEncryptionZones", 80, hadoop.hdfs.ListEncryptionZonesRequestProto, hadoop.hdfs.ListEncryptionZonesResponseProto),
-        MethodDescriptor("getEZForPath", 81, hadoop.hdfs.GetEZForPathRequestProto, hadoop.hdfs.GetEZForPathResponseProto),
-        MethodDescriptor("getCurrentEditLogTxid", 82, hadoop.hdfs.GetCurrentEditLogTxidRequestProto, hadoop.hdfs.GetCurrentEditLogTxidResponseProto),
-        MethodDescriptor("getEditsFromTxid", 83, hadoop.hdfs.GetEditsFromTxidRequestProto, hadoop.hdfs.GetEditsFromTxidResponseProto)
+        MethodDescriptor("unsetStoragePolicy", 7, hadoop.hdfs.UnsetStoragePolicyRequestProto, hadoop.hdfs.UnsetStoragePolicyResponseProto),
+        MethodDescriptor("getStoragePolicy", 8, hadoop.hdfs.GetStoragePolicyRequestProto, hadoop.hdfs.GetStoragePolicyResponseProto),
+        MethodDescriptor("getStoragePolicies", 9, hadoop.hdfs.GetStoragePoliciesRequestProto, hadoop.hdfs.GetStoragePoliciesResponseProto),
+        MethodDescriptor("setPermission", 10, hadoop.hdfs.SetPermissionRequestProto, hadoop.hdfs.SetPermissionResponseProto),
+        MethodDescriptor("setOwner", 11, hadoop.hdfs.SetOwnerRequestProto, hadoop.hdfs.SetOwnerResponseProto),
+        MethodDescriptor("abandonBlock", 12, hadoop.hdfs.AbandonBlockRequestProto, hadoop.hdfs.AbandonBlockResponseProto),
+        MethodDescriptor("addBlock", 13, hadoop.hdfs.AddBlockRequestProto, hadoop.hdfs.AddBlockResponseProto),
+        MethodDescriptor("getAdditionalDatanode", 14, hadoop.hdfs.GetAdditionalDatanodeRequestProto, hadoop.hdfs.GetAdditionalDatanodeResponseProto),
+        MethodDescriptor("complete", 15, hadoop.hdfs.CompleteRequestProto, hadoop.hdfs.CompleteResponseProto),
+        MethodDescriptor("reportBadBlocks", 16, hadoop.hdfs.ReportBadBlocksRequestProto, hadoop.hdfs.ReportBadBlocksResponseProto),
+        MethodDescriptor("concat", 17, hadoop.hdfs.ConcatRequestProto, hadoop.hdfs.ConcatResponseProto),
+        MethodDescriptor("truncate", 18, hadoop.hdfs.TruncateRequestProto, hadoop.hdfs.TruncateResponseProto),
+        MethodDescriptor("rename", 19, hadoop.hdfs.RenameRequestProto, hadoop.hdfs.RenameResponseProto),
+        MethodDescriptor("rename2", 20, hadoop.hdfs.Rename2RequestProto, hadoop.hdfs.Rename2ResponseProto),
+        MethodDescriptor("delete", 21, hadoop.hdfs.DeleteRequestProto, hadoop.hdfs.DeleteResponseProto),
+        MethodDescriptor("mkdirs", 22, hadoop.hdfs.MkdirsRequestProto, hadoop.hdfs.MkdirsResponseProto),
+        MethodDescriptor("getListing", 23, hadoop.hdfs.GetListingRequestProto, hadoop.hdfs.GetListingResponseProto),
+        MethodDescriptor("renewLease", 24, hadoop.hdfs.RenewLeaseRequestProto, hadoop.hdfs.RenewLeaseResponseProto),
+        MethodDescriptor("recoverLease", 25, hadoop.hdfs.RecoverLeaseRequestProto, hadoop.hdfs.RecoverLeaseResponseProto),
+        MethodDescriptor("getFsStats", 26, hadoop.hdfs.GetFsStatusRequestProto, hadoop.hdfs.GetFsStatsResponseProto),
+        MethodDescriptor("getDatanodeReport", 27, hadoop.hdfs.GetDatanodeReportRequestProto, hadoop.hdfs.GetDatanodeReportResponseProto),
+        MethodDescriptor("getDatanodeStorageReport", 28, hadoop.hdfs.GetDatanodeStorageReportRequestProto, hadoop.hdfs.GetDatanodeStorageReportResponseProto),
+        MethodDescriptor("getPreferredBlockSize", 29, hadoop.hdfs.GetPreferredBlockSizeRequestProto, hadoop.hdfs.GetPreferredBlockSizeResponseProto),
+        MethodDescriptor("setSafeMode", 30, hadoop.hdfs.SetSafeModeRequestProto, hadoop.hdfs.SetSafeModeResponseProto),
+        MethodDescriptor("saveNamespace", 31, hadoop.hdfs.SaveNamespaceRequestProto, hadoop.hdfs.SaveNamespaceResponseProto),
+        MethodDescriptor("rollEdits", 32, hadoop.hdfs.RollEditsRequestProto, hadoop.hdfs.RollEditsResponseProto),
+        MethodDescriptor("restoreFailedStorage", 33, hadoop.hdfs.RestoreFailedStorageRequestProto, hadoop.hdfs.RestoreFailedStorageResponseProto),
+        MethodDescriptor("refreshNodes", 34, hadoop.hdfs.RefreshNodesRequestProto, hadoop.hdfs.RefreshNodesResponseProto),
+        MethodDescriptor("finalizeUpgrade", 35, hadoop.hdfs.FinalizeUpgradeRequestProto, hadoop.hdfs.FinalizeUpgradeResponseProto),
+        MethodDescriptor("rollingUpgrade", 36, hadoop.hdfs.RollingUpgradeRequestProto, hadoop.hdfs.RollingUpgradeResponseProto),
+        MethodDescriptor("listCorruptFileBlocks", 37, hadoop.hdfs.ListCorruptFileBlocksRequestProto, hadoop.hdfs.ListCorruptFileBlocksResponseProto),
+        MethodDescriptor("metaSave", 38, hadoop.hdfs.MetaSaveRequestProto, hadoop.hdfs.MetaSaveResponseProto),
+        MethodDescriptor("getFileInfo", 39, hadoop.hdfs.GetFileInfoRequestProto, hadoop.hdfs.GetFileInfoResponseProto),
+        MethodDescriptor("addCacheDirective", 40, hadoop.hdfs.AddCacheDirectiveRequestProto, hadoop.hdfs.AddCacheDirectiveResponseProto),
+        MethodDescriptor("modifyCacheDirective", 41, hadoop.hdfs.ModifyCacheDirectiveRequestProto, hadoop.hdfs.ModifyCacheDirectiveResponseProto),
+        MethodDescriptor("removeCacheDirective", 42, hadoop.hdfs.RemoveCacheDirectiveRequestProto, hadoop.hdfs.RemoveCacheDirectiveResponseProto),
+        MethodDescriptor("listCacheDirectives", 43, hadoop.hdfs.ListCacheDirectivesRequestProto, hadoop.hdfs.ListCacheDirectivesResponseProto),
+        MethodDescriptor("addCachePool", 44, hadoop.hdfs.AddCachePoolRequestProto, hadoop.hdfs.AddCachePoolResponseProto),
+        MethodDescriptor("modifyCachePool", 45, hadoop.hdfs.ModifyCachePoolRequestProto, hadoop.hdfs.ModifyCachePoolResponseProto),
+        MethodDescriptor("removeCachePool", 46, hadoop.hdfs.RemoveCachePoolRequestProto, hadoop.hdfs.RemoveCachePoolResponseProto),
+        MethodDescriptor("listCachePools", 47, hadoop.hdfs.ListCachePoolsRequestProto, hadoop.hdfs.ListCachePoolsResponseProto),
+        MethodDescriptor("getFileLinkInfo", 48, hadoop.hdfs.GetFileLinkInfoRequestProto, hadoop.hdfs.GetFileLinkInfoResponseProto),
+        MethodDescriptor("getContentSummary", 49, hadoop.hdfs.GetContentSummaryRequestProto, hadoop.hdfs.GetContentSummaryResponseProto),
+        MethodDescriptor("setQuota", 50, hadoop.hdfs.SetQuotaRequestProto, hadoop.hdfs.SetQuotaResponseProto),
+        MethodDescriptor("fsync", 51, hadoop.hdfs.FsyncRequestProto, hadoop.hdfs.FsyncResponseProto),
+        MethodDescriptor("setTimes", 52, hadoop.hdfs.SetTimesRequestProto, hadoop.hdfs.SetTimesResponseProto),
+        MethodDescriptor("createSymlink", 53, hadoop.hdfs.CreateSymlinkRequestProto, hadoop.hdfs.CreateSymlinkResponseProto),
+        MethodDescriptor("getLinkTarget", 54, hadoop.hdfs.GetLinkTargetRequestProto, hadoop.hdfs.GetLinkTargetResponseProto),
+        MethodDescriptor("updateBlockForPipeline", 55, hadoop.hdfs.UpdateBlockForPipelineRequestProto, hadoop.hdfs.UpdateBlockForPipelineResponseProto),
+        MethodDescriptor("updatePipeline", 56, hadoop.hdfs.UpdatePipelineRequestProto, hadoop.hdfs.UpdatePipelineResponseProto),
+        MethodDescriptor("getDelegationToken", 57, hadoop.common.GetDelegationTokenRequestProto, hadoop.common.GetDelegationTokenResponseProto),
+        MethodDescriptor("renewDelegationToken", 58, hadoop.common.RenewDelegationTokenRequestProto, hadoop.common.RenewDelegationTokenResponseProto),
+        MethodDescriptor("cancelDelegationToken", 59, hadoop.common.CancelDelegationTokenRequestProto, hadoop.common.CancelDelegationTokenResponseProto),
+        MethodDescriptor("setBalancerBandwidth", 60, hadoop.hdfs.SetBalancerBandwidthRequestProto, hadoop.hdfs.SetBalancerBandwidthResponseProto),
+        MethodDescriptor("getDataEncryptionKey", 61, hadoop.hdfs.GetDataEncryptionKeyRequestProto, hadoop.hdfs.GetDataEncryptionKeyResponseProto),
+        MethodDescriptor("createSnapshot", 62, hadoop.hdfs.CreateSnapshotRequestProto, hadoop.hdfs.CreateSnapshotResponseProto),
+        MethodDescriptor("renameSnapshot", 63, hadoop.hdfs.RenameSnapshotRequestProto, hadoop.hdfs.RenameSnapshotResponseProto),
+        MethodDescriptor("allowSnapshot", 64, hadoop.hdfs.AllowSnapshotRequestProto, hadoop.hdfs.AllowSnapshotResponseProto),
+        MethodDescriptor("disallowSnapshot", 65, hadoop.hdfs.DisallowSnapshotRequestProto, hadoop.hdfs.DisallowSnapshotResponseProto),
+        MethodDescriptor("getSnapshottableDirListing", 66, hadoop.hdfs.GetSnapshottableDirListingRequestProto, hadoop.hdfs.GetSnapshottableDirListingResponseProto),
+        MethodDescriptor("deleteSnapshot", 67, hadoop.hdfs.DeleteSnapshotRequestProto, hadoop.hdfs.DeleteSnapshotResponseProto),
+        MethodDescriptor("getSnapshotDiffReport", 68, hadoop.hdfs.GetSnapshotDiffReportRequestProto, hadoop.hdfs.GetSnapshotDiffReportResponseProto),
+        MethodDescriptor("isFileClosed", 69, hadoop.hdfs.IsFileClosedRequestProto, hadoop.hdfs.IsFileClosedResponseProto),
+        MethodDescriptor("modifyAclEntries", 70, hadoop.hdfs.ModifyAclEntriesRequestProto, hadoop.hdfs.ModifyAclEntriesResponseProto),
+        MethodDescriptor("removeAclEntries", 71, hadoop.hdfs.RemoveAclEntriesRequestProto, hadoop.hdfs.RemoveAclEntriesResponseProto),
+        MethodDescriptor("removeDefaultAcl", 72, hadoop.hdfs.RemoveDefaultAclRequestProto, hadoop.hdfs.RemoveDefaultAclResponseProto),
+        MethodDescriptor("removeAcl", 73, hadoop.hdfs.RemoveAclRequestProto, hadoop.hdfs.RemoveAclResponseProto),
+        MethodDescriptor("setAcl", 74, hadoop.hdfs.SetAclRequestProto, hadoop.hdfs.SetAclResponseProto),
+        MethodDescriptor("getAclStatus", 75, hadoop.hdfs.GetAclStatusRequestProto, hadoop.hdfs.GetAclStatusResponseProto),
+        MethodDescriptor("setXAttr", 76, hadoop.hdfs.SetXAttrRequestProto, hadoop.hdfs.SetXAttrResponseProto),
+        MethodDescriptor("getXAttrs", 77, hadoop.hdfs.GetXAttrsRequestProto, hadoop.hdfs.GetXAttrsResponseProto),
+        MethodDescriptor("listXAttrs", 78, hadoop.hdfs.ListXAttrsRequestProto, hadoop.hdfs.ListXAttrsResponseProto),
+        MethodDescriptor("removeXAttr", 79, hadoop.hdfs.RemoveXAttrRequestProto, hadoop.hdfs.RemoveXAttrResponseProto),
+        MethodDescriptor("checkAccess", 80, hadoop.hdfs.CheckAccessRequestProto, hadoop.hdfs.CheckAccessResponseProto),
+        MethodDescriptor("createEncryptionZone", 81, hadoop.hdfs.CreateEncryptionZoneRequestProto, hadoop.hdfs.CreateEncryptionZoneResponseProto),
+        MethodDescriptor("listEncryptionZones", 82, hadoop.hdfs.ListEncryptionZonesRequestProto, hadoop.hdfs.ListEncryptionZonesResponseProto),
+        MethodDescriptor("getEZForPath", 83, hadoop.hdfs.GetEZForPathRequestProto, hadoop.hdfs.GetEZForPathResponseProto),
+        MethodDescriptor("getCurrentEditLogTxid", 84, hadoop.hdfs.GetCurrentEditLogTxidRequestProto, hadoop.hdfs.GetCurrentEditLogTxidResponseProto),
+        MethodDescriptor("getEditsFromTxid", 85, hadoop.hdfs.GetEditsFromTxidRequestProto, hadoop.hdfs.GetEditsFromTxidResponseProto),
+        MethodDescriptor("getQuotaUsage", 86, hadoop.hdfs.GetQuotaUsageRequestProto, hadoop.hdfs.GetQuotaUsageResponseProto),
+        MethodDescriptor("listOpenFiles", 87, hadoop.hdfs.ListOpenFilesRequestProto, hadoop.hdfs.ListOpenFilesResponseProto),
+        MethodDescriptor("msync", 88, hadoop.hdfs.MsyncRequestProto, hadoop.hdfs.MsyncResponseProto),
+        MethodDescriptor("getHAServiceState", 89, hadoop.hdfs.HAServiceStateRequestProto, hadoop.hdfs.HAServiceStateResponseProto)
     ] # const _ClientNamenodeProtocol_methods
 const _ClientNamenodeProtocol_desc = ServiceDescriptor("hadoop.hdfs.ClientNamenodeProtocol", 1, _ClientNamenodeProtocol_methods)
 
@@ -1131,235 +1236,253 @@ setReplication(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcCon
 setStoragePolicy(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetStoragePolicyRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[6], controller, inp, done)
 setStoragePolicy(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetStoragePolicyRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[6], controller, inp)
 
-getStoragePolicies(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetStoragePoliciesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[7], controller, inp, done)
-getStoragePolicies(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetStoragePoliciesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[7], controller, inp)
+unsetStoragePolicy(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.UnsetStoragePolicyRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[7], controller, inp, done)
+unsetStoragePolicy(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.UnsetStoragePolicyRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[7], controller, inp)
 
-setPermission(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetPermissionRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[8], controller, inp, done)
-setPermission(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetPermissionRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[8], controller, inp)
+getStoragePolicy(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetStoragePolicyRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[8], controller, inp, done)
+getStoragePolicy(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetStoragePolicyRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[8], controller, inp)
 
-setOwner(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetOwnerRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[9], controller, inp, done)
-setOwner(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetOwnerRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[9], controller, inp)
+getStoragePolicies(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetStoragePoliciesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[9], controller, inp, done)
+getStoragePolicies(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetStoragePoliciesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[9], controller, inp)
 
-abandonBlock(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AbandonBlockRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[10], controller, inp, done)
-abandonBlock(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AbandonBlockRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[10], controller, inp)
+setPermission(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetPermissionRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[10], controller, inp, done)
+setPermission(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetPermissionRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[10], controller, inp)
 
-addBlock(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddBlockRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[11], controller, inp, done)
-addBlock(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddBlockRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[11], controller, inp)
+setOwner(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetOwnerRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[11], controller, inp, done)
+setOwner(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetOwnerRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[11], controller, inp)
 
-getAdditionalDatanode(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetAdditionalDatanodeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[12], controller, inp, done)
-getAdditionalDatanode(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetAdditionalDatanodeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[12], controller, inp)
+abandonBlock(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AbandonBlockRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[12], controller, inp, done)
+abandonBlock(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AbandonBlockRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[12], controller, inp)
 
-complete(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CompleteRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[13], controller, inp, done)
-complete(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CompleteRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[13], controller, inp)
+addBlock(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddBlockRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[13], controller, inp, done)
+addBlock(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddBlockRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[13], controller, inp)
 
-reportBadBlocks(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ReportBadBlocksRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[14], controller, inp, done)
-reportBadBlocks(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ReportBadBlocksRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[14], controller, inp)
+getAdditionalDatanode(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetAdditionalDatanodeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[14], controller, inp, done)
+getAdditionalDatanode(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetAdditionalDatanodeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[14], controller, inp)
 
-concat(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ConcatRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[15], controller, inp, done)
-concat(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ConcatRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[15], controller, inp)
+complete(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CompleteRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[15], controller, inp, done)
+complete(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CompleteRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[15], controller, inp)
 
-truncate(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.TruncateRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[16], controller, inp, done)
-truncate(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.TruncateRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[16], controller, inp)
+reportBadBlocks(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ReportBadBlocksRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[16], controller, inp, done)
+reportBadBlocks(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ReportBadBlocksRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[16], controller, inp)
 
-rename(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenameRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[17], controller, inp, done)
-rename(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenameRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[17], controller, inp)
+concat(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ConcatRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[17], controller, inp, done)
+concat(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ConcatRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[17], controller, inp)
 
-rename2(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.Rename2RequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[18], controller, inp, done)
-rename2(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.Rename2RequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[18], controller, inp)
+truncate(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.TruncateRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[18], controller, inp, done)
+truncate(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.TruncateRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[18], controller, inp)
 
-delete(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.DeleteRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[19], controller, inp, done)
-delete(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.DeleteRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[19], controller, inp)
+rename(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenameRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[19], controller, inp, done)
+rename(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenameRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[19], controller, inp)
 
-mkdirs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.MkdirsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[20], controller, inp, done)
-mkdirs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.MkdirsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[20], controller, inp)
+rename2(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.Rename2RequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[20], controller, inp, done)
+rename2(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.Rename2RequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[20], controller, inp)
 
-getListing(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetListingRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[21], controller, inp, done)
-getListing(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetListingRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[21], controller, inp)
+delete(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.DeleteRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[21], controller, inp, done)
+delete(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.DeleteRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[21], controller, inp)
 
-renewLease(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenewLeaseRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[22], controller, inp, done)
-renewLease(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenewLeaseRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[22], controller, inp)
+mkdirs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.MkdirsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[22], controller, inp, done)
+mkdirs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.MkdirsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[22], controller, inp)
 
-recoverLease(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RecoverLeaseRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[23], controller, inp, done)
-recoverLease(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RecoverLeaseRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[23], controller, inp)
+getListing(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetListingRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[23], controller, inp, done)
+getListing(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetListingRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[23], controller, inp)
 
-getFsStats(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFsStatusRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[24], controller, inp, done)
-getFsStats(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFsStatusRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[24], controller, inp)
+renewLease(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenewLeaseRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[24], controller, inp, done)
+renewLease(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenewLeaseRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[24], controller, inp)
 
-getDatanodeReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDatanodeReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[25], controller, inp, done)
-getDatanodeReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDatanodeReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[25], controller, inp)
+recoverLease(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RecoverLeaseRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[25], controller, inp, done)
+recoverLease(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RecoverLeaseRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[25], controller, inp)
 
-getDatanodeStorageReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDatanodeStorageReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[26], controller, inp, done)
-getDatanodeStorageReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDatanodeStorageReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[26], controller, inp)
+getFsStats(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFsStatusRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[26], controller, inp, done)
+getFsStats(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFsStatusRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[26], controller, inp)
 
-getPreferredBlockSize(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetPreferredBlockSizeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[27], controller, inp, done)
-getPreferredBlockSize(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetPreferredBlockSizeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[27], controller, inp)
+getDatanodeReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDatanodeReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[27], controller, inp, done)
+getDatanodeReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDatanodeReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[27], controller, inp)
 
-setSafeMode(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetSafeModeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[28], controller, inp, done)
-setSafeMode(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetSafeModeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[28], controller, inp)
+getDatanodeStorageReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDatanodeStorageReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[28], controller, inp, done)
+getDatanodeStorageReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDatanodeStorageReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[28], controller, inp)
 
-saveNamespace(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SaveNamespaceRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[29], controller, inp, done)
-saveNamespace(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SaveNamespaceRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[29], controller, inp)
+getPreferredBlockSize(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetPreferredBlockSizeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[29], controller, inp, done)
+getPreferredBlockSize(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetPreferredBlockSizeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[29], controller, inp)
 
-rollEdits(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RollEditsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[30], controller, inp, done)
-rollEdits(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RollEditsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[30], controller, inp)
+setSafeMode(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetSafeModeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[30], controller, inp, done)
+setSafeMode(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetSafeModeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[30], controller, inp)
 
-restoreFailedStorage(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RestoreFailedStorageRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[31], controller, inp, done)
-restoreFailedStorage(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RestoreFailedStorageRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[31], controller, inp)
+saveNamespace(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SaveNamespaceRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[31], controller, inp, done)
+saveNamespace(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SaveNamespaceRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[31], controller, inp)
 
-refreshNodes(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RefreshNodesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[32], controller, inp, done)
-refreshNodes(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RefreshNodesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[32], controller, inp)
+rollEdits(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RollEditsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[32], controller, inp, done)
+rollEdits(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RollEditsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[32], controller, inp)
 
-finalizeUpgrade(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.FinalizeUpgradeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[33], controller, inp, done)
-finalizeUpgrade(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.FinalizeUpgradeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[33], controller, inp)
+restoreFailedStorage(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RestoreFailedStorageRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[33], controller, inp, done)
+restoreFailedStorage(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RestoreFailedStorageRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[33], controller, inp)
 
-rollingUpgrade(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RollingUpgradeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[34], controller, inp, done)
-rollingUpgrade(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RollingUpgradeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[34], controller, inp)
+refreshNodes(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RefreshNodesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[34], controller, inp, done)
+refreshNodes(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RefreshNodesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[34], controller, inp)
 
-listCorruptFileBlocks(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCorruptFileBlocksRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[35], controller, inp, done)
-listCorruptFileBlocks(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCorruptFileBlocksRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[35], controller, inp)
+finalizeUpgrade(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.FinalizeUpgradeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[35], controller, inp, done)
+finalizeUpgrade(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.FinalizeUpgradeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[35], controller, inp)
 
-metaSave(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.MetaSaveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[36], controller, inp, done)
-metaSave(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.MetaSaveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[36], controller, inp)
+rollingUpgrade(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RollingUpgradeRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[36], controller, inp, done)
+rollingUpgrade(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RollingUpgradeRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[36], controller, inp)
 
-getFileInfo(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFileInfoRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[37], controller, inp, done)
-getFileInfo(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFileInfoRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[37], controller, inp)
+listCorruptFileBlocks(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCorruptFileBlocksRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[37], controller, inp, done)
+listCorruptFileBlocks(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCorruptFileBlocksRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[37], controller, inp)
 
-addCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[38], controller, inp, done)
-addCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[38], controller, inp)
+metaSave(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.MetaSaveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[38], controller, inp, done)
+metaSave(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.MetaSaveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[38], controller, inp)
 
-modifyCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[39], controller, inp, done)
-modifyCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[39], controller, inp)
+getFileInfo(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFileInfoRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[39], controller, inp, done)
+getFileInfo(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFileInfoRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[39], controller, inp)
 
-removeCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[40], controller, inp, done)
-removeCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[40], controller, inp)
+addCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[40], controller, inp, done)
+addCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[40], controller, inp)
 
-listCacheDirectives(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCacheDirectivesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[41], controller, inp, done)
-listCacheDirectives(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCacheDirectivesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[41], controller, inp)
+modifyCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[41], controller, inp, done)
+modifyCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[41], controller, inp)
 
-addCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[42], controller, inp, done)
-addCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[42], controller, inp)
+removeCacheDirective(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveCacheDirectiveRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[42], controller, inp, done)
+removeCacheDirective(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveCacheDirectiveRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[42], controller, inp)
 
-modifyCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[43], controller, inp, done)
-modifyCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[43], controller, inp)
+listCacheDirectives(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCacheDirectivesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[43], controller, inp, done)
+listCacheDirectives(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCacheDirectivesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[43], controller, inp)
 
-removeCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[44], controller, inp, done)
-removeCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[44], controller, inp)
+addCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[44], controller, inp, done)
+addCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AddCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[44], controller, inp)
 
-listCachePools(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCachePoolsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[45], controller, inp, done)
-listCachePools(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCachePoolsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[45], controller, inp)
+modifyCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[45], controller, inp, done)
+modifyCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[45], controller, inp)
 
-getFileLinkInfo(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFileLinkInfoRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[46], controller, inp, done)
-getFileLinkInfo(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFileLinkInfoRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[46], controller, inp)
+removeCachePool(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveCachePoolRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[46], controller, inp, done)
+removeCachePool(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveCachePoolRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[46], controller, inp)
 
-getContentSummary(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetContentSummaryRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[47], controller, inp, done)
-getContentSummary(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetContentSummaryRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[47], controller, inp)
+listCachePools(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCachePoolsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[47], controller, inp, done)
+listCachePools(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListCachePoolsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[47], controller, inp)
 
-setQuota(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetQuotaRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[48], controller, inp, done)
-setQuota(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetQuotaRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[48], controller, inp)
+getFileLinkInfo(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFileLinkInfoRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[48], controller, inp, done)
+getFileLinkInfo(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetFileLinkInfoRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[48], controller, inp)
 
-fsync(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.FsyncRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[49], controller, inp, done)
-fsync(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.FsyncRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[49], controller, inp)
+getContentSummary(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetContentSummaryRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[49], controller, inp, done)
+getContentSummary(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetContentSummaryRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[49], controller, inp)
 
-setTimes(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetTimesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[50], controller, inp, done)
-setTimes(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetTimesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[50], controller, inp)
+setQuota(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetQuotaRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[50], controller, inp, done)
+setQuota(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetQuotaRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[50], controller, inp)
 
-createSymlink(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateSymlinkRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[51], controller, inp, done)
-createSymlink(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateSymlinkRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[51], controller, inp)
+fsync(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.FsyncRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[51], controller, inp, done)
+fsync(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.FsyncRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[51], controller, inp)
 
-getLinkTarget(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetLinkTargetRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[52], controller, inp, done)
-getLinkTarget(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetLinkTargetRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[52], controller, inp)
+setTimes(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetTimesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[52], controller, inp, done)
+setTimes(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetTimesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[52], controller, inp)
 
-updateBlockForPipeline(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.UpdateBlockForPipelineRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[53], controller, inp, done)
-updateBlockForPipeline(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.UpdateBlockForPipelineRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[53], controller, inp)
+createSymlink(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateSymlinkRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[53], controller, inp, done)
+createSymlink(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateSymlinkRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[53], controller, inp)
 
-updatePipeline(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.UpdatePipelineRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[54], controller, inp, done)
-updatePipeline(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.UpdatePipelineRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[54], controller, inp)
+getLinkTarget(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetLinkTargetRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[54], controller, inp, done)
+getLinkTarget(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetLinkTargetRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[54], controller, inp)
 
-getDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.common.GetDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[55], controller, inp, done)
-getDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.common.GetDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[55], controller, inp)
+updateBlockForPipeline(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.UpdateBlockForPipelineRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[55], controller, inp, done)
+updateBlockForPipeline(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.UpdateBlockForPipelineRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[55], controller, inp)
 
-renewDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.common.RenewDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[56], controller, inp, done)
-renewDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.common.RenewDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[56], controller, inp)
+updatePipeline(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.UpdatePipelineRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[56], controller, inp, done)
+updatePipeline(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.UpdatePipelineRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[56], controller, inp)
 
-cancelDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.common.CancelDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[57], controller, inp, done)
-cancelDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.common.CancelDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[57], controller, inp)
+getDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.common.GetDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[57], controller, inp, done)
+getDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.common.GetDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[57], controller, inp)
 
-setBalancerBandwidth(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetBalancerBandwidthRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[58], controller, inp, done)
-setBalancerBandwidth(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetBalancerBandwidthRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[58], controller, inp)
+renewDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.common.RenewDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[58], controller, inp, done)
+renewDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.common.RenewDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[58], controller, inp)
 
-getDataEncryptionKey(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDataEncryptionKeyRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[59], controller, inp, done)
-getDataEncryptionKey(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDataEncryptionKeyRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[59], controller, inp)
+cancelDelegationToken(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.common.CancelDelegationTokenRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[59], controller, inp, done)
+cancelDelegationToken(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.common.CancelDelegationTokenRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[59], controller, inp)
 
-createSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[60], controller, inp, done)
-createSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[60], controller, inp)
+setBalancerBandwidth(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetBalancerBandwidthRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[60], controller, inp, done)
+setBalancerBandwidth(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetBalancerBandwidthRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[60], controller, inp)
 
-renameSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenameSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[61], controller, inp, done)
-renameSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenameSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[61], controller, inp)
+getDataEncryptionKey(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDataEncryptionKeyRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[61], controller, inp, done)
+getDataEncryptionKey(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetDataEncryptionKeyRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[61], controller, inp)
 
-allowSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AllowSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[62], controller, inp, done)
-allowSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AllowSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[62], controller, inp)
+createSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[62], controller, inp, done)
+createSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[62], controller, inp)
 
-disallowSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.DisallowSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[63], controller, inp, done)
-disallowSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.DisallowSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[63], controller, inp)
+renameSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenameSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[63], controller, inp, done)
+renameSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RenameSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[63], controller, inp)
 
-getSnapshottableDirListing(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetSnapshottableDirListingRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[64], controller, inp, done)
-getSnapshottableDirListing(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetSnapshottableDirListingRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[64], controller, inp)
+allowSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.AllowSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[64], controller, inp, done)
+allowSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.AllowSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[64], controller, inp)
 
-deleteSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.DeleteSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[65], controller, inp, done)
-deleteSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.DeleteSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[65], controller, inp)
+disallowSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.DisallowSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[65], controller, inp, done)
+disallowSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.DisallowSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[65], controller, inp)
 
-getSnapshotDiffReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetSnapshotDiffReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[66], controller, inp, done)
-getSnapshotDiffReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetSnapshotDiffReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[66], controller, inp)
+getSnapshottableDirListing(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetSnapshottableDirListingRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[66], controller, inp, done)
+getSnapshottableDirListing(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetSnapshottableDirListingRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[66], controller, inp)
 
-isFileClosed(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.IsFileClosedRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[67], controller, inp, done)
-isFileClosed(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.IsFileClosedRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[67], controller, inp)
+deleteSnapshot(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.DeleteSnapshotRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[67], controller, inp, done)
+deleteSnapshot(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.DeleteSnapshotRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[67], controller, inp)
 
-modifyAclEntries(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyAclEntriesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[68], controller, inp, done)
-modifyAclEntries(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyAclEntriesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[68], controller, inp)
+getSnapshotDiffReport(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetSnapshotDiffReportRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[68], controller, inp, done)
+getSnapshotDiffReport(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetSnapshotDiffReportRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[68], controller, inp)
 
-removeAclEntries(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveAclEntriesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[69], controller, inp, done)
-removeAclEntries(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveAclEntriesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[69], controller, inp)
+isFileClosed(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.IsFileClosedRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[69], controller, inp, done)
+isFileClosed(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.IsFileClosedRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[69], controller, inp)
 
-removeDefaultAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveDefaultAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[70], controller, inp, done)
-removeDefaultAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveDefaultAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[70], controller, inp)
+modifyAclEntries(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyAclEntriesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[70], controller, inp, done)
+modifyAclEntries(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ModifyAclEntriesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[70], controller, inp)
 
-removeAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[71], controller, inp, done)
-removeAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[71], controller, inp)
+removeAclEntries(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveAclEntriesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[71], controller, inp, done)
+removeAclEntries(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveAclEntriesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[71], controller, inp)
 
-setAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[72], controller, inp, done)
-setAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[72], controller, inp)
+removeDefaultAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveDefaultAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[72], controller, inp, done)
+removeDefaultAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveDefaultAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[72], controller, inp)
 
-getAclStatus(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetAclStatusRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[73], controller, inp, done)
-getAclStatus(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetAclStatusRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[73], controller, inp)
+removeAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[73], controller, inp, done)
+removeAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[73], controller, inp)
 
-setXAttr(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetXAttrRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[74], controller, inp, done)
-setXAttr(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetXAttrRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[74], controller, inp)
+setAcl(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetAclRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[74], controller, inp, done)
+setAcl(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetAclRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[74], controller, inp)
 
-getXAttrs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetXAttrsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[75], controller, inp, done)
-getXAttrs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetXAttrsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[75], controller, inp)
+getAclStatus(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetAclStatusRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[75], controller, inp, done)
+getAclStatus(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetAclStatusRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[75], controller, inp)
 
-listXAttrs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListXAttrsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[76], controller, inp, done)
-listXAttrs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListXAttrsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[76], controller, inp)
+setXAttr(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetXAttrRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[76], controller, inp, done)
+setXAttr(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.SetXAttrRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[76], controller, inp)
 
-removeXAttr(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveXAttrRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[77], controller, inp, done)
-removeXAttr(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveXAttrRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[77], controller, inp)
+getXAttrs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetXAttrsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[77], controller, inp, done)
+getXAttrs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetXAttrsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[77], controller, inp)
 
-checkAccess(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CheckAccessRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[78], controller, inp, done)
-checkAccess(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CheckAccessRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[78], controller, inp)
+listXAttrs(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListXAttrsRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[78], controller, inp, done)
+listXAttrs(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListXAttrsRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[78], controller, inp)
 
-createEncryptionZone(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateEncryptionZoneRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[79], controller, inp, done)
-createEncryptionZone(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateEncryptionZoneRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[79], controller, inp)
+removeXAttr(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveXAttrRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[79], controller, inp, done)
+removeXAttr(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.RemoveXAttrRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[79], controller, inp)
 
-listEncryptionZones(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListEncryptionZonesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[80], controller, inp, done)
-listEncryptionZones(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListEncryptionZonesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[80], controller, inp)
+checkAccess(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CheckAccessRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[80], controller, inp, done)
+checkAccess(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CheckAccessRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[80], controller, inp)
 
-getEZForPath(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetEZForPathRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[81], controller, inp, done)
-getEZForPath(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetEZForPathRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[81], controller, inp)
+createEncryptionZone(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateEncryptionZoneRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[81], controller, inp, done)
+createEncryptionZone(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.CreateEncryptionZoneRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[81], controller, inp)
 
-getCurrentEditLogTxid(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetCurrentEditLogTxidRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[82], controller, inp, done)
-getCurrentEditLogTxid(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetCurrentEditLogTxidRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[82], controller, inp)
+listEncryptionZones(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListEncryptionZonesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[82], controller, inp, done)
+listEncryptionZones(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListEncryptionZonesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[82], controller, inp)
 
-getEditsFromTxid(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetEditsFromTxidRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[83], controller, inp, done)
-getEditsFromTxid(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetEditsFromTxidRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[83], controller, inp)
+getEZForPath(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetEZForPathRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[83], controller, inp, done)
+getEZForPath(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetEZForPathRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[83], controller, inp)
 
-export CreateFlagProto, DatanodeReportTypeProto, SafeModeActionProto, RollingUpgradeActionProto, CacheFlagProto, GetBlockLocationsRequestProto, GetBlockLocationsResponseProto, GetServerDefaultsRequestProto, GetServerDefaultsResponseProto, CreateRequestProto, CreateResponseProto, AppendRequestProto, AppendResponseProto, SetReplicationRequestProto, SetReplicationResponseProto, SetStoragePolicyRequestProto, SetStoragePolicyResponseProto, GetStoragePoliciesRequestProto, GetStoragePoliciesResponseProto, SetPermissionRequestProto, SetPermissionResponseProto, SetOwnerRequestProto, SetOwnerResponseProto, AbandonBlockRequestProto, AbandonBlockResponseProto, AddBlockRequestProto, AddBlockResponseProto, GetAdditionalDatanodeRequestProto, GetAdditionalDatanodeResponseProto, CompleteRequestProto, CompleteResponseProto, ReportBadBlocksRequestProto, ReportBadBlocksResponseProto, ConcatRequestProto, ConcatResponseProto, TruncateRequestProto, TruncateResponseProto, RenameRequestProto, RenameResponseProto, Rename2RequestProto, Rename2ResponseProto, DeleteRequestProto, DeleteResponseProto, MkdirsRequestProto, MkdirsResponseProto, GetListingRequestProto, GetListingResponseProto, GetSnapshottableDirListingRequestProto, GetSnapshottableDirListingResponseProto, GetSnapshotDiffReportRequestProto, GetSnapshotDiffReportResponseProto, RenewLeaseRequestProto, RenewLeaseResponseProto, RecoverLeaseRequestProto, RecoverLeaseResponseProto, GetFsStatusRequestProto, GetFsStatsResponseProto, GetDatanodeReportRequestProto, GetDatanodeReportResponseProto, GetDatanodeStorageReportRequestProto, DatanodeStorageReportProto, GetDatanodeStorageReportResponseProto, GetPreferredBlockSizeRequestProto, GetPreferredBlockSizeResponseProto, SetSafeModeRequestProto, SetSafeModeResponseProto, SaveNamespaceRequestProto, SaveNamespaceResponseProto, RollEditsRequestProto, RollEditsResponseProto, RestoreFailedStorageRequestProto, RestoreFailedStorageResponseProto, RefreshNodesRequestProto, RefreshNodesResponseProto, FinalizeUpgradeRequestProto, FinalizeUpgradeResponseProto, RollingUpgradeRequestProto, RollingUpgradeInfoProto, RollingUpgradeResponseProto, ListCorruptFileBlocksRequestProto, ListCorruptFileBlocksResponseProto, MetaSaveRequestProto, MetaSaveResponseProto, GetFileInfoRequestProto, GetFileInfoResponseProto, IsFileClosedRequestProto, IsFileClosedResponseProto, CacheDirectiveInfoProto, CacheDirectiveInfoExpirationProto, CacheDirectiveStatsProto, AddCacheDirectiveRequestProto, AddCacheDirectiveResponseProto, ModifyCacheDirectiveRequestProto, ModifyCacheDirectiveResponseProto, RemoveCacheDirectiveRequestProto, RemoveCacheDirectiveResponseProto, ListCacheDirectivesRequestProto, CacheDirectiveEntryProto, ListCacheDirectivesResponseProto, CachePoolInfoProto, CachePoolStatsProto, AddCachePoolRequestProto, AddCachePoolResponseProto, ModifyCachePoolRequestProto, ModifyCachePoolResponseProto, RemoveCachePoolRequestProto, RemoveCachePoolResponseProto, ListCachePoolsRequestProto, ListCachePoolsResponseProto, CachePoolEntryProto, GetFileLinkInfoRequestProto, GetFileLinkInfoResponseProto, GetContentSummaryRequestProto, GetContentSummaryResponseProto, SetQuotaRequestProto, SetQuotaResponseProto, FsyncRequestProto, FsyncResponseProto, SetTimesRequestProto, SetTimesResponseProto, CreateSymlinkRequestProto, CreateSymlinkResponseProto, GetLinkTargetRequestProto, GetLinkTargetResponseProto, UpdateBlockForPipelineRequestProto, UpdateBlockForPipelineResponseProto, UpdatePipelineRequestProto, UpdatePipelineResponseProto, SetBalancerBandwidthRequestProto, SetBalancerBandwidthResponseProto, GetDataEncryptionKeyRequestProto, GetDataEncryptionKeyResponseProto, CreateSnapshotRequestProto, CreateSnapshotResponseProto, RenameSnapshotRequestProto, RenameSnapshotResponseProto, AllowSnapshotRequestProto, AllowSnapshotResponseProto, DisallowSnapshotRequestProto, DisallowSnapshotResponseProto, DeleteSnapshotRequestProto, DeleteSnapshotResponseProto, CheckAccessRequestProto, CheckAccessResponseProto, GetCurrentEditLogTxidRequestProto, GetCurrentEditLogTxidResponseProto, GetEditsFromTxidRequestProto, GetEditsFromTxidResponseProto, ClientNamenodeProtocol, ClientNamenodeProtocolStub, ClientNamenodeProtocolBlockingStub, getBlockLocations, getServerDefaults, create, append, setReplication, setStoragePolicy, getStoragePolicies, setPermission, setOwner, abandonBlock, addBlock, getAdditionalDatanode, complete, reportBadBlocks, concat, truncate, rename, rename2, delete, mkdirs, getListing, renewLease, recoverLease, getFsStats, getDatanodeReport, getDatanodeStorageReport, getPreferredBlockSize, setSafeMode, saveNamespace, rollEdits, restoreFailedStorage, refreshNodes, finalizeUpgrade, rollingUpgrade, listCorruptFileBlocks, metaSave, getFileInfo, addCacheDirective, modifyCacheDirective, removeCacheDirective, listCacheDirectives, addCachePool, modifyCachePool, removeCachePool, listCachePools, getFileLinkInfo, getContentSummary, setQuota, fsync, setTimes, createSymlink, getLinkTarget, updateBlockForPipeline, updatePipeline, getDelegationToken, renewDelegationToken, cancelDelegationToken, setBalancerBandwidth, getDataEncryptionKey, createSnapshot, renameSnapshot, allowSnapshot, disallowSnapshot, getSnapshottableDirListing, deleteSnapshot, getSnapshotDiffReport, isFileClosed, modifyAclEntries, removeAclEntries, removeDefaultAcl, removeAcl, setAcl, getAclStatus, setXAttr, getXAttrs, listXAttrs, removeXAttr, checkAccess, createEncryptionZone, listEncryptionZones, getEZForPath, getCurrentEditLogTxid, getEditsFromTxid
+getCurrentEditLogTxid(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetCurrentEditLogTxidRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[84], controller, inp, done)
+getCurrentEditLogTxid(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetCurrentEditLogTxidRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[84], controller, inp)
+
+getEditsFromTxid(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetEditsFromTxidRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[85], controller, inp, done)
+getEditsFromTxid(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetEditsFromTxidRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[85], controller, inp)
+
+getQuotaUsage(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetQuotaUsageRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[86], controller, inp, done)
+getQuotaUsage(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.GetQuotaUsageRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[86], controller, inp)
+
+listOpenFiles(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListOpenFilesRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[87], controller, inp, done)
+listOpenFiles(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.ListOpenFilesRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[87], controller, inp)
+
+msync(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.MsyncRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[88], controller, inp, done)
+msync(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.MsyncRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[88], controller, inp)
+
+getHAServiceState(stub::ClientNamenodeProtocolStub, controller::ProtoRpcController, inp::hadoop.hdfs.HAServiceStateRequestProto, done::Function) = call_method(stub.impl, _ClientNamenodeProtocol_methods[89], controller, inp, done)
+getHAServiceState(stub::ClientNamenodeProtocolBlockingStub, controller::ProtoRpcController, inp::hadoop.hdfs.HAServiceStateRequestProto) = call_method(stub.impl, _ClientNamenodeProtocol_methods[89], controller, inp)
+
+export CreateFlagProto, AddBlockFlagProto, DatanodeReportTypeProto, SafeModeActionProto, RollingUpgradeActionProto, CacheFlagProto, GetBlockLocationsRequestProto, GetBlockLocationsResponseProto, GetServerDefaultsRequestProto, GetServerDefaultsResponseProto, CreateRequestProto, CreateResponseProto, AppendRequestProto, AppendResponseProto, SetReplicationRequestProto, SetReplicationResponseProto, SetStoragePolicyRequestProto, SetStoragePolicyResponseProto, UnsetStoragePolicyRequestProto, UnsetStoragePolicyResponseProto, GetStoragePolicyRequestProto, GetStoragePolicyResponseProto, GetStoragePoliciesRequestProto, GetStoragePoliciesResponseProto, SetPermissionRequestProto, SetPermissionResponseProto, SetOwnerRequestProto, SetOwnerResponseProto, AbandonBlockRequestProto, AbandonBlockResponseProto, AddBlockRequestProto, AddBlockResponseProto, GetAdditionalDatanodeRequestProto, GetAdditionalDatanodeResponseProto, CompleteRequestProto, CompleteResponseProto, ReportBadBlocksRequestProto, ReportBadBlocksResponseProto, ConcatRequestProto, ConcatResponseProto, TruncateRequestProto, TruncateResponseProto, RenameRequestProto, RenameResponseProto, Rename2RequestProto, Rename2ResponseProto, DeleteRequestProto, DeleteResponseProto, MkdirsRequestProto, MkdirsResponseProto, GetListingRequestProto, GetListingResponseProto, GetSnapshottableDirListingRequestProto, GetSnapshottableDirListingResponseProto, GetSnapshotDiffReportRequestProto, GetSnapshotDiffReportResponseProto, RenewLeaseRequestProto, RenewLeaseResponseProto, RecoverLeaseRequestProto, RecoverLeaseResponseProto, GetFsStatusRequestProto, GetFsStatsResponseProto, GetDatanodeReportRequestProto, GetDatanodeReportResponseProto, GetDatanodeStorageReportRequestProto, DatanodeStorageReportProto, GetDatanodeStorageReportResponseProto, GetPreferredBlockSizeRequestProto, GetPreferredBlockSizeResponseProto, SetSafeModeRequestProto, SetSafeModeResponseProto, SaveNamespaceRequestProto, SaveNamespaceResponseProto, RollEditsRequestProto, RollEditsResponseProto, RestoreFailedStorageRequestProto, RestoreFailedStorageResponseProto, RefreshNodesRequestProto, RefreshNodesResponseProto, FinalizeUpgradeRequestProto, FinalizeUpgradeResponseProto, RollingUpgradeRequestProto, RollingUpgradeInfoProto, RollingUpgradeResponseProto, ListCorruptFileBlocksRequestProto, ListCorruptFileBlocksResponseProto, MetaSaveRequestProto, MetaSaveResponseProto, GetFileInfoRequestProto, GetFileInfoResponseProto, IsFileClosedRequestProto, IsFileClosedResponseProto, CacheDirectiveInfoProto, CacheDirectiveInfoExpirationProto, CacheDirectiveStatsProto, AddCacheDirectiveRequestProto, AddCacheDirectiveResponseProto, ModifyCacheDirectiveRequestProto, ModifyCacheDirectiveResponseProto, RemoveCacheDirectiveRequestProto, RemoveCacheDirectiveResponseProto, ListCacheDirectivesRequestProto, CacheDirectiveEntryProto, ListCacheDirectivesResponseProto, CachePoolInfoProto, CachePoolStatsProto, AddCachePoolRequestProto, AddCachePoolResponseProto, ModifyCachePoolRequestProto, ModifyCachePoolResponseProto, RemoveCachePoolRequestProto, RemoveCachePoolResponseProto, ListCachePoolsRequestProto, ListCachePoolsResponseProto, CachePoolEntryProto, GetFileLinkInfoRequestProto, GetFileLinkInfoResponseProto, GetContentSummaryRequestProto, GetContentSummaryResponseProto, GetQuotaUsageRequestProto, GetQuotaUsageResponseProto, SetQuotaRequestProto, SetQuotaResponseProto, FsyncRequestProto, FsyncResponseProto, SetTimesRequestProto, SetTimesResponseProto, CreateSymlinkRequestProto, CreateSymlinkResponseProto, GetLinkTargetRequestProto, GetLinkTargetResponseProto, UpdateBlockForPipelineRequestProto, UpdateBlockForPipelineResponseProto, UpdatePipelineRequestProto, UpdatePipelineResponseProto, SetBalancerBandwidthRequestProto, SetBalancerBandwidthResponseProto, GetDataEncryptionKeyRequestProto, GetDataEncryptionKeyResponseProto, CreateSnapshotRequestProto, CreateSnapshotResponseProto, RenameSnapshotRequestProto, RenameSnapshotResponseProto, AllowSnapshotRequestProto, AllowSnapshotResponseProto, DisallowSnapshotRequestProto, DisallowSnapshotResponseProto, DeleteSnapshotRequestProto, DeleteSnapshotResponseProto, CheckAccessRequestProto, CheckAccessResponseProto, GetCurrentEditLogTxidRequestProto, GetCurrentEditLogTxidResponseProto, GetEditsFromTxidRequestProto, GetEditsFromTxidResponseProto, ListOpenFilesRequestProto, OpenFilesBatchResponseProto, ListOpenFilesResponseProto, MsyncRequestProto, MsyncResponseProto, HAServiceStateRequestProto, HAServiceStateResponseProto, ClientNamenodeProtocol, ClientNamenodeProtocolStub, ClientNamenodeProtocolBlockingStub, getBlockLocations, getServerDefaults, create, append, setReplication, setStoragePolicy, unsetStoragePolicy, getStoragePolicy, getStoragePolicies, setPermission, setOwner, abandonBlock, addBlock, getAdditionalDatanode, complete, reportBadBlocks, concat, truncate, rename, rename2, delete, mkdirs, getListing, renewLease, recoverLease, getFsStats, getDatanodeReport, getDatanodeStorageReport, getPreferredBlockSize, setSafeMode, saveNamespace, rollEdits, restoreFailedStorage, refreshNodes, finalizeUpgrade, rollingUpgrade, listCorruptFileBlocks, metaSave, getFileInfo, addCacheDirective, modifyCacheDirective, removeCacheDirective, listCacheDirectives, addCachePool, modifyCachePool, removeCachePool, listCachePools, getFileLinkInfo, getContentSummary, setQuota, fsync, setTimes, createSymlink, getLinkTarget, updateBlockForPipeline, updatePipeline, getDelegationToken, renewDelegationToken, cancelDelegationToken, setBalancerBandwidth, getDataEncryptionKey, createSnapshot, renameSnapshot, allowSnapshot, disallowSnapshot, getSnapshottableDirListing, deleteSnapshot, getSnapshotDiffReport, isFileClosed, modifyAclEntries, removeAclEntries, removeDefaultAcl, removeAcl, setAcl, getAclStatus, setXAttr, getXAttrs, listXAttrs, removeXAttr, checkAccess, createEncryptionZone, listEncryptionZones, getEZForPath, getCurrentEditLogTxid, getEditsFromTxid, getQuotaUsage, listOpenFiles, msync, getHAServiceState

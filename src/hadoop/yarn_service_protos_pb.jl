@@ -3,6 +3,15 @@ using ProtoBuf
 import ProtoBuf.meta
 import ..hadoop
 
+struct __enum_ContainerUpdateTypeProto <: ProtoEnum
+    INCREASE_RESOURCE::Int32
+    DECREASE_RESOURCE::Int32
+    PROMOTE_EXECUTION_TYPE::Int32
+    DEMOTE_EXECUTION_TYPE::Int32
+    __enum_ContainerUpdateTypeProto() = new(0,1,2,3)
+end #struct __enum_ContainerUpdateTypeProto
+const ContainerUpdateTypeProto = __enum_ContainerUpdateTypeProto()
+
 struct __enum_SchedulerResourceTypes <: ProtoEnum
     MEMORY::Int32
     CPU::Int32
@@ -39,6 +48,24 @@ end #mutable struct FinishApplicationMasterResponseProto
 const __val_FinishApplicationMasterResponseProto = Dict(:isUnregistered => false)
 meta(t::Type{FinishApplicationMasterResponseProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_FinishApplicationMasterResponseProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
+mutable struct UpdateContainerRequestProto <: ProtoType
+    container_version::Int32
+    container_id::ContainerIdProto
+    update_type::Int32
+    capability::ResourceProto
+    execution_type::Int32
+    UpdateContainerRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UpdateContainerRequestProto
+const __req_UpdateContainerRequestProto = Symbol[:container_version,:container_id,:update_type]
+meta(t::Type{UpdateContainerRequestProto}) = meta(t, __req_UpdateContainerRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct UpdateContainerErrorProto <: ProtoType
+    reason::AbstractString
+    update_request::UpdateContainerRequestProto
+    current_container_version::Int32
+    UpdateContainerErrorProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UpdateContainerErrorProto
+
 mutable struct AllocateRequestProto <: ProtoType
     ask::Base.Vector{ResourceRequestProto}
     release::Base.Vector{ContainerIdProto}
@@ -46,8 +73,12 @@ mutable struct AllocateRequestProto <: ProtoType
     response_id::Int32
     progress::Float32
     increase_request::Base.Vector{ContainerResourceIncreaseRequestProto}
+    update_requests::Base.Vector{UpdateContainerRequestProto}
+    tracking_url::AbstractString
     AllocateRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct AllocateRequestProto
+const __fnum_AllocateRequestProto = Int[1,2,3,4,5,6,7,11]
+meta(t::Type{AllocateRequestProto}) = meta(t, ProtoBuf.DEF_REQ, __fnum_AllocateRequestProto, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
 mutable struct NMTokenProto <: ProtoType
     nodeId::NodeIdProto
@@ -66,6 +97,14 @@ mutable struct RegisterApplicationMasterResponseProto <: ProtoType
     RegisterApplicationMasterResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RegisterApplicationMasterResponseProto
 
+mutable struct UpdatedContainerProto <: ProtoType
+    update_type::Int32
+    container::ContainerProto
+    UpdatedContainerProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UpdatedContainerProto
+const __req_UpdatedContainerProto = Symbol[:update_type,:container]
+meta(t::Type{UpdatedContainerProto}) = meta(t, __req_UpdatedContainerProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
 mutable struct AllocateResponseProto <: ProtoType
     a_m_command::Int32
     response_id::Int32
@@ -79,6 +118,10 @@ mutable struct AllocateResponseProto <: ProtoType
     increased_containers::Base.Vector{ContainerResourceIncreaseProto}
     decreased_containers::Base.Vector{ContainerResourceDecreaseProto}
     am_rm_token::hadoop.common.TokenProto
+    application_priority::PriorityProto
+    collector_info::CollectorInfoProto
+    update_errors::Base.Vector{UpdateContainerErrorProto}
+    updated_containers::Base.Vector{UpdatedContainerProto}
     AllocateResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct AllocateResponseProto
 
@@ -111,8 +154,18 @@ mutable struct SubmitApplicationResponseProto <: ProtoType
     SubmitApplicationResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct SubmitApplicationResponseProto
 
+mutable struct FailApplicationAttemptRequestProto <: ProtoType
+    application_attempt_id::ApplicationAttemptIdProto
+    FailApplicationAttemptRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct FailApplicationAttemptRequestProto
+
+mutable struct FailApplicationAttemptResponseProto <: ProtoType
+    FailApplicationAttemptResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct FailApplicationAttemptResponseProto
+
 mutable struct KillApplicationRequestProto <: ProtoType
     application_id::ApplicationIdProto
+    diagnostics::AbstractString
     KillApplicationRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct KillApplicationRequestProto
 
@@ -222,9 +275,57 @@ mutable struct GetClusterNodeLabelsRequestProto <: ProtoType
 end #mutable struct GetClusterNodeLabelsRequestProto
 
 mutable struct GetClusterNodeLabelsResponseProto <: ProtoType
-    nodeLabels::Base.Vector{AbstractString}
+    deprecatedNodeLabels::Base.Vector{AbstractString}
+    nodeLabels::Base.Vector{NodeLabelProto}
     GetClusterNodeLabelsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct GetClusterNodeLabelsResponseProto
+
+mutable struct UpdateApplicationPriorityRequestProto <: ProtoType
+    applicationId::ApplicationIdProto
+    applicationPriority::PriorityProto
+    UpdateApplicationPriorityRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UpdateApplicationPriorityRequestProto
+const __req_UpdateApplicationPriorityRequestProto = Symbol[:applicationId,:applicationPriority]
+meta(t::Type{UpdateApplicationPriorityRequestProto}) = meta(t, __req_UpdateApplicationPriorityRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct UpdateApplicationPriorityResponseProto <: ProtoType
+    applicationPriority::PriorityProto
+    UpdateApplicationPriorityResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UpdateApplicationPriorityResponseProto
+
+mutable struct SignalContainerRequestProto <: ProtoType
+    container_id::ContainerIdProto
+    command::Int32
+    SignalContainerRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct SignalContainerRequestProto
+const __req_SignalContainerRequestProto = Symbol[:container_id,:command]
+meta(t::Type{SignalContainerRequestProto}) = meta(t, __req_SignalContainerRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct SignalContainerResponseProto <: ProtoType
+    SignalContainerResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct SignalContainerResponseProto
+
+mutable struct UpdateApplicationTimeoutsRequestProto <: ProtoType
+    applicationId::ApplicationIdProto
+    application_timeouts::Base.Vector{ApplicationUpdateTimeoutMapProto}
+    UpdateApplicationTimeoutsRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UpdateApplicationTimeoutsRequestProto
+const __req_UpdateApplicationTimeoutsRequestProto = Symbol[:applicationId]
+meta(t::Type{UpdateApplicationTimeoutsRequestProto}) = meta(t, __req_UpdateApplicationTimeoutsRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct UpdateApplicationTimeoutsResponseProto <: ProtoType
+    application_timeouts::Base.Vector{ApplicationUpdateTimeoutMapProto}
+    UpdateApplicationTimeoutsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct UpdateApplicationTimeoutsResponseProto
+
+mutable struct GetAllResourceTypeInfoRequestProto <: ProtoType
+    GetAllResourceTypeInfoRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct GetAllResourceTypeInfoRequestProto
+
+mutable struct GetAllResourceTypeInfoResponseProto <: ProtoType
+    resource_type_info::Base.Vector{ResourceTypeInfoProto}
+    GetAllResourceTypeInfoResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct GetAllResourceTypeInfoResponseProto
 
 mutable struct StartContainerRequestProto <: ProtoType
     container_launch_context::ContainerLaunchContextProto
@@ -246,15 +347,40 @@ mutable struct StopContainerResponseProto <: ProtoType
     StopContainerResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct StopContainerResponseProto
 
-mutable struct GetContainerStatusRequestProto <: ProtoType
+mutable struct ResourceLocalizationRequestProto <: ProtoType
     container_id::ContainerIdProto
-    GetContainerStatusRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetContainerStatusRequestProto
+    local_resources::Base.Vector{StringLocalResourceMapProto}
+    ResourceLocalizationRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ResourceLocalizationRequestProto
 
-mutable struct GetContainerStatusResponseProto <: ProtoType
-    status::ContainerStatusProto
-    GetContainerStatusResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetContainerStatusResponseProto
+mutable struct ResourceLocalizationResponseProto <: ProtoType
+    ResourceLocalizationResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ResourceLocalizationResponseProto
+
+mutable struct ReInitializeContainerRequestProto <: ProtoType
+    container_id::ContainerIdProto
+    container_launch_context::ContainerLaunchContextProto
+    auto_commit::Bool
+    ReInitializeContainerRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ReInitializeContainerRequestProto
+const __val_ReInitializeContainerRequestProto = Dict(:auto_commit => true)
+meta(t::Type{ReInitializeContainerRequestProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_ReInitializeContainerRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct ReInitializeContainerResponseProto <: ProtoType
+    ReInitializeContainerResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ReInitializeContainerResponseProto
+
+mutable struct RestartContainerResponseProto <: ProtoType
+    RestartContainerResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct RestartContainerResponseProto
+
+mutable struct RollbackResponseProto <: ProtoType
+    RollbackResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct RollbackResponseProto
+
+mutable struct CommitResponseProto <: ProtoType
+    CommitResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct CommitResponseProto
 
 mutable struct StartContainersRequestProto <: ProtoType
     start_container_request::Base.Vector{StartContainerRequestProto}
@@ -295,6 +421,28 @@ mutable struct GetContainerStatusesResponseProto <: ProtoType
     failed_requests::Base.Vector{ContainerExceptionMapProto}
     GetContainerStatusesResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct GetContainerStatusesResponseProto
+
+mutable struct IncreaseContainersResourceRequestProto <: ProtoType
+    increase_containers::Base.Vector{hadoop.common.TokenProto}
+    IncreaseContainersResourceRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct IncreaseContainersResourceRequestProto
+
+mutable struct IncreaseContainersResourceResponseProto <: ProtoType
+    succeeded_requests::Base.Vector{ContainerIdProto}
+    failed_requests::Base.Vector{ContainerExceptionMapProto}
+    IncreaseContainersResourceResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct IncreaseContainersResourceResponseProto
+
+mutable struct ContainerUpdateRequestProto <: ProtoType
+    update_container_token::Base.Vector{hadoop.common.TokenProto}
+    ContainerUpdateRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ContainerUpdateRequestProto
+
+mutable struct ContainerUpdateResponseProto <: ProtoType
+    succeeded_requests::Base.Vector{ContainerIdProto}
+    failed_requests::Base.Vector{ContainerExceptionMapProto}
+    ContainerUpdateResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ContainerUpdateResponseProto
 
 mutable struct GetApplicationAttemptReportRequestProto <: ProtoType
     application_attempt_id::ApplicationAttemptIdProto
@@ -357,14 +505,23 @@ mutable struct ReleaseSharedCacheResourceResponseProto <: ProtoType
     ReleaseSharedCacheResourceResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ReleaseSharedCacheResourceResponseProto
 
+mutable struct GetNewReservationRequestProto <: ProtoType
+    GetNewReservationRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct GetNewReservationRequestProto
+
+mutable struct GetNewReservationResponseProto <: ProtoType
+    reservation_id::ReservationIdProto
+    GetNewReservationResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct GetNewReservationResponseProto
+
 mutable struct ReservationSubmissionRequestProto <: ProtoType
     queue::AbstractString
     reservation_definition::ReservationDefinitionProto
+    reservation_id::ReservationIdProto
     ReservationSubmissionRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ReservationSubmissionRequestProto
 
 mutable struct ReservationSubmissionResponseProto <: ProtoType
-    reservation_id::ReservationIdProto
     ReservationSubmissionResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ReservationSubmissionResponseProto
 
@@ -387,6 +544,22 @@ mutable struct ReservationDeleteResponseProto <: ProtoType
     ReservationDeleteResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ReservationDeleteResponseProto
 
+mutable struct ReservationListRequestProto <: ProtoType
+    queue::AbstractString
+    reservation_id::AbstractString
+    start_time::Int64
+    end_time::Int64
+    include_resource_allocations::Bool
+    ReservationListRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ReservationListRequestProto
+const __fnum_ReservationListRequestProto = Int[1,3,4,5,6]
+meta(t::Type{ReservationListRequestProto}) = meta(t, ProtoBuf.DEF_REQ, __fnum_ReservationListRequestProto, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct ReservationListResponseProto <: ProtoType
+    reservations::Base.Vector{ReservationAllocationStateProto}
+    ReservationListResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct ReservationListResponseProto
+
 mutable struct RunSharedCacheCleanerTaskRequestProto <: ProtoType
     RunSharedCacheCleanerTaskRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RunSharedCacheCleanerTaskRequestProto
@@ -396,4 +569,4 @@ mutable struct RunSharedCacheCleanerTaskResponseProto <: ProtoType
     RunSharedCacheCleanerTaskResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RunSharedCacheCleanerTaskResponseProto
 
-export SchedulerResourceTypes, ApplicationsRequestScopeProto, RegisterApplicationMasterRequestProto, RegisterApplicationMasterResponseProto, FinishApplicationMasterRequestProto, FinishApplicationMasterResponseProto, AllocateRequestProto, NMTokenProto, AllocateResponseProto, GetNewApplicationRequestProto, GetNewApplicationResponseProto, GetApplicationReportRequestProto, GetApplicationReportResponseProto, SubmitApplicationRequestProto, SubmitApplicationResponseProto, KillApplicationRequestProto, KillApplicationResponseProto, GetClusterMetricsRequestProto, GetClusterMetricsResponseProto, MoveApplicationAcrossQueuesRequestProto, MoveApplicationAcrossQueuesResponseProto, GetApplicationsRequestProto, GetApplicationsResponseProto, GetClusterNodesRequestProto, GetClusterNodesResponseProto, GetQueueInfoRequestProto, GetQueueInfoResponseProto, GetQueueUserAclsInfoRequestProto, GetQueueUserAclsInfoResponseProto, GetNodesToLabelsRequestProto, GetNodesToLabelsResponseProto, GetLabelsToNodesRequestProto, GetLabelsToNodesResponseProto, GetClusterNodeLabelsRequestProto, GetClusterNodeLabelsResponseProto, StartContainerRequestProto, StartContainerResponseProto, StopContainerRequestProto, StopContainerResponseProto, GetContainerStatusRequestProto, GetContainerStatusResponseProto, StartContainersRequestProto, ContainerExceptionMapProto, StartContainersResponseProto, StopContainersRequestProto, StopContainersResponseProto, GetContainerStatusesRequestProto, GetContainerStatusesResponseProto, GetApplicationAttemptReportRequestProto, GetApplicationAttemptReportResponseProto, GetApplicationAttemptsRequestProto, GetApplicationAttemptsResponseProto, GetContainerReportRequestProto, GetContainerReportResponseProto, GetContainersRequestProto, GetContainersResponseProto, UseSharedCacheResourceRequestProto, UseSharedCacheResourceResponseProto, ReleaseSharedCacheResourceRequestProto, ReleaseSharedCacheResourceResponseProto, ReservationSubmissionRequestProto, ReservationSubmissionResponseProto, ReservationUpdateRequestProto, ReservationUpdateResponseProto, ReservationDeleteRequestProto, ReservationDeleteResponseProto, RunSharedCacheCleanerTaskRequestProto, RunSharedCacheCleanerTaskResponseProto
+export ContainerUpdateTypeProto, SchedulerResourceTypes, ApplicationsRequestScopeProto, RegisterApplicationMasterRequestProto, RegisterApplicationMasterResponseProto, FinishApplicationMasterRequestProto, FinishApplicationMasterResponseProto, UpdateContainerRequestProto, UpdateContainerErrorProto, AllocateRequestProto, NMTokenProto, UpdatedContainerProto, AllocateResponseProto, GetNewApplicationRequestProto, GetNewApplicationResponseProto, GetApplicationReportRequestProto, GetApplicationReportResponseProto, SubmitApplicationRequestProto, SubmitApplicationResponseProto, FailApplicationAttemptRequestProto, FailApplicationAttemptResponseProto, KillApplicationRequestProto, KillApplicationResponseProto, GetClusterMetricsRequestProto, GetClusterMetricsResponseProto, MoveApplicationAcrossQueuesRequestProto, MoveApplicationAcrossQueuesResponseProto, GetApplicationsRequestProto, GetApplicationsResponseProto, GetClusterNodesRequestProto, GetClusterNodesResponseProto, GetQueueInfoRequestProto, GetQueueInfoResponseProto, GetQueueUserAclsInfoRequestProto, GetQueueUserAclsInfoResponseProto, GetNodesToLabelsRequestProto, GetNodesToLabelsResponseProto, GetLabelsToNodesRequestProto, GetLabelsToNodesResponseProto, GetClusterNodeLabelsRequestProto, GetClusterNodeLabelsResponseProto, UpdateApplicationPriorityRequestProto, UpdateApplicationPriorityResponseProto, SignalContainerRequestProto, SignalContainerResponseProto, UpdateApplicationTimeoutsRequestProto, UpdateApplicationTimeoutsResponseProto, GetAllResourceTypeInfoRequestProto, GetAllResourceTypeInfoResponseProto, StartContainerRequestProto, StartContainerResponseProto, StopContainerRequestProto, StopContainerResponseProto, ResourceLocalizationRequestProto, ResourceLocalizationResponseProto, ReInitializeContainerRequestProto, ReInitializeContainerResponseProto, RestartContainerResponseProto, RollbackResponseProto, CommitResponseProto, StartContainersRequestProto, ContainerExceptionMapProto, StartContainersResponseProto, StopContainersRequestProto, StopContainersResponseProto, GetContainerStatusesRequestProto, GetContainerStatusesResponseProto, IncreaseContainersResourceRequestProto, IncreaseContainersResourceResponseProto, ContainerUpdateRequestProto, ContainerUpdateResponseProto, GetApplicationAttemptReportRequestProto, GetApplicationAttemptReportResponseProto, GetApplicationAttemptsRequestProto, GetApplicationAttemptsResponseProto, GetContainerReportRequestProto, GetContainerReportResponseProto, GetContainersRequestProto, GetContainersResponseProto, UseSharedCacheResourceRequestProto, UseSharedCacheResourceResponseProto, ReleaseSharedCacheResourceRequestProto, ReleaseSharedCacheResourceResponseProto, GetNewReservationRequestProto, GetNewReservationResponseProto, ReservationSubmissionRequestProto, ReservationSubmissionResponseProto, ReservationUpdateRequestProto, ReservationUpdateResponseProto, ReservationDeleteRequestProto, ReservationDeleteResponseProto, ReservationListRequestProto, ReservationListResponseProto, RunSharedCacheCleanerTaskRequestProto, RunSharedCacheCleanerTaskResponseProto

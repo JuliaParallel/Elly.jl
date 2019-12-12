@@ -28,6 +28,14 @@ struct __enum_ShortCircuitFdResponse <: ProtoEnum
 end #struct __enum_ShortCircuitFdResponse
 const ShortCircuitFdResponse = __enum_ShortCircuitFdResponse()
 
+mutable struct HandshakeSecretProto <: ProtoType
+    secret::Array{UInt8,1}
+    bpid::AbstractString
+    HandshakeSecretProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct HandshakeSecretProto
+const __req_HandshakeSecretProto = Symbol[:secret,:bpid]
+meta(t::Type{HandshakeSecretProto}) = meta(t, __req_HandshakeSecretProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
 struct __enum_DataTransferEncryptorMessageProto_DataTransferEncryptorStatus <: ProtoEnum
     SUCCESS::Int32
     ERROR_UNKNOWN_KEY::Int32
@@ -41,6 +49,7 @@ mutable struct DataTransferEncryptorMessageProto <: ProtoType
     payload::Array{UInt8,1}
     message::AbstractString
     cipherOption::Base.Vector{CipherOptionProto}
+    handshakeSecret::HandshakeSecretProto
     DataTransferEncryptorMessageProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct DataTransferEncryptorMessageProto
 const __req_DataTransferEncryptorMessageProto = Symbol[:status]
@@ -297,4 +306,11 @@ end #mutable struct BlockOpResponseProto
 const __req_BlockOpResponseProto = Symbol[:status]
 meta(t::Type{BlockOpResponseProto}) = meta(t, __req_BlockOpResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
-export Status, ShortCircuitFdResponse, DataTransferEncryptorMessageProto_DataTransferEncryptorStatus, DataTransferEncryptorMessageProto, BaseHeaderProto, DataTransferTraceInfoProto, ClientOperationHeaderProto, CachingStrategyProto, OpReadBlockProto, ChecksumProto, OpWriteBlockProto_BlockConstructionStage, OpWriteBlockProto, OpTransferBlockProto, OpReplaceBlockProto, OpCopyBlockProto, OpBlockChecksumProto, ShortCircuitShmIdProto, ShortCircuitShmSlotProto, OpRequestShortCircuitAccessProto, ReleaseShortCircuitAccessRequestProto, ReleaseShortCircuitAccessResponseProto, ShortCircuitShmRequestProto, ShortCircuitShmResponseProto, PacketHeaderProto, PipelineAckProto, ReadOpChecksumInfoProto, BlockOpResponseProto, ClientReadStatusProto, DNTransferAckProto, OpBlockChecksumResponseProto
+mutable struct OpCustomProto <: ProtoType
+    customId::AbstractString
+    OpCustomProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct OpCustomProto
+const __req_OpCustomProto = Symbol[:customId]
+meta(t::Type{OpCustomProto}) = meta(t, __req_OpCustomProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+export Status, ShortCircuitFdResponse, DataTransferEncryptorMessageProto_DataTransferEncryptorStatus, DataTransferEncryptorMessageProto, HandshakeSecretProto, BaseHeaderProto, DataTransferTraceInfoProto, ClientOperationHeaderProto, CachingStrategyProto, OpReadBlockProto, ChecksumProto, OpWriteBlockProto_BlockConstructionStage, OpWriteBlockProto, OpTransferBlockProto, OpReplaceBlockProto, OpCopyBlockProto, OpBlockChecksumProto, ShortCircuitShmIdProto, ShortCircuitShmSlotProto, OpRequestShortCircuitAccessProto, ReleaseShortCircuitAccessRequestProto, ReleaseShortCircuitAccessResponseProto, ShortCircuitShmRequestProto, ShortCircuitShmResponseProto, PacketHeaderProto, PipelineAckProto, ReadOpChecksumInfoProto, BlockOpResponseProto, ClientReadStatusProto, DNTransferAckProto, OpBlockChecksumResponseProto, OpCustomProto
