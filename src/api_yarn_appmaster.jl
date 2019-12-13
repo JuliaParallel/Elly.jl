@@ -34,7 +34,7 @@ mutable struct YarnAppMaster
     queue::AbstractString
     managed::Bool
 
-    response_id::Int32
+    response_id::Int32      # initial value must be 0, update with response_id sent from server on every response
     
     registration::Union{Nothing,RegisterApplicationMasterResponseProto}
     lck::Lock
@@ -48,7 +48,7 @@ mutable struct YarnAppMaster
         new(amrm_conn, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(ugi), YarnContainers(),
-            "", true, 1,
+            "", true, 0,
             nothing, lck)
     end
 end
@@ -214,17 +214,14 @@ function _update_rm(yam::YarnAppMaster)
     !isempty(alloc_pending) && setproperty!(inp, :ask, alloc_pending)
     !isempty(release_pending) && setproperty!(inp, :release, release_pending)
 
-    # send one-up response id
-    if yam.response_id == typemax(Int32)
-        yam.response_id = 1
-    else
-        yam.response_id += 1
-    end
+    # send last received response id as response_id in this request
     setproperty!(inp, :response_id, yam.response_id)
 
     #@debug(inp)
     resp = withlock(yam) do
-        allocate(yam.amrm_conn, inp)
+        allocate_resp = allocate(yam.amrm_conn, inp)
+        yam.response_id = allocate_resp.response_id # next response id must match this
+        allocate_resp
     end
     #@debug(resp)
 
