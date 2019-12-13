@@ -173,7 +173,7 @@ function _read_and_buffer(reader::HDFSFileReader, out::Vector{UInt8}, offset::UI
         if reader.blk_reader !== nothing
             blk_reader = reader.blk_reader
             channel = blk_reader.channel
-            @debug("exception receiving from $(channel.host):$(channel.port)", ex=ex)
+            @debug("exception receiving from", host=channel.host, port=channel.port, ex)
         else
             @debug("exception receiving", ex=ex)
         end
@@ -216,7 +216,7 @@ function read!(reader::HDFSFileReader, a::Vector{UInt8})
             end
         else
             nbytes = min(navlb, remaining)
-            @debug("reading $nbytes from buffer", nbytes=nbytes, navlb=navlb, remaining=remaining, offset=offset)
+            @debug("reading from buffer", nbytes=nbytes, navlb=navlb, remaining=remaining, offset=offset)
             Base.read_sub(reader.buffer, a, offset, nbytes)
             reader.fptr += nbytes
         end
@@ -384,7 +384,7 @@ function cp(frompath::Union{HDFSFile,AbstractString}, topath::Union{HDFSFile,Abs
         read!(fromfile, buff)
         write(tofile, buff)
         brem -= bread
-        @debug("remaining $brem/$btot")
+        @debug("progress", remaining=brem, total=btot)
     end
     close(fromfile)
     close(tofile)

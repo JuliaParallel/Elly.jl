@@ -203,7 +203,7 @@ function status(app::YarnApp, refresh::Bool=true)
 end
 
 function wait_for_state(app::YarnApp, state::Int32, timeout_secs::Int=60)
-    @debug("waiting for application to reach $(APP_STATES[state]) ($state) state")
+    @debug("waiting for application to reach state", statename=APP_STATES[state], state)
     t1 = time() + timeout_secs
     finalstates = (YarnApplicationStateProto.KILLED, YarnApplicationStateProto.FAILED, YarnApplicationStateProto.FINISHED)
     isfinalstate = state in finalstates
@@ -243,7 +243,7 @@ function attempts(app::YarnApp, refresh::Bool=true)
 end
 
 function wait_for_attempt_state(app::YarnApp, attemptid::Int32, state::Int32, timeout_secs::Int=60)
-    @debug("waiting for application attempt $attemptid to reach $(ATTEMPT_STATES[state]) ($state) state")
+    @debug("waiting for application attempt to reach state", attemptid, statename=ATTEMPT_STATES[state], state)
     t1 = time() + timeout_secs
     finalstates = (YarnApplicationAttemptStateProto.APP_ATTEMPT_KILLED, YarnApplicationAttemptStateProto.APP_ATTEMPT_FAILED, YarnApplicationAttemptStateProto.APP_ATTEMPT_FINISHED)
     isfinalstate = state in finalstates
@@ -255,7 +255,7 @@ function wait_for_attempt_state(app::YarnApp, attemptid::Int32, state::Int32, ti
                 atmptstate = report.yarn_application_attempt_state
                 (atmptstate == state) && (return true)
                 isfinalstate || ((atmptstate in finalstates) && (return false))
-                @debug("application attempt $attemptid is in state $(ATTEMPT_STATES[atmptstate]) ($atmptstate) state")
+                @debug("application attempt is in state", attemptid, statename=ATTEMPT_STATES[atmptstate], atmptstate)
                 break
             end
         end

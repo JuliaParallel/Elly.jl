@@ -15,7 +15,7 @@ function digmd5_decode_challenge(challenge::AbstractString)
         end
         comps[n] = v
     end
-    @debug("decoded challenge components: $comps")
+    @debug("decoded challenge components", comps)
     comps
 end
 
@@ -79,7 +79,7 @@ end
 buffer_sasl_reqhdr(channel::HadoopRpcChannel) = (channel.sent_call_id = channel.call_id = HRPC_CALL_ID_SASL; buffer_reqhdr(channel, HRPC_CALL_ID_SASL))
 
 function buffer_sasl_message(channel::HadoopRpcChannel, state::Int32, auths::Vector{RpcSaslProto_SaslAuth}=RpcSaslProto_SaslAuth[], token::Vector{UInt8}=UInt8[])
-    @debug("buffer SASL message. state:$state, nauths:$(length(auths)), token:$(!isempty(token))")
+    @debug("buffer SASL message", state, nauths=length(auths), token=!isempty(token))
     saslmsg = protobuild(RpcSaslProto, Dict(:version => 0, :state => state))
     isempty(auths) || setproperty!(saslmsg, :auths, auths)
     isempty(token) || setproperty!(saslmsg, :token, token)
@@ -90,7 +90,7 @@ function recv_sasl_message(channel::HadoopRpcChannel)
     @debug("recv SASL message")
     resp = RpcSaslProto()
     recv_rpc_message(channel, resp)
-    @debug("received SASL message $resp")
+    @debug("received SASL message", resp)
     resp
 end
 
@@ -103,10 +103,10 @@ function conditional_sasl_auth(channel::HadoopRpcChannel)
     tok_alias = token_alias(channel)
     tokens = find_tokens(channel.ugi, alias=tok_alias)
     if isempty(tokens)
-        @debug("no token available to authenticate to $tok_alias. skipping")
+        @debug("no token available to authenticate, skipping.", to=tok_alias)
         return false
     end
-    @debug("found $(length(tokens)) tokens available to authenticate to $tok_alias. authenticating...")
+    @debug("found tokens available to authenticate. authenticating...", ntokens=length(tokens), to=tok_alias)
     token = tokens[1]
     sasl_auth(channel, token)
     true
@@ -127,11 +127,11 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
 
     # check if TOKEN/DIGEST-MD5 is one of the supported methods
     nauths = length(resp.auths)
-    @debug("server supports $nauths auths")
+    @debug("server supports auth", nauths)
     idx_auth = 0
     for idx in 1:length(resp.auths)
         auth = resp.auths[idx]
-        @debug("    $idx: $(auth.method)/$(auth.mechanism)")
+        @debug("supported auth", idx, method=auth.method, mechanism=auth.mechanism)
         ((auth.method == "TOKEN") && (auth.mechanism == "DIGEST-MD5")) || continue
         idx_auth = idx
     end
@@ -145,9 +145,9 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
     protocol = auth.protocol
     serverId = auth.serverId
     challenge = auth.challenge
-    @debug("auth.protocol: $protocol, serverId: $serverId, challenge: $challenge")
+    @debug("auth", protocol, serverId, challenge)
     response = digmd5_respond(token, auth.protocol, auth.serverId, auth.challenge)
-    @debug("response: $response")
+    @debug("response", response)
 
     # send response as a sasl initiate request
     respauth = protobuild(RpcSaslProto_SaslAuth, Dict(:method => auth.method,
@@ -163,7 +163,7 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
 
     # expect a success response
     if resp.state != RpcSaslProto_SaslState.SUCCESS
-        @debug("error completing SASL auth. state: $(resp.state). expected state: $(RpcSaslProto_SaslState.SUCCESS)")
+        @debug("error completing SASL auth", state=resp.state, expected=RpcSaslProto_SaslState.SUCCESS)
         throw(HadoopRpcException("error completing SASL auth. state: $(resp.state). expected state: $(RpcSaslProto_SaslState.SUCCESS)"))
     end
     nothing
