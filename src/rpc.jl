@@ -250,9 +250,10 @@ function recv_rpc_message(channel::HadoopRpcChannel, resp)
 
         resp_hdr = RpcResponseHeaderProto()
         readproto(IOBuffer(hdr_bytes), resp_hdr)
+        @debug("resp_hdr", resp_hdr)
 
-        (resp_hdr.callId == reinterpret(UInt32, channel.sent_call_id)) || throw(HadoopRpcException("unknown callid. received:$(resp_hdr.callId) sent:$(channel.sent_call_id). status: $(resp_hdr.status)"))
         (resp_hdr.status == RpcResponseHeaderProto_RpcStatusProto.SUCCESS) || throw(HadoopRpcException(resp_hdr))
+        (resp_hdr.callId == reinterpret(UInt32, channel.sent_call_id)) || throw(HadoopRpcException("unknown callid. received:$(resp_hdr.callId) sent:$(channel.sent_call_id). status: $(resp_hdr.status)"))
 
         if resp_hdr.status == RpcResponseHeaderProto_RpcStatusProto.SUCCESS
             hdr_len = UInt32(length(hdr_bytes))
