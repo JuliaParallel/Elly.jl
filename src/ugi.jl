@@ -12,7 +12,7 @@ end
 add_token(ugi::UserGroupInformation, token::TokenProto) = add_token(ugi, token.service, token)
 add_token(ugi::UserGroupInformation, alias::AbstractString, token::TokenProto) = (ugi.tokens[alias] = token; nothing)
 
-username(userinfo::UserInformationProto) = isfilled(userinfo, :realUser) ? userinfo.realUser : userInfo.effectiveUser
+username(userinfo::UserInformationProto) = isfilled(userinfo, :realUser) ? userinfo.realUser : userinfo.effectiveUser
 username(ugi::UserGroupInformation) = username(ugi.userinfo)
 
 function find_tokens(ugi::UserGroupInformation; alias::AbstractString="", kind::AbstractString="")
