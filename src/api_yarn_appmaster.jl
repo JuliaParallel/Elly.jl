@@ -3,8 +3,10 @@
 # - applicationmaster_protocol.proto
 # - containermanagement_protocol.proto
 
-# In managed mode, the AMRMToken available in file CONTAINER_TOKEN_FILE_ENV_NAME is in Java serialized format (https://apache.googlesource.com/hadoop-common/+/HADOOP-6685/src/java/org/apache/hadoop/security/Credentials.java).
-# Since that is unusable, we are forced to operate only in unmanaged mode, where we get it from the application report.
+# In managed mode, the AMRMToken available in file CONTAINER_TOKEN_FILE_ENV_NAME is in Java serialized format
+#   - Example: https://github.com/apache/hadoop/blob/ab32762f4381449540e1580eeda1cd5198e1e5fa/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/launcher/ContainerLaunch.java#L348-L351
+#   - Some related debate about this here: https://issues.apache.org/jira/browse/HADOOP-6685
+# Since that is unusable in anything other than Java, we are forced to operate only in unmanaged mode, where we get it from the application report.
 
 const YARN_CONTAINER_MEM_DEFAULT = 128
 const YARN_CONTAINER_CPU_DEFAULT = 1
@@ -66,11 +68,13 @@ end
 
 function show(io::IO, yam::YarnAppMaster)
     show(io, yam.amrm_conn)
-    println(io, "    Memory: available:$(yam.available_mem), max:$(yam.max_mem), can schecule:$(can_schedule_mem(yam))")
-    println(io, "    Cores: available:$(yam.available_cores), max:$(yam.max_cores), can schedule:$(can_schedule_cores(yam))")
-    println(io, "    Queue: $(yam.queue)")
-    show(io, yam.nodes)
-    show(io, yam.containers)
+    if yam.registration !== nothing
+        println(io, "    Memory: available:$(yam.available_mem), max:$(yam.max_mem), can schecule:$(can_schedule_mem(yam))")
+        println(io, "    Cores: available:$(yam.available_cores), max:$(yam.max_cores), can schedule:$(can_schedule_cores(yam))")
+        println(io, "    Queue: $(yam.queue)")
+        show(io, yam.nodes)
+        show(io, yam.containers)
+    end
 end
 
 callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_container_finish::Union{Nothing,Function}) = 

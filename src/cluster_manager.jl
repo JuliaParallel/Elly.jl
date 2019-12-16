@@ -120,8 +120,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     initargs = "using Elly; Elly.setup_worker($(ipaddr.host), $(port), $(cookie))"
     clc = launchcontext(cmd="$cmd -e '$initargs'", env=appenv)
 
-    @debug("YarnManager launch", initargs)
-    @debug("YarnManager launch", context=clc)
+    @debug("YarnManager launch", initargs, context=clc)
     on_alloc = (cid) -> container_start(manager.am, cid, clc)
     callback(manager.am, on_alloc, nothing)
 
