@@ -28,12 +28,6 @@ end #mutable struct XAttrProto
 const __req_XAttrProto = Symbol[:namespace,:name]
 meta(t::Type{XAttrProto}) = meta(t, __req_XAttrProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
-mutable struct XAttrEditLogProto <: ProtoType
-    src::AbstractString
-    xAttrs::Base.Vector{XAttrProto}
-    XAttrEditLogProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct XAttrEditLogProto
-
 mutable struct SetXAttrRequestProto <: ProtoType
     src::AbstractString
     xAttr::XAttrProto
@@ -84,4 +78,4 @@ mutable struct RemoveXAttrResponseProto <: ProtoType
     RemoveXAttrResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RemoveXAttrResponseProto
 
-export XAttrSetFlagProto, XAttrProto_XAttrNamespaceProto, XAttrProto, XAttrEditLogProto, SetXAttrRequestProto, SetXAttrResponseProto, GetXAttrsRequestProto, GetXAttrsResponseProto, ListXAttrsRequestProto, ListXAttrsResponseProto, RemoveXAttrRequestProto, RemoveXAttrResponseProto
+export XAttrSetFlagProto, XAttrProto_XAttrNamespaceProto, XAttrProto, SetXAttrRequestProto, SetXAttrResponseProto, GetXAttrsRequestProto, GetXAttrsResponseProto, ListXAttrsRequestProto, ListXAttrsResponseProto, RemoveXAttrRequestProto, RemoveXAttrResponseProto

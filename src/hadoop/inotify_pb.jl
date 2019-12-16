@@ -9,7 +9,8 @@ struct __enum_EventType <: ProtoEnum
     EVENT_RENAME::Int32
     EVENT_METADATA::Int32
     EVENT_UNLINK::Int32
-    __enum_EventType() = new(0,1,2,3,4,5)
+    EVENT_TRUNCATE::Int32
+    __enum_EventType() = new(0,1,2,3,4,5,6)
 end #struct __enum_EventType
 const EventType = __enum_EventType()
 
@@ -74,6 +75,15 @@ end #mutable struct CloseEventProto
 const __req_CloseEventProto = Symbol[:path,:fileSize,:timestamp]
 meta(t::Type{CloseEventProto}) = meta(t, __req_CloseEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
+mutable struct TruncateEventProto <: ProtoType
+    path::AbstractString
+    fileSize::Int64
+    timestamp::Int64
+    TruncateEventProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct TruncateEventProto
+const __req_TruncateEventProto = Symbol[:path,:fileSize,:timestamp]
+meta(t::Type{TruncateEventProto}) = meta(t, __req_TruncateEventProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
 mutable struct AppendEventProto <: ProtoType
     path::AbstractString
     newBlock::Bool
@@ -128,4 +138,4 @@ end #mutable struct EventsListProto
 const __req_EventsListProto = Symbol[:firstTxid,:lastTxid,:syncTxid]
 meta(t::Type{EventsListProto}) = meta(t, __req_EventsListProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
-export EventType, INodeType, MetadataUpdateType, EventProto, EventBatchProto, CreateEventProto, CloseEventProto, AppendEventProto, RenameEventProto, MetadataUpdateEventProto, UnlinkEventProto, EventsListProto
+export EventType, INodeType, MetadataUpdateType, EventProto, EventBatchProto, CreateEventProto, CloseEventProto, TruncateEventProto, AppendEventProto, RenameEventProto, MetadataUpdateEventProto, UnlinkEventProto, EventsListProto

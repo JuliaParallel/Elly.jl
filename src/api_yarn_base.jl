@@ -318,9 +318,8 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
         @debug("have completed containers")
         for contst in arp.completed_container_statuses
             id = contst.container_id
-            @debug("container $id is finished")
             status[id] = contst
-            @debug("id in active: $(id in active)")
+            @debug("container finished", id, active=(id in active))
             (id in active) && pop!(active, id)
             (id in busy) && pop!(busy, id)
             @debug("calling callback for finish")

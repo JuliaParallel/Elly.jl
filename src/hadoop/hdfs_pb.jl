@@ -34,16 +34,6 @@ struct __enum_ChecksumTypeProto <: ProtoEnum
 end #struct __enum_ChecksumTypeProto
 const ChecksumTypeProto = __enum_ChecksumTypeProto()
 
-struct __enum_ReplicaStateProto <: ProtoEnum
-    FINALIZED::Int32
-    RBW::Int32
-    RWR::Int32
-    RUR::Int32
-    TEMPORARY::Int32
-    __enum_ReplicaStateProto() = new(0,1,2,3,4)
-end #struct __enum_ReplicaStateProto
-const ReplicaStateProto = __enum_ReplicaStateProto()
-
 mutable struct ExtendedBlockProto <: ProtoType
     poolId::AbstractString
     blockId::UInt64
@@ -78,11 +68,26 @@ end #mutable struct DatanodeLocalInfoProto
 const __req_DatanodeLocalInfoProto = Symbol[:softwareVersion,:configVersion,:uptime]
 meta(t::Type{DatanodeLocalInfoProto}) = meta(t, __req_DatanodeLocalInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
+mutable struct DatanodeVolumeInfoProto <: ProtoType
+    path::AbstractString
+    storageType::Int32
+    usedSpace::UInt64
+    freeSpace::UInt64
+    reservedSpace::UInt64
+    reservedSpaceForReplicas::UInt64
+    numBlocks::UInt64
+    DatanodeVolumeInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct DatanodeVolumeInfoProto
+const __req_DatanodeVolumeInfoProto = Symbol[:path,:storageType,:usedSpace,:freeSpace,:reservedSpace,:reservedSpaceForReplicas,:numBlocks]
+meta(t::Type{DatanodeVolumeInfoProto}) = meta(t, __req_DatanodeVolumeInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
 struct __enum_DatanodeInfoProto_AdminState <: ProtoEnum
     NORMAL::Int32
     DECOMMISSION_INPROGRESS::Int32
     DECOMMISSIONED::Int32
-    __enum_DatanodeInfoProto_AdminState() = new(0,1,2)
+    ENTERING_MAINTENANCE::Int32
+    IN_MAINTENANCE::Int32
+    __enum_DatanodeInfoProto_AdminState() = new(0,1,2,3,4)
 end #struct __enum_DatanodeInfoProto_AdminState
 const DatanodeInfoProto_AdminState = __enum_DatanodeInfoProto_AdminState()
 
@@ -95,16 +100,19 @@ mutable struct DatanodeInfoProto <: ProtoType
     lastUpdate::UInt64
     xceiverCount::UInt32
     location::AbstractString
+    nonDfsUsed::UInt64
     adminState::Int32
     cacheCapacity::UInt64
     cacheUsed::UInt64
     lastUpdateMonotonic::UInt64
+    upgradeDomain::AbstractString
+    lastBlockReportTime::UInt64
+    lastBlockReportMonotonic::UInt64
     DatanodeInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct DatanodeInfoProto
 const __req_DatanodeInfoProto = Symbol[:id]
-const __val_DatanodeInfoProto = Dict(:capacity => 0, :dfsUsed => 0, :remaining => 0, :blockPoolUsed => 0, :lastUpdate => 0, :xceiverCount => 0, :adminState => DatanodeInfoProto_AdminState.NORMAL, :cacheCapacity => 0, :cacheUsed => 0, :lastUpdateMonotonic => 0)
-const __fnum_DatanodeInfoProto = Int[1,2,3,4,5,6,7,8,10,11,12,13]
-meta(t::Type{DatanodeInfoProto}) = meta(t, __req_DatanodeInfoProto, __fnum_DatanodeInfoProto, __val_DatanodeInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+const __val_DatanodeInfoProto = Dict(:capacity => 0, :dfsUsed => 0, :remaining => 0, :blockPoolUsed => 0, :lastUpdate => 0, :xceiverCount => 0, :adminState => DatanodeInfoProto_AdminState.NORMAL, :cacheCapacity => 0, :cacheUsed => 0, :lastUpdateMonotonic => 0, :lastBlockReportTime => 0, :lastBlockReportMonotonic => 0)
+meta(t::Type{DatanodeInfoProto}) = meta(t, __req_DatanodeInfoProto, ProtoBuf.DEF_FNUM, __val_DatanodeInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
 mutable struct DatanodeInfosProto <: ProtoType
     datanodes::Base.Vector{DatanodeInfoProto}
@@ -136,6 +144,7 @@ mutable struct StorageReportProto <: ProtoType
     remaining::UInt64
     blockPoolUsed::UInt64
     storage::DatanodeStorageProto
+    nonDfsUsed::UInt64
     StorageReportProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct StorageReportProto
 const __req_StorageReportProto = Symbol[:storageUuid]
@@ -164,10 +173,25 @@ mutable struct ContentSummaryProto <: ProtoType
     spaceConsumed::UInt64
     spaceQuota::UInt64
     typeQuotaInfos::StorageTypeQuotaInfosProto
+    snapshotLength::UInt64
+    snapshotFileCount::UInt64
+    snapshotDirectoryCount::UInt64
+    snapshotSpaceConsumed::UInt64
     ContentSummaryProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct ContentSummaryProto
 const __req_ContentSummaryProto = Symbol[:length,:fileCount,:directoryCount,:quota,:spaceConsumed,:spaceQuota]
 meta(t::Type{ContentSummaryProto}) = meta(t, __req_ContentSummaryProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
+mutable struct QuotaUsageProto <: ProtoType
+    fileAndDirectoryCount::UInt64
+    quota::UInt64
+    spaceConsumed::UInt64
+    spaceQuota::UInt64
+    typeQuotaInfos::StorageTypeQuotaInfosProto
+    QuotaUsageProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct QuotaUsageProto
+const __req_QuotaUsageProto = Symbol[:fileAndDirectoryCount,:quota,:spaceConsumed,:spaceQuota]
+meta(t::Type{QuotaUsageProto}) = meta(t, __req_QuotaUsageProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
 mutable struct CorruptFileBlocksProto <: ProtoType
     files::Base.Vector{AbstractString}
@@ -199,11 +223,6 @@ mutable struct BlockStoragePolicyProto <: ProtoType
 end #mutable struct BlockStoragePolicyProto
 const __req_BlockStoragePolicyProto = Symbol[:policyId,:name,:creationPolicy]
 meta(t::Type{BlockStoragePolicyProto}) = meta(t, __req_BlockStoragePolicyProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct StorageUuidsProto <: ProtoType
-    storageUuids::Base.Vector{AbstractString}
-    StorageUuidsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct StorageUuidsProto
 
 mutable struct LocatedBlockProto <: ProtoType
     b::ExtendedBlockProto
@@ -325,10 +344,12 @@ mutable struct FsServerDefaultsProto <: ProtoType
     encryptDataTransfer::Bool
     trashInterval::UInt64
     checksumType::Int32
+    keyProviderUri::AbstractString
+    policyId::UInt32
     FsServerDefaultsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct FsServerDefaultsProto
 const __req_FsServerDefaultsProto = Symbol[:blockSize,:bytesPerChecksum,:writePacketSize,:replication,:fileBufferSize]
-const __val_FsServerDefaultsProto = Dict(:encryptDataTransfer => false, :trashInterval => 0, :checksumType => ChecksumTypeProto.CHECKSUM_CRC32)
+const __val_FsServerDefaultsProto = Dict(:encryptDataTransfer => false, :trashInterval => 0, :checksumType => ChecksumTypeProto.CHECKSUM_CRC32, :policyId => 0)
 meta(t::Type{FsServerDefaultsProto}) = meta(t, __req_FsServerDefaultsProto, ProtoBuf.DEF_FNUM, __val_FsServerDefaultsProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
 mutable struct DirectoryListingProto <: ProtoType
@@ -373,69 +394,6 @@ end #mutable struct SnapshotDiffReportProto
 const __req_SnapshotDiffReportProto = Symbol[:snapshotRoot,:fromSnapshot,:toSnapshot]
 meta(t::Type{SnapshotDiffReportProto}) = meta(t, __req_SnapshotDiffReportProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
-mutable struct StorageInfoProto <: ProtoType
-    layoutVersion::UInt32
-    namespceID::UInt32
-    clusterID::AbstractString
-    cTime::UInt64
-    StorageInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct StorageInfoProto
-const __req_StorageInfoProto = Symbol[:layoutVersion,:namespceID,:clusterID,:cTime]
-meta(t::Type{StorageInfoProto}) = meta(t, __req_StorageInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-struct __enum_NamenodeRegistrationProto_NamenodeRoleProto <: ProtoEnum
-    NAMENODE::Int32
-    BACKUP::Int32
-    CHECKPOINT::Int32
-    __enum_NamenodeRegistrationProto_NamenodeRoleProto() = new(1,2,3)
-end #struct __enum_NamenodeRegistrationProto_NamenodeRoleProto
-const NamenodeRegistrationProto_NamenodeRoleProto = __enum_NamenodeRegistrationProto_NamenodeRoleProto()
-
-mutable struct NamenodeRegistrationProto <: ProtoType
-    rpcAddress::AbstractString
-    httpAddress::AbstractString
-    storageInfo::StorageInfoProto
-    role::Int32
-    NamenodeRegistrationProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct NamenodeRegistrationProto
-const __req_NamenodeRegistrationProto = Symbol[:rpcAddress,:httpAddress,:storageInfo]
-const __val_NamenodeRegistrationProto = Dict(:role => NamenodeRegistrationProto_NamenodeRoleProto.NAMENODE)
-meta(t::Type{NamenodeRegistrationProto}) = meta(t, __req_NamenodeRegistrationProto, ProtoBuf.DEF_FNUM, __val_NamenodeRegistrationProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct CheckpointSignatureProto <: ProtoType
-    blockPoolId::AbstractString
-    mostRecentCheckpointTxId::UInt64
-    curSegmentTxId::UInt64
-    storageInfo::StorageInfoProto
-    CheckpointSignatureProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CheckpointSignatureProto
-const __req_CheckpointSignatureProto = Symbol[:blockPoolId,:mostRecentCheckpointTxId,:curSegmentTxId,:storageInfo]
-meta(t::Type{CheckpointSignatureProto}) = meta(t, __req_CheckpointSignatureProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct CheckpointCommandProto <: ProtoType
-    signature::CheckpointSignatureProto
-    needToReturnImage::Bool
-    CheckpointCommandProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CheckpointCommandProto
-const __req_CheckpointCommandProto = Symbol[:signature,:needToReturnImage]
-meta(t::Type{CheckpointCommandProto}) = meta(t, __req_CheckpointCommandProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-struct __enum_NamenodeCommandProto_Type <: ProtoEnum
-    NamenodeCommand::Int32
-    CheckPointCommand::Int32
-    __enum_NamenodeCommandProto_Type() = new(0,1)
-end #struct __enum_NamenodeCommandProto_Type
-const NamenodeCommandProto_Type = __enum_NamenodeCommandProto_Type()
-
-mutable struct NamenodeCommandProto <: ProtoType
-    action::UInt32
-    _type::Int32
-    checkpointCmd::CheckpointCommandProto
-    NamenodeCommandProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct NamenodeCommandProto
-const __req_NamenodeCommandProto = Symbol[:action,:_type]
-meta(t::Type{NamenodeCommandProto}) = meta(t, __req_NamenodeCommandProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
 mutable struct BlockProto <: ProtoType
     blockId::UInt64
     genStamp::UInt64
@@ -445,89 +403,6 @@ end #mutable struct BlockProto
 const __req_BlockProto = Symbol[:blockId,:genStamp]
 const __val_BlockProto = Dict(:numBytes => 0)
 meta(t::Type{BlockProto}) = meta(t, __req_BlockProto, ProtoBuf.DEF_FNUM, __val_BlockProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct BlockWithLocationsProto <: ProtoType
-    block::BlockProto
-    datanodeUuids::Base.Vector{AbstractString}
-    storageUuids::Base.Vector{AbstractString}
-    storageTypes::Base.Vector{Int32}
-    BlockWithLocationsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct BlockWithLocationsProto
-const __req_BlockWithLocationsProto = Symbol[:block]
-meta(t::Type{BlockWithLocationsProto}) = meta(t, __req_BlockWithLocationsProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct BlocksWithLocationsProto <: ProtoType
-    blocks::Base.Vector{BlockWithLocationsProto}
-    BlocksWithLocationsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct BlocksWithLocationsProto
-
-mutable struct RemoteEditLogProto <: ProtoType
-    startTxId::UInt64
-    endTxId::UInt64
-    isInProgress::Bool
-    RemoteEditLogProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RemoteEditLogProto
-const __req_RemoteEditLogProto = Symbol[:startTxId,:endTxId]
-const __val_RemoteEditLogProto = Dict(:isInProgress => false)
-meta(t::Type{RemoteEditLogProto}) = meta(t, __req_RemoteEditLogProto, ProtoBuf.DEF_FNUM, __val_RemoteEditLogProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct RemoteEditLogManifestProto <: ProtoType
-    logs::Base.Vector{RemoteEditLogProto}
-    RemoteEditLogManifestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RemoteEditLogManifestProto
-
-mutable struct NamespaceInfoProto <: ProtoType
-    buildVersion::AbstractString
-    unused::UInt32
-    blockPoolID::AbstractString
-    storageInfo::StorageInfoProto
-    softwareVersion::AbstractString
-    capabilities::UInt64
-    NamespaceInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct NamespaceInfoProto
-const __req_NamespaceInfoProto = Symbol[:buildVersion,:unused,:blockPoolID,:storageInfo,:softwareVersion]
-const __val_NamespaceInfoProto = Dict(:capabilities => 0)
-meta(t::Type{NamespaceInfoProto}) = meta(t, __req_NamespaceInfoProto, ProtoBuf.DEF_FNUM, __val_NamespaceInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct BlockKeyProto <: ProtoType
-    keyId::UInt32
-    expiryDate::UInt64
-    keyBytes::Array{UInt8,1}
-    BlockKeyProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct BlockKeyProto
-const __req_BlockKeyProto = Symbol[:keyId,:expiryDate]
-meta(t::Type{BlockKeyProto}) = meta(t, __req_BlockKeyProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct ExportedBlockKeysProto <: ProtoType
-    isBlockTokenEnabled::Bool
-    keyUpdateInterval::UInt64
-    tokenLifeTime::UInt64
-    currentKey::BlockKeyProto
-    allKeys::Base.Vector{BlockKeyProto}
-    ExportedBlockKeysProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ExportedBlockKeysProto
-const __req_ExportedBlockKeysProto = Symbol[:isBlockTokenEnabled,:keyUpdateInterval,:tokenLifeTime,:currentKey]
-meta(t::Type{ExportedBlockKeysProto}) = meta(t, __req_ExportedBlockKeysProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct RecoveringBlockProto <: ProtoType
-    newGenStamp::UInt64
-    block::LocatedBlockProto
-    truncateBlock::BlockProto
-    RecoveringBlockProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RecoveringBlockProto
-const __req_RecoveringBlockProto = Symbol[:newGenStamp,:block]
-meta(t::Type{RecoveringBlockProto}) = meta(t, __req_RecoveringBlockProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
-
-mutable struct VersionRequestProto <: ProtoType
-    VersionRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct VersionRequestProto
-
-mutable struct VersionResponseProto <: ProtoType
-    info::NamespaceInfoProto
-    VersionResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct VersionResponseProto
-const __req_VersionResponseProto = Symbol[:info]
-meta(t::Type{VersionResponseProto}) = meta(t, __req_VersionResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
 mutable struct SnapshotInfoProto <: ProtoType
     snapshotName::AbstractString
@@ -550,4 +425,4 @@ const __req_RollingUpgradeStatusProto = Symbol[:blockPoolId]
 const __val_RollingUpgradeStatusProto = Dict(:finalized => false)
 meta(t::Type{RollingUpgradeStatusProto}) = meta(t, __req_RollingUpgradeStatusProto, ProtoBuf.DEF_FNUM, __val_RollingUpgradeStatusProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
-export StorageTypeProto, CipherSuiteProto, CryptoProtocolVersionProto, ChecksumTypeProto, ReplicaStateProto, ExtendedBlockProto, DatanodeIDProto, DatanodeLocalInfoProto, DatanodeInfosProto, DatanodeInfoProto_AdminState, DatanodeInfoProto, DatanodeStorageProto_StorageState, DatanodeStorageProto, StorageReportProto, ContentSummaryProto, StorageTypeQuotaInfosProto, StorageTypeQuotaInfoProto, CorruptFileBlocksProto, FsPermissionProto, StorageTypesProto, BlockStoragePolicyProto, StorageUuidsProto, LocatedBlockProto, DataEncryptionKeyProto, FileEncryptionInfoProto, PerFileEncryptionInfoProto, ZoneEncryptionInfoProto, CipherOptionProto, LocatedBlocksProto, HdfsFileStatusProto_FileType, HdfsFileStatusProto, FsServerDefaultsProto, DirectoryListingProto, SnapshottableDirectoryStatusProto, SnapshottableDirectoryListingProto, SnapshotDiffReportEntryProto, SnapshotDiffReportProto, StorageInfoProto, NamenodeRegistrationProto_NamenodeRoleProto, NamenodeRegistrationProto, CheckpointSignatureProto, NamenodeCommandProto_Type, NamenodeCommandProto, CheckpointCommandProto, BlockProto, BlockWithLocationsProto, BlocksWithLocationsProto, RemoteEditLogProto, RemoteEditLogManifestProto, NamespaceInfoProto, BlockKeyProto, ExportedBlockKeysProto, RecoveringBlockProto, VersionRequestProto, VersionResponseProto, SnapshotInfoProto, RollingUpgradeStatusProto
+export StorageTypeProto, CipherSuiteProto, CryptoProtocolVersionProto, ChecksumTypeProto, ExtendedBlockProto, DatanodeIDProto, DatanodeLocalInfoProto, DatanodeVolumeInfoProto, DatanodeInfosProto, DatanodeInfoProto_AdminState, DatanodeInfoProto, DatanodeStorageProto_StorageState, DatanodeStorageProto, StorageReportProto, ContentSummaryProto, QuotaUsageProto, StorageTypeQuotaInfosProto, StorageTypeQuotaInfoProto, CorruptFileBlocksProto, FsPermissionProto, StorageTypesProto, BlockStoragePolicyProto, LocatedBlockProto, DataEncryptionKeyProto, FileEncryptionInfoProto, PerFileEncryptionInfoProto, ZoneEncryptionInfoProto, CipherOptionProto, LocatedBlocksProto, HdfsFileStatusProto_FileType, HdfsFileStatusProto, FsServerDefaultsProto, DirectoryListingProto, SnapshottableDirectoryStatusProto, SnapshottableDirectoryListingProto, SnapshotDiffReportEntryProto, SnapshotDiffReportProto, BlockProto, SnapshotInfoProto, RollingUpgradeStatusProto

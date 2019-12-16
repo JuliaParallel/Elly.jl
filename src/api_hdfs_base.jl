@@ -391,7 +391,7 @@ function _complete_file(client::HDFSClient, path::AbstractString, last::Union{No
                 :clientName => ELLY_CLIENTNAME))
     if last !== nothing
         setproperty!(endinp, :last, last)
-        @debug("setting last block as $(last)")
+        @debug("setting last block as", last)
     end
 
     endresp = complete(client.nn_conn, endinp)
@@ -400,7 +400,7 @@ end
 
 function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Union{Nothing,T}=nothing) where T<:LocatedBlockProto
     (previous === nothing) && (return _add_block(ExtendedBlockProto, client, path))
-    @debug("adding next block to $(previous.b)")
+    @debug("adding next block to", previous.b)
     _add_block(ExtendedBlockProto, client, path, previous.b)
 end
 function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Union{Nothing,T}=nothing) where T<:ExtendedBlockProto

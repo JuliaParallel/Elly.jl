@@ -13,7 +13,7 @@ struct YarnManager <: ClusterManager
             params[n] = v
         end
         paramkeys = keys(params)
-        @debug("YarnManager constructor: params: $params")
+        @debug("YarnManager constructor", params)
         
         user            = (:user            in paramkeys) ? params[:user]           : ""
         rmport          = (:rmport          in paramkeys) ? params[:rmport]         : 8032
@@ -41,7 +41,7 @@ function show(io::IO, yarncm::YarnManager)
 end
 
 function setup_worker(host, port, cookie)
-    @debug("YarnManager setup_worker: host:$host port:$port cookie:$cookie for container $(ENV[CONTAINER_ID])")
+    @debug("YarnManager setup_worker", host, port, cookie, container=ENV[CONTAINER_ID])
     c = connect(IPv4(host), port)
     if :wait_connected in names(Base; all=true) # < Julia 1.3
         Base.wait_connected(c)
@@ -95,7 +95,7 @@ function _currprocname()
 end
 
 function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Condition)
-    @debug("YarnManager launch: params: $params")
+    @debug("YarnManager launch", params)
 
     paramkeys   = keys(params)
     np          = (:np       in paramkeys)  ? params[:np]               : 1
@@ -120,8 +120,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     initargs = "using Elly; Elly.setup_worker($(ipaddr.host), $(port), $(cookie))"
     clc = launchcontext(cmd="$cmd -e '$initargs'", env=appenv)
 
-    @debug("YarnManager launch: initargs: $initargs")
-    @debug("YarnManager launch: context: $clc")
+    @debug("YarnManager launch", initargs, context=clc)
     on_alloc = (cid) -> container_start(manager.am, cid, clc)
     callback(manager.am, on_alloc, nothing)
 
@@ -160,7 +159,7 @@ end
 function manage(manager::YarnManager, id::Integer, config::WorkerConfig, op::Symbol)
     # This function needs to exist, but so far we don't do anything
     if op == :deregister
-        @debug("YarnManager manage: id:$id, op:$op, nprocs:$(nprocs())")
+        @debug("YarnManager manage", id, op, nprocs=nprocs())
         !manager.keep_connected && (1 == nprocs()) && (@async disconnect(manager))
     end
     nothing

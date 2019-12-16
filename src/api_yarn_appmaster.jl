@@ -3,8 +3,10 @@
 # - applicationmaster_protocol.proto
 # - containermanagement_protocol.proto
 
-# In managed mode, the AMRMToken available in file CONTAINER_TOKEN_FILE_ENV_NAME is in Java serialized format (https://apache.googlesource.com/hadoop-common/+/HADOOP-6685/src/java/org/apache/hadoop/security/Credentials.java).
-# Since that is unusable, we are forced to operate only in unmanaged mode, where we get it from the application report.
+# In managed mode, the AMRMToken available in file CONTAINER_TOKEN_FILE_ENV_NAME is in Java serialized format
+#   - Example: https://github.com/apache/hadoop/blob/ab32762f4381449540e1580eeda1cd5198e1e5fa/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/launcher/ContainerLaunch.java#L348-L351
+#   - Some related debate about this here: https://issues.apache.org/jira/browse/HADOOP-6685
+# Since that is unusable in anything other than Java, we are forced to operate only in unmanaged mode, where we get it from the application report.
 
 const YARN_CONTAINER_MEM_DEFAULT = 128
 const YARN_CONTAINER_CPU_DEFAULT = 1
@@ -34,7 +36,7 @@ mutable struct YarnAppMaster
     queue::AbstractString
     managed::Bool
 
-    response_id::Int32
+    response_id::Int32      # initial value must be 0, update with response_id sent from server on every response
     
     registration::Union{Nothing,RegisterApplicationMasterResponseProto}
     lck::Lock
@@ -48,7 +50,7 @@ mutable struct YarnAppMaster
         new(amrm_conn, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(ugi), YarnContainers(),
-            "", true, 1,
+            "", true, 0,
             nothing, lck)
     end
 end
@@ -66,11 +68,13 @@ end
 
 function show(io::IO, yam::YarnAppMaster)
     show(io, yam.amrm_conn)
-    println(io, "    Memory: available:$(yam.available_mem), max:$(yam.max_mem), can schecule:$(can_schedule_mem(yam))")
-    println(io, "    Cores: available:$(yam.available_cores), max:$(yam.max_cores), can schedule:$(can_schedule_cores(yam))")
-    println(io, "    Queue: $(yam.queue)")
-    show(io, yam.nodes)
-    show(io, yam.containers)
+    if yam.registration !== nothing
+        println(io, "    Memory: available:$(yam.available_mem), max:$(yam.max_mem), can schecule:$(can_schedule_mem(yam))")
+        println(io, "    Cores: available:$(yam.available_cores), max:$(yam.max_cores), can schedule:$(can_schedule_cores(yam))")
+        println(io, "    Queue: $(yam.queue)")
+        show(io, yam.nodes)
+        show(io, yam.containers)
+    end
 end
 
 callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_container_finish::Union{Nothing,Function}) = 
@@ -116,7 +120,7 @@ function register(yam::YarnAppMaster)
         yam.max_mem = resp.maximumCapability.memory
         yam.max_cores = resp.maximumCapability.virtual_cores
     end
-    @debug("max capability: mem:$(yam.max_mem), cores:$(yam.max_cores)")
+    @debug("max capability", mem=yam.max_mem, cores=yam.max_cores)
     if isfilled(resp, :queue)
         yam.queue = resp.queue
     end
@@ -155,7 +159,7 @@ container_release(yam::YarnAppMaster, cids::ContainerIdProto...) = request_relea
 
 container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cid], container_spec)
 function container_start(yam::YarnAppMaster, container::ContainerProto, container_spec::ContainerLaunchContextProto)
-    @debug("starting container $(container)")
+    @debug("starting", container)
     req = protobuild(StartContainerRequestProto, Dict(:container_launch_context => container_spec, :container_token => container.container_token))
     inp = protobuild(StartContainersRequestProto, Dict(:start_container_request => [req]))
 
@@ -181,7 +185,7 @@ end
 
 container_stop(yam::YarnAppMaster, cid::ContainerIdProto) = container_stop(yam, yam.containers.containers[cid])
 function container_stop(yam::YarnAppMaster, container::ContainerProto)
-    @debug("stopping container $container")
+    @debug("stopping", container)
 
     inp = protobuild(StopContainersRequestProto, Dict(:container_id => [container.id]))
     nodeid = container.nodeId
@@ -210,22 +214,18 @@ function _update_rm(yam::YarnAppMaster)
 
     # allocation and release requests
     (alloc_pending,release_pending) = torequest(yam.containers)
-    @debug("alloc pending: $alloc_pending")
-    @debug("release pending: $release_pending")
+    @debug("pending", alloc_pending, release_pending)
     !isempty(alloc_pending) && setproperty!(inp, :ask, alloc_pending)
     !isempty(release_pending) && setproperty!(inp, :release, release_pending)
 
-    # send one-up response id
-    if yam.response_id == typemax(Int32)
-        yam.response_id = 1
-    else
-        yam.response_id += 1
-    end
+    # send last received response id as response_id in this request
     setproperty!(inp, :response_id, yam.response_id)
 
     #@debug(inp)
     resp = withlock(yam) do
-        allocate(yam.amrm_conn, inp)
+        allocate_resp = allocate(yam.amrm_conn, inp)
+        yam.response_id = allocate_resp.response_id # next response id must match this
+        allocate_resp
     end
     #@debug(resp)
 

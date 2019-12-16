@@ -16,6 +16,14 @@ mutable struct RPCTraceInfoProto <: ProtoType
     RPCTraceInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RPCTraceInfoProto
 
+mutable struct RPCCallerContextProto <: ProtoType
+    context::AbstractString
+    signature::Array{UInt8,1}
+    RPCCallerContextProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
+end #mutable struct RPCCallerContextProto
+const __req_RPCCallerContextProto = Symbol[:context]
+meta(t::Type{RPCCallerContextProto}) = meta(t, __req_RPCCallerContextProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+
 struct __enum_RpcRequestHeaderProto_OperationProto <: ProtoEnum
     RPC_FINAL_PACKET::Int32
     RPC_CONTINUATION_PACKET::Int32
@@ -31,6 +39,8 @@ mutable struct RpcRequestHeaderProto <: ProtoType
     clientId::Array{UInt8,1}
     retryCount::Int32
     traceInfo::RPCTraceInfoProto
+    callerContext::RPCCallerContextProto
+    stateId::Int64
     RpcRequestHeaderProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RpcRequestHeaderProto
 const __req_RpcRequestHeaderProto = Symbol[:callId,:clientId]
@@ -72,6 +82,7 @@ mutable struct RpcResponseHeaderProto <: ProtoType
     errorDetail::Int32
     clientId::Array{UInt8,1}
     retryCount::Int32
+    stateId::Int64
     RpcResponseHeaderProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
 end #mutable struct RpcResponseHeaderProto
 const __req_RpcResponseHeaderProto = Symbol[:callId,:status]
@@ -111,4 +122,4 @@ end #mutable struct RpcSaslProto
 const __req_RpcSaslProto = Symbol[:state]
 meta(t::Type{RpcSaslProto}) = meta(t, __req_RpcSaslProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
 
-export RpcKindProto, RPCTraceInfoProto, RpcRequestHeaderProto_OperationProto, RpcRequestHeaderProto, RpcResponseHeaderProto_RpcStatusProto, RpcResponseHeaderProto_RpcErrorCodeProto, RpcResponseHeaderProto, RpcSaslProto_SaslState, RpcSaslProto_SaslAuth, RpcSaslProto
+export RpcKindProto, RPCTraceInfoProto, RPCCallerContextProto, RpcRequestHeaderProto_OperationProto, RpcRequestHeaderProto, RpcResponseHeaderProto_RpcStatusProto, RpcResponseHeaderProto_RpcErrorCodeProto, RpcResponseHeaderProto, RpcSaslProto_SaslState, RpcSaslProto_SaslAuth, RpcSaslProto
