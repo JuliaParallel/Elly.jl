@@ -4,13 +4,19 @@ mutable struct UserGroupInformation
     tokens::Dict{AbstractString,TokenProto}
     function UserGroupInformation(username::AbstractString="")
         isempty(username) && (username = ENV["USER"])
+        #userinfo = protobuild(UserInformationProto, Dict(:realUser => username, :effectiveUser => username))
         userinfo = protobuild(UserInformationProto, Dict(:realUser => username))
+        #userinfo = protobuild(UserInformationProto, Dict(:effectiveUser => username))
         new(userinfo, Dict{AbstractString,TokenProto}())
     end
 end
 
 add_token(ugi::UserGroupInformation, token::TokenProto) = add_token(ugi, token.service, token)
-add_token(ugi::UserGroupInformation, alias::AbstractString, token::TokenProto) = (ugi.tokens[alias] = token; nothing)
+function add_token(ugi::UserGroupInformation, alias::AbstractString, token::TokenProto)
+    @info("adding token", alias, token, token_identifier=String(copy(token.identifier)), token_password=String(copy(token,password)), token_kind=token.kind)
+    ugi.tokens[alias] = token
+    nothing
+end
 
 username(userinfo::UserInformationProto) = isfilled(userinfo, :realUser) ? userinfo.realUser : userinfo.effectiveUser
 username(ugi::UserGroupInformation) = username(ugi.userinfo)
