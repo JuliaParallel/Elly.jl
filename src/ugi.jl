@@ -13,7 +13,7 @@ end
 
 add_token(ugi::UserGroupInformation, token::TokenProto) = add_token(ugi, token.service, token)
 function add_token(ugi::UserGroupInformation, alias::AbstractString, token::TokenProto)
-    @info("adding token", alias, token, token_identifier=String(copy(token.identifier)), token_password=String(copy(token,password)), token_kind=token.kind)
+    @info("adding token", alias, token, token_identifier=String(copy(token.identifier)), token_password=String(copy(token.password)), token_kind=token.kind)
     ugi.tokens[alias] = token
     nothing
 end
