@@ -1,12 +1,20 @@
 # Basic UserGroupInformation to store user information and tokens,
+# realUser: what it is at client side
+# effectiveUser: set this to specify what this should be proxied as at the server end
+# ref: https://www.opencore.com/blog/2016/5/user-name-handling-in-hadoop/
 mutable struct UserGroupInformation
     userinfo::UserInformationProto
     tokens::Dict{AbstractString,TokenProto}
-    function UserGroupInformation(username::AbstractString="")
-        isempty(username) && (username = ENV["USER"])
-        userinfo = protobuild(UserInformationProto, Dict(:realUser => username))
+    function UserGroupInformation(username::AbstractString=default_username(); proxy::Bool=false, proxyuser::AbstractString=username)
+        userinfo = proxy ? protobuild(UserInformationProto, Dict(:realUser => username, :effectiveUser => proxyuser)) : protobuild(UserInformationProto, Dict(:realUser => username))
         new(userinfo, Dict{AbstractString,TokenProto}())
     end
+end
+
+function default_username()
+    ("HADOOP_USER_NAME" in keys(ENV)) && (return ENV["HADOOP_USER_NAME"])
+    ("USER" in keys(ENV)) && (return ENV["USER"])
+    error("Can not determine user information. Either HADOOP_USER_NAME or USER must be set.")
 end
 
 add_token(ugi::UserGroupInformation, token::TokenProto) = add_token(ugi, token.service, token)
