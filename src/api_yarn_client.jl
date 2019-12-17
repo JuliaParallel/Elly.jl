@@ -178,6 +178,7 @@ function submit(client::YarnClient, container_spec::ContainerLaunchContextProto,
                 :keep_containers_across_application_attempts => reuse))
   
     inp = protobuild(SubmitApplicationRequestProto, Dict(:application_submission_context => asc))
+    @info("submitApplication", inp, prio, res, asc)
 
     submitApplication(client.rm_conn, inp)
     YarnApp(client, appid)
