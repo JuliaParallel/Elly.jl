@@ -222,13 +222,13 @@ function _update_rm(yam::YarnAppMaster)
     # send last received response id as response_id in this request
     setproperty!(inp, :response_id, yam.response_id)
 
-    #@debug(inp)
+    @info(inp)
     resp = withlock(yam) do
         allocate_resp = allocate(yam.amrm_conn, inp)
         yam.response_id = allocate_resp.response_id # next response id must match this
         allocate_resp
     end
-    #@debug(resp)
+    @info(resp)
 
     # store/update tokens
     channel = yam.amrm_conn.channel
