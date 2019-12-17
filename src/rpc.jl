@@ -190,6 +190,7 @@ function connect(channel::HadoopRpcChannel)
 
         # negotiate sasl authentication if ugi has appropriate tokens
         if !conditional_sasl_auth(channel)
+            @info("sasl auth not possible, doing simple handshake")
             # else do a simple handshake
             begin_send(channel)
             buffer_handshake(channel, HRPC_AUTH_PROTOCOL_NONE)

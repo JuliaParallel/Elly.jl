@@ -106,7 +106,7 @@ function conditional_sasl_auth(channel::HadoopRpcChannel)
         @debug("no token available to authenticate, skipping.", to=tok_alias)
         return false
     end
-    @debug("found tokens available to authenticate. authenticating...", ntokens=length(tokens), to=tok_alias)
+    @info("found tokens available to authenticate. authenticating...", ntokens=length(tokens), to=tok_alias)
     token = tokens[1]
     sasl_auth(channel, token)
     true
