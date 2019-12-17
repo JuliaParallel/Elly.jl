@@ -159,7 +159,8 @@ container_release(yam::YarnAppMaster, cids::ContainerIdProto...) = request_relea
 
 container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cid], container_spec)
 function container_start(yam::YarnAppMaster, container::ContainerProto, container_spec::ContainerLaunchContextProto)
-    @debug("starting", container)
+    @info("starting", container, container_spec)
+    @info("container token", container.container_token, token_identifier=String(copy(container.container_token.identifier)), token_password=String(copy(container.container_token.password)), token_kind=container.container_token.kind)
     req = protobuild(StartContainerRequestProto, Dict(:container_launch_context => container_spec, :container_token => container.container_token))
     inp = protobuild(StartContainersRequestProto, Dict(:start_container_request => [req]))
 
