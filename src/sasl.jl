@@ -127,11 +127,11 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
 
     # check if TOKEN/DIGEST-MD5 is one of the supported methods
     nauths = length(resp.auths)
-    @debug("server supports auth", nauths)
+    @info("server supports auth", nauths)
     idx_auth = 0
     for idx in 1:length(resp.auths)
         auth = resp.auths[idx]
-        @debug("supported auth", idx, method=auth.method, mechanism=auth.mechanism)
+        @info("supported auth", idx, method=auth.method, mechanism=auth.mechanism)
         ((auth.method == "TOKEN") && (auth.mechanism == "DIGEST-MD5")) || continue
         idx_auth = idx
     end
