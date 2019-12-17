@@ -62,10 +62,13 @@ struct HDFSFile
     path::AbstractString
 end
 
-function HDFSFile(uristr::AbstractString)
+function HDFSFile(uristr::AbstractString; ugi::Union{UserGroupInformation,Nothing}=nothing, proxy::Bool=false)
     uri = URI(uristr)
     (uri.scheme == "hdfs") || throw(HDFSException("Not a HDFS URI: $uristr"))
-    client = HDFSClient(uri.host, uri.port, UserGroupInformation(uri.userinfo))
+    if ugi === nothing
+        ugi = isempty(uri.userinfo) ? UserGroupInformation() : UserGroupInformation(uri.userinfo)
+    end
+    client = HDFSClient(uri.host, uri.port, ugi)
     HDFSFile(client, uri.path)
 end
 

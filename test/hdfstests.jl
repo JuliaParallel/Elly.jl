@@ -2,10 +2,27 @@ using Elly
 using Test
 using Random
 
+function test_ugi()
+    ugi = UserGroupInformation()
+    @test !isempty(ugi.userinfo.realUser)
+
+    ugi = UserGroupInformation(; proxy=true)
+    @test !isempty(ugi.userinfo.realUser)
+    @test !isempty(ugi.userinfo.effectiveUser)
+
+    proxyuser = ugi.userinfo.realUser * "proxy"
+    ugi = UserGroupInformation(; proxy=true, proxyuser=proxyuser)
+    @test !isempty(ugi.userinfo.realUser)
+    @test !isempty(ugi.userinfo.effectiveUser)
+    @test ugi.userinfo.effectiveUser == proxyuser
+    nothing
+end
+
 function test_hdfs(host="localhost", port=9000)
     limitedtestenv = (get(ENV, "CI", "false") == "true")
 
-    hdfsclnt = HDFSClient(host, port)
+    ugi = UserGroupInformation()
+    hdfsclnt = HDFSClient(host, port, ugi)
 
     exists(hdfsclnt, "/tmp") || mkdir(hdfsclnt, "/tmp")
 
@@ -67,7 +84,7 @@ function test_hdfs(host="localhost", port=9000)
     println(st)
     @test st.name == "bar"
     mv(bar_file, "/tmp/foo/bar2")
-    bar2_file = HDFSFile("hdfs://$(host):$(port)/tmp/foo/bar2")
+    bar2_file = HDFSFile("hdfs://$(host):$(port)/tmp/foo/bar2"; ugi=ugi)
     @test isfile(bar2_file)
     rm(bar2_file)
 

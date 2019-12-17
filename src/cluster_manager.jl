@@ -119,6 +119,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
     cookie = ":cookie_" * cluster_cookie()
     initargs = "using Elly; Elly.setup_worker($(ipaddr.host), $(port), $(cookie))"
     clc = launchcontext(cmd="$cmd -e '$initargs'", env=appenv)
+    # TODO: do we need to add tokens into clc?
 
     @debug("YarnManager launch", initargs, context=clc)
     on_alloc = (cid) -> container_start(manager.am, cid, clc)

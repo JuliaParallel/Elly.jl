@@ -2,5 +2,6 @@
 include("hdfstests.jl")
 include("yarntests.jl")
 
+test_ugi()
 test_hdfs()
 test_yarn()
