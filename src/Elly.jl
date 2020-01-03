@@ -53,6 +53,7 @@ using Elly.hadoop.yarn
 
 const ELLY_CLIENTNAME = "elly"
 
+include("containerid.jl")
 include("credentials.jl")
 include("ugi.jl")
 include("rpc.jl")

@@ -4,6 +4,12 @@
 # - applicationclient_protocol.proto
 # - application_history_client.proto
 
+const YARN_CONTAINER_MEM_DEFAULT = 128
+const YARN_CONTAINER_CPU_DEFAULT = 1
+const YARN_CONTAINER_LOCATION_DEFAULT = "*"
+const YARN_CONTAINER_PRIORITY_DEFAULT = 1
+const YARN_NM_CONN_KEEPALIVE_SECS = 5*60
+
 """
 YarnClient holds a connection to the Yarn Resource Manager and provides
 APIs for application clients to interact with Yarn.
@@ -159,9 +165,15 @@ function _new_app(client::YarnClient)
     resp.application_id, resp.maximumCapability.memory, resp.maximumCapability.virtual_cores
 end
 
-function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Integer, cores::Integer; 
+function submit(client::YarnClient, cmd::Union{AbstractString,Vector{String}}, mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cores::Integer=YARN_CONTAINER_CPU_DEFAULT, env::Dict{String,String}=Dict{String,String}(); kwargs...)
+    clc = launchcontext(cmd=cmd, env=env)
+    submit(client, clc, mem, cores; kwargs...)
+end
+
+function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cores::Integer=YARN_CONTAINER_CPU_DEFAULT;
         priority::Int32=one(Int32), appname::AbstractString="EllyApp", queue::AbstractString="default", apptype::AbstractString="YARN", 
         reuse::Bool=false, unmanaged::Bool=false)
+    @debug("submitting application", unmanaged=unmanaged, cmd=container_spec.command)
     appid, maxmem, maxcores = _new_app(client)
 
     prio = protobuild(PriorityProto, Dict(:priority => priority))

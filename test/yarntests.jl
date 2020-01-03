@@ -13,6 +13,22 @@ function test_credential_tokens()
     nothing
 end
 
+function test_container_id()
+    cid = Elly.parse_container_id("container_1577681661884_0005_01_000001")
+    @test cid.id == 1
+    @test cid.app_id.cluster_timestamp == 1577681661884
+    @test cid.app_id.id == 5
+    @test cid.app_attempt_id.attemptId == 1
+
+    cid = Elly.parse_container_id("container_e17_1410901177871_0001_01_000005")
+    @test cid.id == 18691697672197
+    @test cid.app_id.cluster_timestamp == 1410901177871
+    @test cid.app_id.id == 1
+    @test cid.app_attempt_id.attemptId == 1
+
+    nothing
+end
+
 function test_yarn(host="localhost", rmport=8032, schedport=8030)
     limitedtestenv = (get(ENV, "CI", "false") == "true")
 

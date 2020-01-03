@@ -8,13 +8,6 @@
 #   - Some related debate about this here: https://issues.apache.org/jira/browse/HADOOP-6685
 # Since that is unusable in anything other than Java, we are forced to operate only in unmanaged mode, where we get it from the application report.
 
-const YARN_CONTAINER_MEM_DEFAULT = 128
-const YARN_CONTAINER_CPU_DEFAULT = 1
-const YARN_CONTAINER_LOCATION_DEFAULT = "*"
-const YARN_CONTAINER_PRIORITY_DEFAULT = 1
-const YARN_NM_CONN_KEEPALIVE_SECS = 5*60
-
-
 """
 YarnAppMaster is a skeleton application master. It provides the generic scafolding methods which can be used to create specific
 application masters for different purposes.
@@ -32,17 +25,14 @@ mutable struct YarnAppMaster
     available_cores::Int32
     nodes::YarnNodes
     containers::YarnContainers
-
     queue::AbstractString
-    managed::Bool
-
     response_id::Int32      # initial value must be 0, update with response_id sent from server on every response
-    
     registration::Union{Nothing,RegisterApplicationMasterResponseProto}
+    am_rm_task::Union{Nothing,Task}
     lck::Lock
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
-                amhost::AbstractString="", amport::Integer=0, amurl::AbstractString=""; managed::Bool=false)
+                amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
         amrm_conn = YarnAMRMProtocol(rmhost, rmport, ugi)
         lck = makelock()
         put!(lck, 1)
@@ -50,8 +40,8 @@ mutable struct YarnAppMaster
         new(amrm_conn, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(ugi), YarnContainers(),
-            "", managed, 0,
-            nothing, lck)
+            "", 0,
+            nothing, nothing, lck)
     end
 end
 
@@ -81,15 +71,17 @@ callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_con
     callback(yam.containers, on_container_alloc, on_container_finish)
 
 # TODO: managed appmaster
-function submit(client::YarnClient, appmaster::YarnAppMaster)
-    if appmaster.managed
-        @error("not implemented yet")
-    else
-        submit_unmanaged(client, appmaster)
-    end
+function init_managed(client::YarnClient, managedappmaster::YarnAppMaster)
+    # read in the am_rm_token
+    # register the managed appmaster
+    # initialize complete node list for appmaster
+    # start the am_rm processing task once the app attempt starts running if it is an unmanaged application master
+    container_id = ENV["CONTAINER_ID"]
+    
+    # YarnApp(client::YarnClient, appid::ApplicationIdProto)
 end
 
-function submit_unmanaged(client::YarnClient, unmanagedappmaster::YarnAppMaster)
+function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     @debug("submitting unmanaged application")
     clc = launchcontext()
     app = submit(client, clc, YARN_CONTAINER_MEM_DEFAULT, YARN_CONTAINER_CPU_DEFAULT; unmanaged=true)
@@ -107,8 +99,6 @@ function submit_unmanaged(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     # initialize complete node list for appmaster
     nodes(client; nodelist=unmanagedappmaster.nodes)
 
-    # start the am_rm processing task once the app attempt starts running if it is an unmanaged application master
-    @async(process_am_rm(unmanagedappmaster))
     app
 end
 
@@ -135,7 +125,8 @@ function register(yam::YarnAppMaster)
     end
 
     # start the am_rm processing task on registration if it is a managed application master
-    yam.managed && @async(process_am_rm(yam))
+    yam.am_rm_task = @async process_am_rm(yam)
+
     nothing
 end
 

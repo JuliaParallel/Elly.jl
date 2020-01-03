@@ -376,10 +376,10 @@ haverequests(containers::YarnContainers) = containers.ndesired != length(contain
 
 # TODO: support local resources
 # TODO: support tokens
-function launchcontext(;cmd::AbstractString="", env::Dict=Dict(), service_data::Dict=Dict())
+function launchcontext(; cmd::Union{AbstractString,Vector{AbstractString}}="", env::Dict=Dict(), service_data::Dict=Dict())
     clc = ContainerLaunchContextProto()
     if !isempty(cmd)
-        setproperty!(clc, :command, AbstractString[cmd])
+        setproperty!(clc, :command, isa(cmd, Vector) ? cmd : AbstractString[cmd])
     end
     if !isempty(env)
         envproto = StringStringMapProto[]

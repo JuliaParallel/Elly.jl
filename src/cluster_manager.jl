@@ -55,7 +55,7 @@ function setup_worker(host, port)
         Sockets.wait_connected(c) # >= Julia 1.3
     end
     # identify container id so that rmprocs can clean things up nicely if required
-    serialize(c, ENV["JULIA_YARN_CID"])
+    serialize(c, ENV["CONTAINER_ID"])
 
     redirect_stdout(c)
     redirect_stderr(c)
@@ -83,9 +83,6 @@ end
 
 function container_start(manager::YarnManager, cmd::String, env::Dict{String,String}, ipaddr::IPv4, port::UInt16, cid::ContainerIdProto)
     try
-        iob = IOBuffer()
-        serialize(iob, cid)
-        env["JULIA_YARN_CID"] = base64encode(take!(iob))
         env["JULIA_YARN_KUKI"] = cluster_cookie()
 
         initargs = "using Elly; Elly.setup_worker($(ipaddr.host), $(port))"
@@ -125,7 +122,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
                 # keep the container id in userdata to be used with rmprocs if required
                 cidstr = deserialize(sock)
                 @debug("got container id string", cidstr)
-                cid = deserialize(IOBuffer(base64decode(cidstr)))
+                cid = parse_container_id(cidstr)
                 @debug("got container id", cid)
                 config.userdata = Dict(:container_id => cid)
                 push!(instances_arr, config)
