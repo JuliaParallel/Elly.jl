@@ -2,6 +2,17 @@ using Elly
 using Test
 using Distributed
 
+function test_credential_tokens()
+    token_file = joinpath(@__DIR__, "token", "container_tokens")
+    creds = Elly.Credentials()
+    Elly.read_credentials!(creds, token_file)
+    tokens = find_tokens(creds, alias="YARN_AM_RM_TOKEN")
+    @test !isempty(tokens)
+    tokens = find_tokens(creds, kind="YARN_AM_RM_TOKEN")
+    @test !isempty(tokens)
+    nothing
+end
+
 function test_yarn(host="localhost", rmport=8032, schedport=8030)
     limitedtestenv = (get(ENV, "CI", "false") == "true")
 

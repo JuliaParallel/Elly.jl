@@ -26,7 +26,7 @@ import URIParser: URI
 
 export show, convert, URI
 
-export UserGroupInformation, add_token, find_tokens, username
+export UserGroupInformation, add_token!, find_tokens, username
 
 export HDFSClient, HDFSFile, HDFSFileInfo,
         hdfs_server_defaults, hdfs_default_block_size, hdfs_default_replication, hdfs_blocks, hdfs_set_replication,
@@ -53,6 +53,7 @@ using Elly.hadoop.yarn
 
 const ELLY_CLIENTNAME = "elly"
 
+include("credentials.jl")
 include("ugi.jl")
 include("rpc.jl")
 include("sasl.jl")

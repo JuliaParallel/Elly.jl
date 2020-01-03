@@ -42,7 +42,7 @@ mutable struct YarnAppMaster
     lck::Lock
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
-                amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
+                amhost::AbstractString="", amport::Integer=0, amurl::AbstractString=""; managed::Bool=false)
         amrm_conn = YarnAMRMProtocol(rmhost, rmport, ugi)
         lck = makelock()
         put!(lck, 1)
@@ -50,7 +50,7 @@ mutable struct YarnAppMaster
         new(amrm_conn, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(ugi), YarnContainers(),
-            "", true, 0,
+            "", managed, 0,
             nothing, lck)
     end
 end
@@ -80,7 +80,16 @@ end
 callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_container_finish::Union{Nothing,Function}) = 
     callback(yam.containers, on_container_alloc, on_container_finish)
 
-function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
+# TODO: managed appmaster
+function submit(client::YarnClient, appmaster::YarnAppMaster)
+    if appmaster.managed
+        @error("not implemented yet")
+    else
+        submit_unmanaged(client, appmaster)
+    end
+end
+
+function submit_unmanaged(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     @debug("submitting unmanaged application")
     clc = launchcontext()
     app = submit(client, clc, YARN_CONTAINER_MEM_DEFAULT, YARN_CONTAINER_CPU_DEFAULT; unmanaged=true)
@@ -88,10 +97,10 @@ function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     # keep the am_rm token
     tok = am_rm_token(app)
     channel = unmanagedappmaster.amrm_conn.channel
-    add_token(channel.ugi, token_alias(channel), tok)
+    @debug("adding token", alias=token_alias(channel))
+    add_token!(channel.ugi, token_alias(channel), tok)
 
     # register the unmanaged appmaster
-    unmanagedappmaster.managed = false
     register(unmanagedappmaster)
     wait_for_attempt_state(app, Int32(1), YarnApplicationAttemptStateProto.APP_ATTEMPT_RUNNING) || throw(YarnException("Application attempt could not be launched"))
 
@@ -232,10 +241,10 @@ function _update_rm(yam::YarnAppMaster)
     # store/update tokens
     channel = yam.amrm_conn.channel
     ugi = channel.ugi
-    isfilled(resp, :am_rm_token) && add_token(ugi, token_alias(channel), resp.am_rm_token)
+    isfilled(resp, :am_rm_token) && add_token!(ugi, token_alias(channel), resp.am_rm_token)
     if isfilled(resp, :nm_tokens)
         for nmtok in resp.nm_tokens
-            add_token(ugi, token_alias(nmtok.nodeId), nmtok.token)
+            add_token!(ugi, token_alias(nmtok.nodeId), nmtok.token)
         end
     end
 

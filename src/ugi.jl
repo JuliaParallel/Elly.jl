@@ -4,10 +4,11 @@
 # ref: https://www.opencore.com/blog/2016/5/user-name-handling-in-hadoop/
 mutable struct UserGroupInformation
     userinfo::UserInformationProto
-    tokens::Dict{AbstractString,TokenProto}
+    credentials::Credentials
+
     function UserGroupInformation(username::AbstractString=default_username(); proxy::Bool=false, proxyuser::AbstractString=username)
         userinfo = proxy ? protobuild(UserInformationProto, Dict(:realUser => username, :effectiveUser => proxyuser)) : protobuild(UserInformationProto, Dict(:realUser => username))
-        new(userinfo, Dict{AbstractString,TokenProto}())
+        new(userinfo, Credentials())
     end
 end
 
@@ -17,24 +18,13 @@ function default_username()
     error("Can not determine user information. Either HADOOP_USER_NAME or USER must be set.")
 end
 
-add_token(ugi::UserGroupInformation, token::TokenProto) = add_token(ugi, token.service, token)
-add_token(ugi::UserGroupInformation, alias::AbstractString, token::TokenProto) = (ugi.tokens[alias] = token; nothing)
+add_token!(ugi::UserGroupInformation, token::TokenProto) = add_token!(ugi.credentials, token)
+add_token!(ugi::UserGroupInformation, alias::AbstractString, token::TokenProto) = add_token!(ugi.credentials, alias, token)
 
 username(userinfo::UserInformationProto) = isfilled(userinfo, :realUser) ? userinfo.realUser : userinfo.effectiveUser
 username(ugi::UserGroupInformation) = username(ugi.userinfo)
 
-function find_tokens(ugi::UserGroupInformation; alias::AbstractString="", kind::AbstractString="")
-    isempty(alias) && isempty(kind) && (return collect(values(ugi.tokens)))
-
-    result = TokenProto[]
-    !isempty(alias) && (alias in keys(ugi.tokens)) && push!(result, ugi.tokens[alias])
-    if !isempty(kind)
-        for tok in values(ugi.tokens)
-            (tok.kind == kind) && push!(result, tok)
-        end
-    end
-    result
-end
+find_tokens(ugi::UserGroupInformation; alias::AbstractString="", kind::AbstractString="") = find_tokens(ugi.credentials; alias=alias, kind=kind)
 
 function show(io::IO, ugi::UserGroupInformation)
     uinfo = ugi.userinfo
