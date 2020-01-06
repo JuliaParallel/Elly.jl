@@ -8,7 +8,9 @@ mutable struct UserGroupInformation
 
     function UserGroupInformation(username::AbstractString=default_username(); proxy::Bool=false, proxyuser::AbstractString=username)
         userinfo = proxy ? protobuild(UserInformationProto, Dict(:realUser => username, :effectiveUser => proxyuser)) : protobuild(UserInformationProto, Dict(:realUser => username))
-        new(userinfo, Credentials())
+        ugi = new(userinfo, Credentials())
+        haskey(ENV, "HADOOP_TOKEN_FILE_LOCATION") && read_credentials!(ENV["HADOOP_TOKEN_FILE_LOCATION"]; credentials=ugi.credentials)
+        ugi
     end
 end
 
@@ -31,6 +33,6 @@ function show(io::IO, ugi::UserGroupInformation)
     print(io, "User:")
     isfilled(uinfo, :realUser) && print(io, ' ', uinfo.realUser)
     isfilled(uinfo, :effectiveUser) && print(io, " (", uinfo.effectiveUser, ')')
-    isempty(ugi.tokens) || print(io, " with ", length(ugi.tokens), " tokens")
+    isempty(ugi.credentials.tokens) || print(io, " with ", length(ugi.credentials.tokens), " tokens")
     nothing
 end

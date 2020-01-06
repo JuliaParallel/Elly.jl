@@ -36,7 +36,7 @@ mutable struct HDFSClient
 end
 
 function show(io::IO, client::HDFSClient)
-    show(client.nn_conn)
+    show(io, client.nn_conn)
     println(io, "    pwd: $(client.wd)")
     nothing
 end

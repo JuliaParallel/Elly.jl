@@ -11,23 +11,19 @@ struct Credentials
     end
 end
 
-function read_credentials!(creds::Credentials, token_file::String; append::Bool=true)
+function read_credentials!(token_file::String; credentials::Credentials=Credentials())
     open(token_file, "r") do io
-        read_credentials!(creds, io; append=append)
+        read_credentials!(io; credentials=credentials)
     end
+    credentials
 end
 
-function read_credentials!(creds::Credentials, io::IO; append::Bool=true)
+function read_credentials!(io::IO; credentials::Credentials=Credentials())
     hdts = Vector{UInt8}(undef, 4)
     readbytes!(io, hdts)
     (hdts == TOKEN_STORAGE_MAGIC) || error("Bad header found in token storage")
     version = read(io, UInt8)
     (version == TOKEN_STORAGE_VERSION) || error("Unknown version $version in token storage (expected $TOKEN_STORAGE_VERSION)")
-
-    if !append
-        empty!(creds.tokens)
-        empty!(creds.secrets)
-    end
 
     # read tokens
     size = ProtoBuf.read_varint(io, Int32)
@@ -44,7 +40,7 @@ function read_credentials!(creds::Credentials, io::IO; append::Bool=true)
             alias = string(token.service, token.kind)
         end
 
-        creds.tokens[alias] = token
+        credentials.tokens[alias] = token
     end
 
     # read secrets
@@ -52,14 +48,15 @@ function read_credentials!(creds::Credentials, io::IO; append::Bool=true)
     for idx in 1:size
         alias = ProtoBuf.read_string(io)
         secret = ProtoBuf.read_bytes(io)
-        creds.secrets[alias] = secret
+        credentials.secrets[alias] = secret
     end
+    credentials
 end
 
-add_token!(creds::Credentials, token::TokenProto) = add_token!(creds, string(token.service, token.kind), token)
-add_token!(creds::Credentials, alias::AbstractString, token::TokenProto) = (creds.tokens[alias] = token; nothing)
+add_token!(credentials::Credentials, token::TokenProto) = add_token!(credentials, string(token.service, token.kind), token)
+add_token!(credentials::Credentials, alias::AbstractString, token::TokenProto) = (credentials.tokens[alias] = token; nothing)
 
 _match_alias(alias, pattern) = isempty(pattern) || (pattern == alias)
 _match_kind(token, pattern) = isempty(pattern) || (pattern == token.kind)
 _match_token(dict_entry, alias_pattern, kind_pattern) = _match_alias(first(dict_entry), alias_pattern) && _match_kind(last(dict_entry), kind_pattern)
-find_tokens(creds::Credentials; alias::AbstractString="", kind::AbstractString="") = collect(values(filter(x->_match_token(x, alias, kind), creds.tokens)))
+find_tokens(credentials::Credentials; alias::AbstractString="", kind::AbstractString="") = collect(values(filter(x->_match_token(x, alias, kind), credentials.tokens)))

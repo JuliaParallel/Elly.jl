@@ -11,6 +11,21 @@
 """
 YarnAppMaster is a skeleton application master. It provides the generic scafolding methods which can be used to create specific
 application masters for different purposes.
+
+When initializing a YarnAppMaster instance as a managed app master, the scheduler address is picked up from the environment variable `JULIA_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS`.
+Tokens set by Yarn in the file pointed to by `HADOOP_TOKEN_FILE_LOCATION` are also read in automatically.
+
+When run as a managed app master, if a function is provided to be executed, then the application master is registered, the function is executed and then the application master is deregistered.
+This provides a convenient way to run simple Julia applications in a Yarn cluster. E.g.:
+
+```
+using Elly
+
+YarnAppMaster() do
+    ...
+    # execute Julia code
+end
+```
 """
 mutable struct YarnAppMaster
     amrm_conn::YarnAMRMProtocol
@@ -31,7 +46,7 @@ mutable struct YarnAppMaster
     am_rm_task::Union{Nothing,Task}
     lck::Lock
 
-    function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
+    function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation=UserGroupInformation(),
                 amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
         amrm_conn = YarnAMRMProtocol(rmhost, rmport, ugi)
         lck = makelock()
@@ -42,6 +57,29 @@ mutable struct YarnAppMaster
             YarnNodes(ugi), YarnContainers(),
             "", 0,
             nothing, nothing, lck)
+    end
+
+    function YarnAppMaster(ugi::UserGroupInformation=UserGroupInformation())
+        rmschedaddress = ENV["JULIA_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS"]
+        @debug("got rm address", rmschedaddress)
+        parts = split(rmschedaddress, ":")
+        host = parts[1]
+        schedport = parse(Int, parts[2])
+        am = YarnAppMaster(host, schedport, ugi)
+        for token in find_tokens(ugi; kind="YARN_AM_RM_TOKEN")
+            add_token!(ugi, token_alias(am.amrm_conn.channel), token)
+        end
+        am
+    end
+end
+
+function YarnAppMaster(fn::Function, ugi::UserGroupInformation=UserGroupInformation())
+    yam = YarnAppMaster(ugi)
+    register(yam)
+    try
+        fn()
+    finally
+        unregister(yam, true)
     end
 end
 
@@ -69,17 +107,6 @@ end
 
 callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_container_finish::Union{Nothing,Function}) = 
     callback(yam.containers, on_container_alloc, on_container_finish)
-
-# TODO: managed appmaster
-function init_managed(client::YarnClient, managedappmaster::YarnAppMaster)
-    # read in the am_rm_token
-    # register the managed appmaster
-    # initialize complete node list for appmaster
-    # start the am_rm processing task once the app attempt starts running if it is an unmanaged application master
-    container_id = ENV["CONTAINER_ID"]
-    
-    # YarnApp(client::YarnClient, appid::ApplicationIdProto)
-end
 
 function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     @debug("submitting unmanaged application")

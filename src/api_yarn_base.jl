@@ -149,6 +149,7 @@ function update(nodes::YarnNodes, arp::AllocateResponseProto)
     isfilled(arp, :num_cluster_nodes) && (nodes.count = arp.num_cluster_nodes)
     if isfilled(arp, :updated_nodes)
         for nrep in arp.updated_nodes
+            @debug("updating node status", nodeid=nrep.nodeId)
             nodes.status[nrep.nodeId] = YarnNode(nrep)
         end
     end
@@ -161,6 +162,7 @@ function update(nodes::YarnNodes, gcnrp::GetClusterNodesResponseProto)
     nlist = gcnrp.nodeReports
     nodes.count = length(nlist)
     for nrep in nlist
+        @debug("updating node status", nodeid=nrep.nodeId)
         nodes.status[nrep.nodeId] = YarnNode(nrep)
     end 
     nothing
@@ -191,9 +193,12 @@ function _new_or_existing_conn(nodes::YarnNodes, nodeid::NodeIdProto)
 end
 
 function get_connection(nodes::YarnNodes, nodeid::NodeIdProto)
-    (nodeid in keys(nodes.status)) || throw(YarnException("Unknown Yarn node: $(nodeid.host):$(nodeid.port)"))
-    node = nodes.status[nodeid]
-    node.isrunning || throw(YarnException("Yarn node $(nodeid.host):$(nodeid.port) is not running"))
+    if !haskey(nodes.status, nodeid)
+        @debug("Unknown Yarn node, will attempt connection anyway...", expected="$(nodeid.host):$(nodeid.port)", have=collect(keys(nodes.status)))
+    else
+        node = nodes.status[nodeid]
+        node.isrunning || throw(YarnException("Yarn node $(nodeid.host):$(nodeid.port) is not running"))
+    end
 
     conn, lastusetime, lck = _new_or_existing_conn(nodes, nodeid)
     # lock the connection to mark in use
@@ -376,16 +381,16 @@ haverequests(containers::YarnContainers) = containers.ndesired != length(contain
 
 # TODO: support local resources
 # TODO: support tokens
-function launchcontext(; cmd::Union{AbstractString,Vector{AbstractString}}="", env::Dict=Dict(), service_data::Dict=Dict())
+function launchcontext(; cmd::Union{AbstractString,Vector}="", env::Dict=Dict(), service_data::Dict=Dict())
     clc = ContainerLaunchContextProto()
     if !isempty(cmd)
-        setproperty!(clc, :command, isa(cmd, Vector) ? cmd : AbstractString[cmd])
+        setproperty!(clc, :command, isa(cmd, Vector) ? convert(Vector{AbstractString},cmd) : AbstractString[cmd])
     end
     if !isempty(env)
         envproto = StringStringMapProto[]
         for (n,v) in env
             (isa(n, AbstractString) && isa(v, AbstractString)) || throw(ArgumentError("non string environment variable specified: $(typeof(n)) => $(typeof(v))"))
-            push!(envproto, protobuild(StringStringMapProto, Dict(:key => n, :value => v)))
+            push!(envproto, StringStringMapProto(; key=n, value=v))
         end
         setproperty!(clc, :environment, envproto)
     end
@@ -393,7 +398,7 @@ function launchcontext(; cmd::Union{AbstractString,Vector{AbstractString}}="", e
         svcdataproto = StringBytesMapProto[]
         for (n,v) in service_data
             (isa(n, AbstractString) && isa(v, Vector{UInt8})) || throw(ArgumentError("incompatible service data type specified: $(typeof(n)) => $(typeof(v))"))
-            push!(svcdataproto, protobuild(StringBytesMapProto, Dict(:key => n, :value => v)))
+            push!(svcdataproto, StringBytesMapProto(; key=n, value=v))
         end
         setproperty!(clc, :service_data, servicedataproto)
     end

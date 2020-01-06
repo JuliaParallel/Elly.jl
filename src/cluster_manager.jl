@@ -10,29 +10,47 @@ keep_connected: if false, YarnManager will disconnect from the cluster once all 
 """
 struct YarnManager <: ClusterManager
     ugi::UserGroupInformation
-    clnt::YarnClient
+    clnt::Union{YarnClient,Nothing}
     am::YarnAppMaster
-    app::YarnApp
+    app::Union{YarnApp,ContainerIdProto}
     launch_timeout::Integer
     keep_connected::Bool
 
     function YarnManager(; kwargs...)
         params = Dict(kwargs)
         paramkeys = keys(params)
+        unmanaged = (:unmanaged in paramkeys) ? params[:unmanaged] : true
+        launch_timeout  = (:launch_timeout in paramkeys) ? params[:launch_timeout] : 60
+        keep_connected  = (:keep_connected in paramkeys) ? params[:keep_connected] : true
         @debug("YarnManager constructor", params)
-        
-        ugi             = (:ugi             in paramkeys) ? params[:ugi]            : UserGroupInformation()
-        rmport          = (:rmport          in paramkeys) ? params[:rmport]         : 8032
-        yarnhost        = (:yarnhost        in paramkeys) ? params[:yarnhost]       : "localhost"
-        schedport       = (:schedport       in paramkeys) ? params[:schedport]      : 8030
-        launch_timeout  = (:launch_timeout  in paramkeys) ? params[:launch_timeout] : 60
-        keep_connected  = (:keep_connected  in paramkeys) ? params[:keep_connected] : true
 
-        clnt    = YarnClient(yarnhost, rmport, ugi)
-        am      = YarnAppMaster(yarnhost, schedport, ugi)
-        app     = submit(clnt, am)
+        if unmanaged
+            ugi             = (:ugi             in paramkeys) ? params[:ugi]            : UserGroupInformation()
+            rmport          = (:rmport          in paramkeys) ? params[:rmport]         : 8032
+            yarnhost        = (:yarnhost        in paramkeys) ? params[:yarnhost]       : "localhost"
+            schedport       = (:schedport       in paramkeys) ? params[:schedport]      : 8030
+
+            clnt    = YarnClient(yarnhost, rmport, ugi)
+            am      = YarnAppMaster(yarnhost, schedport, ugi)
+            app     = submit(clnt, am)
+        else
+            ugi     = UserGroupInformation()
+            am      = YarnAppMaster(ugi)
+            clnt = nothing
+            register(am)
+            app = parse_container_id(ENV["CONTAINER_ID"])
+        end
 
         new(ugi, clnt, am, app, launch_timeout, keep_connected)
+    end
+end
+
+function YarnManager(fn::Function; kwargs...)
+    yam = YarnManager(; kwargs...)
+    try
+        fn(yam)
+    finally
+        disconnect(yam)
     end
 end
 
@@ -42,7 +60,7 @@ end
 
 function show(io::IO, yarncm::YarnManager)
     print(io, "YarnManager for ")
-    show(io, yarncm.clnt)
+    show(io, yarncm.am)
 end
 
 function setup_worker(host, port)
@@ -73,10 +91,16 @@ function _envdict(envhash::Base.EnvDict)
 end
 
 function _currprocname()
-    p = joinpath(Sys.BINDIR, Sys.get_process_title())
-    exists(p) && (return p)
+    # Julia throws ENOBUFS sometimes while fetching process title
+    pt = try
+        Sys.get_process_title()
+    catch
+        "julia"
+    end
+    p = joinpath(Sys.BINDIR, pt)
+    isfile(p) && (return p)
 
-    ("_" in keys(ENV)) && contains(ENV["_"], "julia") && (return ENV["_"])
+    haskey(ENV, "_") && contains(ENV["_"], "julia") && (return ENV["_"])
 
     "julia"
 end
