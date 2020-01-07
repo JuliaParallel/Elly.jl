@@ -25,6 +25,9 @@ The DFS can be navigated using the same Julia APIs as used for a traditional fil
 julia> pwd(dfs)
 "/"
 
+julia> du(dfs)
+0x0000000000000017
+
 julia> readdir(dfs)
 5-element Array{AbstractString,1}:
  "testdir" 
@@ -65,6 +68,28 @@ HDFSFileInfo: bar
 
 julia> isfile(bar_file)
 true
+
+julia> isdir(bar_file)
+false
+
+julia> islink(bar_file)
+false
+
+julia> filemode(bar_file)
+0x000001a4
+
+julia> mtime(bar_file)
+0x0000016f7f71aa30
+
+julia> atime(bar_file)
+0x0000016f7f71a980
+
+julia> dirname(bar_file)
+HDFSFile: hdfs://userid@localhost:9000/tmp/foo/
+
+julia> joinpath(dirname(bar_file), "baz_file")
+HDFSFile: hdfs://userid@localhost:9000/tmp/foo/baz_file
+
 ...
 ````
 
@@ -90,13 +115,24 @@ HDFSFileInfo: baz.txt
 julia> open(bar_file, "w") do f
            write(f, b"hello world")
        end
-0x000000000000000b
+11
 
 julia> open(bar_file, "r") do f
-           bytes = Array(UInt8, filesize(f))
+           bytes = Vector{UInt8}(undef, filesize(f))
            read!(f, bytes)
-           println(bytestring(bytes))
+           println(String(bytes))
        end
 hello world
 ````
+
+Elly also supports block level access to files, to enable distributed processing.
+
+```
+julia> hdfs_blocks(huge_file)
+1-element Array{Tuple{UInt64,Array},1}:
+ (0x0000000000000000, AbstractString["node1"])
+ (0x0000000007d00000, AbstractString["node2"])
+ (0x000000000fa00000, AbstractString["node3"])
+
+```
 
