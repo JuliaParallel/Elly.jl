@@ -93,7 +93,7 @@ function test_managed_yarn_clustermanager(host="localhost", rmport=8032, schedpo
     @info("starting managed julia with environment", env)
 
     testscript = joinpath(@__DIR__, "yarnmanagedcm.jl")
-    app = submit(clnt, [Elly._currprocname(), testscript], Elly.YARN_CONTAINER_MEM_DEFAULT, Elly.YARN_CONTAINER_CPU_DEFAULT, env; schedaddr="$(host):$(schedport)")
+    app = submit(clnt, [Elly._currprocname(), testscript], env; schedaddr="$(host):$(schedport)")
     Elly.wait_for_state(app, Elly.YarnApplicationStateProto.FINISHED)
     @info("app complete", status=status(app))
     @test isfile("/tmp/ellytest.log")

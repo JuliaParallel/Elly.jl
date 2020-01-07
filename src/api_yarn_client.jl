@@ -173,12 +173,12 @@ function _new_app(client::YarnClient)
     resp.application_id, resp.maximumCapability.memory, resp.maximumCapability.virtual_cores
 end
 
-function submit(client::YarnClient, cmd::Union{AbstractString,Vector}, mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cores::Integer=YARN_CONTAINER_CPU_DEFAULT, env::Dict{String,String}=Dict{String,String}(); kwargs...)
+function submit(client::YarnClient, cmd::Union{AbstractString,Vector}, env::Dict{String,String}=Dict{String,String}(); kwargs...)
     container_spec = launchcontext(cmd=cmd, env=env)
-    submit(client, container_spec, mem, cores; kwargs...)
+    submit(client, container_spec; kwargs...)
 end
 
-function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cores::Integer=YARN_CONTAINER_CPU_DEFAULT;
+function submit(client::YarnClient, container_spec::ContainerLaunchContextProto; mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cores::Integer=YARN_CONTAINER_CPU_DEFAULT,
         priority::Int32=one(Int32), appname::AbstractString="EllyApp", queue::AbstractString="default", apptype::AbstractString="YARN", 
         reuse::Bool=false, unmanaged::Bool=false, schedaddr::String="")
     @debug("submitting application", unmanaged=unmanaged, cmd=container_spec.command)

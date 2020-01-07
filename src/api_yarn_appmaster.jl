@@ -111,7 +111,7 @@ callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_con
 function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     @debug("submitting unmanaged application")
     clc = launchcontext()
-    app = submit(client, clc, YARN_CONTAINER_MEM_DEFAULT, YARN_CONTAINER_CPU_DEFAULT; unmanaged=true)
+    app = submit(client, clc; unmanaged=true)
 
     # keep the am_rm token
     tok = am_rm_token(app)
