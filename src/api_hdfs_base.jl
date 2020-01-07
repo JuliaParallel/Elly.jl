@@ -135,9 +135,7 @@ function _walkdir(client::HDFSClient, path::AbstractString, process_entry::Funct
     cont = true
     start_after = UInt8[]
     while cont
-        inp = protobuild(GetListingRequestProto, Dict(:src => path,
-                    :startAfter => start_after,
-                    :needLocation => false))
+        inp = GetListingRequestProto(src=path, startAfter=start_after, needLocation=false)
         resp = getListing(client.nn_conn, inp)
 
         if isfilled(resp, :dirList)
@@ -164,7 +162,7 @@ end
 
 function _get_file_info(client::HDFSClient, path::AbstractString)
     path = abspath(client, path)
-    inp = protobuild(GetFileInfoRequestProto, Dict(:src => path))
+    inp = GetFileInfoRequestProto(src=path)
     resp = getFileInfo(client.nn_conn, inp)
     isfilled(resp, :fs) ? resp.fs : nothing
 end
@@ -174,9 +172,7 @@ function _get_block_locations(client::HDFSClient, path::AbstractString, offset::
     if length == 0
         length = UInt64(1024)
     end
-    inp = protobuild(GetBlockLocationsRequestProto, Dict(:src => path,
-                :offset => offset,
-                :length => length))
+    inp = GetBlockLocationsRequestProto(src=path, offset=offset, length=length)
     resp = getBlockLocations(client.nn_conn, inp)
     isfilled(resp, :locations) ? resp.locations : nothing
 end
@@ -269,7 +265,7 @@ end
 hdfs_set_replication(file::HDFSFile, replication::Integer) = hdfs_set_replication(file.client, file.path, replication)
 function hdfs_set_replication(client::HDFSClient, path::AbstractString, replication::Integer)
     path = abspath(client, path)
-    inp = protobuild(SetReplicationRequestProto, Dict(:src => path, :replication => replication))
+    inp = SetReplicationRequestProto(src=path, replication=replication)
 
     resp = setReplication(client.nn_conn, inp)
     resp.result
@@ -279,7 +275,7 @@ end
 # Disk Usage
 function _get_content_summary(client::HDFSClient, path::AbstractString)
     path = abspath(client, path)
-    inp = protobuild(GetContentSummaryRequestProto, Dict(:path => path))
+    inp = GetContentSummaryRequestProto(path=path)
 
     resp = getContentSummary(client.nn_conn, inp)
     resp.summary
@@ -310,10 +306,8 @@ mkdir(file::HDFSFile, mode::UInt32) = mkdir(file, false, mode)
 mkdir(file::HDFSFile, create_parents::Bool=false, mode::UInt32=DEFAULT_FOLDER_MODE) = mkdir(file.client, file.path, create_parents, mode)
 function mkdir(client::HDFSClient, path::AbstractString, create_parents::Bool=false, mode::UInt32=DEFAULT_FOLDER_MODE)
     path = abspath(client, path)
-    perms = protobuild(FsPermissionProto, Dict(:perm => mode))
-    inp = protobuild(MkdirsRequestProto, Dict(:src => path,
-                :createParent => create_parents,
-                :masked => perms))
+    perms = FsPermissionProto(perm=mode)
+    inp = MkdirsRequestProto(src=path, createParent=create_parents, masked=perms)
 
     resp = mkdirs(client.nn_conn, inp)
     resp.result
@@ -326,9 +320,7 @@ mv(src::HDFSFile, dst::AbstractString, overwrite::Bool) = mv(src.client, src.pat
 function mv(client::HDFSClient, src::AbstractString, dst::AbstractString, overwrite::Bool)
     src = abspath(client, src)
     dst = abspath(client, dst)
-    inp = protobuild(Rename2RequestProto, Dict(:src => src,
-                :dst => dst,
-                :overwriteDest => overwrite))
+    inp = Rename2RequestProto(src=src, dst=dst, overwriteDest=overwrite)
 
     rename2(client.nn_conn, inp)
     true
@@ -338,8 +330,7 @@ mv(src::HDFSFile, dst::AbstractString) = mv(src.client, src.path, dst)
 function mv(client::HDFSClient, src::AbstractString, dst::AbstractString)
     src = abspath(client, src)
     dst = abspath(client, dst)
-    inp = protobuild(RenameRequestProto, Dict(:src => src,
-                :dst => dst))
+    inp = RenameRequestProto(src=src, dst=dst)
 
     resp = rename(client.nn_conn, inp)
     resp.result
@@ -348,8 +339,7 @@ end
 rm(file::HDFSFile, recursive::Bool=false) = rm(file.client, file.path, recursive)
 function rm(client::HDFSClient, path::AbstractString, recursive::Bool=false)
     path = abspath(client, path)
-    inp = protobuild(DeleteRequestProto, Dict(:src => path,
-                :recursive => recursive))
+    inp = DeleteRequestProto(src=path, recursive=recursive)
 
     resp = delete(client.nn_conn, inp)
     resp.result
@@ -366,16 +356,10 @@ function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=
         (replication == 0) && (replication = defaults.replication)
     end
 
-    perms = protobuild(FsPermissionProto, Dict(:perm => mode))
+    perms = FsPermissionProto(perm=mode)
     createFlag = UInt32(overwrite ? CreateFlagProto.OVERWRITE : CreateFlagProto.CREATE)
 
-    inp = protobuild(CreateRequestProto, Dict(:src => path,
-                :masked => perms,
-                :clientName => ELLY_CLIENTNAME,
-                :createFlag => createFlag,
-                :createParent => false,
-                :replication => replication,
-                :blockSize => blocksz))
+    inp = CreateRequestProto(src=path, masked=perms, clientName=ELLY_CLIENTNAME, createFlag=createFlag, createParent=false, replication=replication, blockSize=blocksz)
 
     resp = create(client.nn_conn, inp)
     isfilled(resp, :fs) || (return nothing)
@@ -390,8 +374,7 @@ end
 function _complete_file(client::HDFSClient, path::AbstractString, last::Union{Nothing,ExtendedBlockProto}=nothing)
     path = abspath(client, path)
 
-    endinp = protobuild(CompleteRequestProto, Dict(:src => path,
-                :clientName => ELLY_CLIENTNAME))
+    endinp = CompleteRequestProto(src=path, clientName=ELLY_CLIENTNAME)
     if last !== nothing
         setproperty!(endinp, :last, last)
         @debug("setting last block as", last)
@@ -409,8 +392,7 @@ end
 function _add_block(::Type{T}, client::HDFSClient, path::AbstractString, previous::Union{Nothing,T}=nothing) where T<:ExtendedBlockProto
     path = abspath(client, path)
 
-    inp = protobuild(AddBlockRequestProto, Dict(:src => path,
-                :clientName => ELLY_CLIENTNAME))
+    inp = AddBlockRequestProto(src=path, clientName=ELLY_CLIENTNAME)
     (previous === nothing) || setproperty!(inp, :previous, previous)
 
     resp = addBlock(client.nn_conn, inp)
@@ -423,7 +405,7 @@ the namenode from assuming the client from having abandoned the file or some oth
 from recovering the lease.
 """
 function hdfs_renewlease(client::HDFSClient)
-    inp = protobuild(RenewLeaseRequestProto, Dict(:clientName => ELLY_CLIENTNAME))
+    inp = RenewLeaseRequestProto(clientName=ELLY_CLIENTNAME)
     renewLease(client.nn_conn, inp)
     nothing
 end
@@ -433,9 +415,7 @@ function touch(client::HDFSClient, path::AbstractString, replication::UInt32=zer
     if exists(client, path)
         path = abspath(client, path)
         t = UInt64(datetime2unix(now(UTC))*1000)
-        inp = protobuild(SetTimesRequestProto, Dict(:src => path,
-                    :mtime => t,
-                    :atime => t))
+        inp = SetTimesRequestProto(src=path, mtime=t, atime=t)
 
         setTimes(client.nn_conn, inp)
     else

@@ -340,12 +340,9 @@ end
 function request_alloc(containers::YarnContainers, numcontainers::Int; 
                     mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cpu::Integer=YARN_CONTAINER_CPU_DEFAULT, 
                     loc::AbstractString=YARN_CONTAINER_LOCATION_DEFAULT, priority::Integer=YARN_CONTAINER_PRIORITY_DEFAULT)
-    prio = protobuild(PriorityProto, Dict(:priority => priority))
-    capability = protobuild(ResourceProto, Dict(:memory => mem, :virtual_cores => cpu))
-    req = protobuild(ResourceRequestProto, Dict(:priority => prio,
-            :resource_name => loc,
-            :num_containers => numcontainers,
-            :capability => capability))
+    prio = PriorityProto(priority=priority)
+    capability = ResourceProto(memory=mem, virtual_cores=cpu)
+    req = ResourceRequestProto(priority=prio, resource_name=loc, num_containers=numcontainers, capability=capability)
     pending(containers.alloc_pipeline, req)
     containers.ndesired += numcontainers
     nothing
