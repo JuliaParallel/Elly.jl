@@ -7,7 +7,7 @@ mutable struct UserGroupInformation
     credentials::Credentials
 
     function UserGroupInformation(username::AbstractString=default_username(); proxy::Bool=false, proxyuser::AbstractString=username)
-        userinfo = proxy ? protobuild(UserInformationProto, Dict(:realUser => username, :effectiveUser => proxyuser)) : protobuild(UserInformationProto, Dict(:realUser => username))
+        userinfo = proxy ? UserInformationProto(realUser=username, effectiveUser=proxyuser) : UserInformationProto(realUser=username)
         ugi = new(userinfo, Credentials())
         haskey(ENV, "HADOOP_TOKEN_FILE_LOCATION") && read_credentials!(ENV["HADOOP_TOKEN_FILE_LOCATION"]; credentials=ugi.credentials)
         ugi

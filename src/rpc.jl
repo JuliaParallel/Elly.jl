@@ -152,17 +152,17 @@ end
 
 function buffer_connctx(channel::HadoopRpcChannel)
     protocol = channel.protocol_attribs[:id]
-    connctx = protobuild(IpcConnectionContextProto, Dict(:userInfo => channel.ugi.userinfo, :protocol => protocol))
+    connctx = IpcConnectionContextProto(userInfo=channel.ugi.userinfo, protocol=protocol)
 
     buffer_size_delimited(channel.iob, connctx)
 end
 
 function buffer_reqhdr(channel::HadoopRpcChannel, call_id::Int32)
-    hdr = protobuild(RpcRequestHeaderProto, Dict(:rpcKind => HRPC_PROTOBUFF_TYPE,
-                :rpcOp => HRPC_FINAL_PACKET,
-                :callId => call_id,
-                #:retryCount => -1,
-                :clientId => convert(Vector{UInt8}, codeunits(channel.clnt_id))))
+    hdr = RpcRequestHeaderProto(rpcKind = HRPC_PROTOBUFF_TYPE,
+                rpcOp = HRPC_FINAL_PACKET,
+                callId = call_id,
+                #retryCount = -1,
+                clientId = convert(Vector{UInt8}, codeunits(channel.clnt_id)))
 
     buffer_size_delimited(channel.iob, hdr)
 end
@@ -173,9 +173,9 @@ buffer_conctx_reqhdr(channel::HadoopRpcChannel) = (channel.sent_call_id = channe
 function buffer_method_reqhdr(channel::HadoopRpcChannel, method::MethodDescriptor)
     protocol = channel.protocol_attribs[:id]
     protocol_ver = channel.protocol_attribs[:ver]
-    hdr = protobuild(RequestHeaderProto, Dict(:methodName => method.name,
-                :declaringClassProtocolName => protocol,
-                :clientProtocolVersion => protocol_ver))
+    hdr = RequestHeaderProto(methodName = method.name,
+                declaringClassProtocolName = protocol,
+                clientProtocolVersion = protocol_ver)
 
     buffer_size_delimited(channel.iob, hdr)
 end
@@ -480,9 +480,9 @@ function buffer_readblock(reader::HDFSBlockReader)
         setproperty!(exblock, fld, get_field(block.b, fld))
     end
 
-    basehdr = protobuild(BaseHeaderProto, Dict(:block => exblock, :token => token))
-    hdr = protobuild(ClientOperationHeaderProto, Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
-    readblock = protobuild(OpReadBlockProto, Dict(:offset => offset, :len => len, :header => hdr))
+    basehdr = BaseHeaderProto(block=exblock, token=token)
+    hdr = ClientOperationHeaderProto(baseHeader=basehdr, clientName=ELLY_CLIENTNAME)
+    readblock = OpReadBlockProto(offset=offset, len=len, header=hdr)
     @debug("sending block read message", offset, len)
 
     buffer_size_delimited(channel.iob, readblock)
@@ -490,7 +490,7 @@ end
 
 function buffer_client_read_status(reader::HDFSBlockReader, status::Int32)
     channel = reader.channel
-    read_status = protobuild(ClientReadStatusProto, Dict(:status => status))
+    read_status = ClientReadStatusProto(status=status)
     buffer_size_delimited(channel.iob, read_status)
 end
 
@@ -972,24 +972,24 @@ function buffer_writeblock(writer::HDFSBlockWriter)
     end
     setproperty!(exblock, :numBytes, zero(UInt64))
 
-    basehdr = protobuild(BaseHeaderProto, Dict(:block => exblock, :token => token))
-    hdr = protobuild(ClientOperationHeaderProto, Dict(:baseHeader => basehdr, :clientName => ELLY_CLIENTNAME))
-    chksum = protobuild(ChecksumProto, Dict(:_type => defaults.checksumType, :bytesPerChecksum => defaults.bytesPerChecksum))
+    basehdr = BaseHeaderProto(block=exblock, token=token)
+    hdr = ClientOperationHeaderProto(baseHeader=basehdr, clientName=ELLY_CLIENTNAME)
+    chksum = ChecksumProto(_type=defaults.checksumType, bytesPerChecksum=defaults.bytesPerChecksum)
 
     targets = DatanodeInfoProto[]
     for loc in block.locs
         (loc.id != writer.source_node.id) && push!(targets, loc)
     end
 
-    writeblock = protobuild(OpWriteBlockProto, Dict(:header => hdr,
-                    :targets => targets,
-                    :source => writer.source_node,
-                    :stage => OpWriteBlockProto_BlockConstructionStage.PIPELINE_SETUP_CREATE,
-                    :pipelineSize => length(block.locs),
-                    :minBytesRcvd => 0,
-                    :maxBytesRcvd => 0,
-                    :latestGenerationStamp => exblock.generationStamp,
-                    :requestedChecksum => chksum))
+    writeblock = OpWriteBlockProto(header = hdr,
+                    targets = targets,
+                    source = writer.source_node,
+                    stage = OpWriteBlockProto_BlockConstructionStage.PIPELINE_SETUP_CREATE,
+                    pipelineSize = length(block.locs),
+                    minBytesRcvd = 0,
+                    maxBytesRcvd = 0,
+                    latestGenerationStamp = exblock.generationStamp,
+                    requestedChecksum = chksum)
     @debug("sending block write message", offset=block.offset)
 
     buffer_size_delimited(channel.iob, writeblock)
@@ -1051,10 +1051,10 @@ function prepare_packet(writer::HDFSBlockWriter)
     seq_no = Int64(writer.pkt_seq += 1)
     #@debug("packet seqno $seq_no with $(bytes_in_packet)/$(defaults.writePacketSize) bytes is last packet: $last_pkt")
 
-    pkt_hdr = protobuild(PacketHeaderProto, Dict(:offsetInBlock => writer.total_written,
-                    :seqno => seq_no,
-                    :lastPacketInBlock => last_pkt,
-                    :dataLen => bytes_in_packet))
+    pkt_hdr = PacketHeaderProto(offsetInBlock = writer.total_written,
+                    seqno = seq_no,
+                    lastPacketInBlock = last_pkt,
+                    dataLen = bytes_in_packet)
 
     writer.total_written += bytes_in_packet
 

@@ -194,20 +194,20 @@ function submit(client::YarnClient, container_spec::ContainerLaunchContextProto,
 
     appid, maxmem, maxcores = _new_app(client)
 
-    prio = protobuild(PriorityProto, Dict(:priority => priority))
-    res = protobuild(ResourceProto, Dict(:memory => mem, :virtual_cores => cores))
-    asc = protobuild(ApplicationSubmissionContextProto, Dict(:application_id => appid,
-                :application_name => appname,
-                :queue => queue,
-                :priority => prio,
-                :unmanaged_am => unmanaged,
-                :am_container_spec => container_spec,
-                :resource => res,
-                :maxAppAttempts => 2,
-                :applicationType => apptype,
-                :keep_containers_across_application_attempts => reuse))
+    prio = PriorityProto(priority=priority)
+    res = ResourceProto(memory=mem, virtual_cores=cores)
+    asc = ApplicationSubmissionContextProto(application_id = appid,
+                application_name = appname,
+                queue = queue,
+                priority = prio,
+                unmanaged_am = unmanaged,
+                am_container_spec = container_spec,
+                resource = res,
+                maxAppAttempts = 2,
+                applicationType = apptype,
+                keep_containers_across_application_attempts = reuse)
   
-    inp = protobuild(SubmitApplicationRequestProto, Dict(:application_submission_context => asc))
+    inp = SubmitApplicationRequestProto(application_submission_context=asc)
 
     submitApplication(client.rm_conn, inp)
     YarnApp(client, appid)
@@ -215,7 +215,7 @@ end
 
 function kill(app::YarnApp)
     client = app.client
-    inp = protobuild(KillApplicationRequestProto, Dict(:application_id => app.appid))
+    inp = KillApplicationRequestProto(application_id=app.appid)
 
     resp = forceKillApplication(client.rm_conn, inp)
     resp.is_kill_completed
@@ -224,7 +224,7 @@ end
 function status(app::YarnApp, refresh::Bool=true)
     if refresh || (app.status === nothing)
         client = app.client
-        inp = protobuild(GetApplicationReportRequestProto, Dict(:application_id => app.appid))
+        inp = GetApplicationReportRequestProto(application_id=app.appid)
 
         resp = getApplicationReport(client.rm_conn, inp) 
         app.status = isfilled(resp.application_report) ?  YarnAppStatus(resp.application_report) : nothing
@@ -258,7 +258,7 @@ end
 function attempts(app::YarnApp, refresh::Bool=true)
     if refresh || isempty(app.attempts)
         client = app.client
-        inp = protobuild(GetApplicationAttemptsRequestProto, Dict(:application_id => app.appid))
+        inp = GetApplicationAttemptsRequestProto(application_id=app.appid)
 
         resp = getApplicationAttempts(client.rm_conn, inp)
         atmptlist = app.attempts

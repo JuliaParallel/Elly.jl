@@ -80,7 +80,7 @@ buffer_sasl_reqhdr(channel::HadoopRpcChannel) = (channel.sent_call_id = channel.
 
 function buffer_sasl_message(channel::HadoopRpcChannel, state::Int32, auths::Vector{RpcSaslProto_SaslAuth}=RpcSaslProto_SaslAuth[], token::Vector{UInt8}=UInt8[])
     @debug("buffer SASL message", state, nauths=length(auths), token=!isempty(token))
-    saslmsg = protobuild(RpcSaslProto, Dict(:version => 0, :state => state))
+    saslmsg = RpcSaslProto(version=0, state=state)
     isempty(auths) || setproperty!(saslmsg, :auths, auths)
     isempty(token) || setproperty!(saslmsg, :token, token)
     buffer_size_delimited(channel.iob, saslmsg)
@@ -150,10 +150,10 @@ function sasl_auth(channel::HadoopRpcChannel, token::TokenProto)
     @debug("response", response)
 
     # send response as a sasl initiate request
-    respauth = protobuild(RpcSaslProto_SaslAuth, Dict(:method => auth.method,
-                :mechanism => auth.mechanism,
-                :protocol => auth.protocol,
-                :serverId => auth.serverId))
+    respauth = RpcSaslProto_SaslAuth(method = auth.method,
+                mechanism = auth.mechanism,
+                protocol = auth.protocol,
+                serverId = auth.serverId)
 
     begin_send(channel)
     buffer_sasl_reqhdr(channel)
