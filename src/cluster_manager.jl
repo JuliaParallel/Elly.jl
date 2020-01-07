@@ -10,29 +10,47 @@ keep_connected: if false, YarnManager will disconnect from the cluster once all 
 """
 struct YarnManager <: ClusterManager
     ugi::UserGroupInformation
-    clnt::YarnClient
+    clnt::Union{YarnClient,Nothing}
     am::YarnAppMaster
-    app::YarnApp
+    app::Union{YarnApp,ContainerIdProto}
     launch_timeout::Integer
     keep_connected::Bool
 
     function YarnManager(; kwargs...)
         params = Dict(kwargs)
         paramkeys = keys(params)
+        unmanaged = (:unmanaged in paramkeys) ? params[:unmanaged] : true
+        launch_timeout  = (:launch_timeout in paramkeys) ? params[:launch_timeout] : 60
+        keep_connected  = (:keep_connected in paramkeys) ? params[:keep_connected] : true
         @debug("YarnManager constructor", params)
-        
-        ugi             = (:ugi             in paramkeys) ? params[:ugi]            : UserGroupInformation()
-        rmport          = (:rmport          in paramkeys) ? params[:rmport]         : 8032
-        yarnhost        = (:yarnhost        in paramkeys) ? params[:yarnhost]       : "localhost"
-        schedport       = (:schedport       in paramkeys) ? params[:schedport]      : 8030
-        launch_timeout  = (:launch_timeout  in paramkeys) ? params[:launch_timeout] : 60
-        keep_connected  = (:keep_connected  in paramkeys) ? params[:keep_connected] : true
 
-        clnt    = YarnClient(yarnhost, rmport, ugi)
-        am      = YarnAppMaster(yarnhost, schedport, ugi)
-        app     = submit(clnt, am)
+        if unmanaged
+            ugi             = (:ugi             in paramkeys) ? params[:ugi]            : UserGroupInformation()
+            rmport          = (:rmport          in paramkeys) ? params[:rmport]         : 8032
+            yarnhost        = (:yarnhost        in paramkeys) ? params[:yarnhost]       : "localhost"
+            schedport       = (:schedport       in paramkeys) ? params[:schedport]      : 8030
+
+            clnt    = YarnClient(yarnhost, rmport, ugi)
+            am      = YarnAppMaster(yarnhost, schedport, ugi)
+            app     = submit(clnt, am)
+        else
+            ugi     = UserGroupInformation()
+            am      = YarnAppMaster(ugi)
+            clnt = nothing
+            register(am)
+            app = parse_container_id(ENV["CONTAINER_ID"])
+        end
 
         new(ugi, clnt, am, app, launch_timeout, keep_connected)
+    end
+end
+
+function YarnManager(fn::Function; kwargs...)
+    yam = YarnManager(; kwargs...)
+    try
+        fn(yam)
+    finally
+        disconnect(yam)
     end
 end
 
@@ -42,7 +60,7 @@ end
 
 function show(io::IO, yarncm::YarnManager)
     print(io, "YarnManager for ")
-    show(io, yarncm.clnt)
+    show(io, yarncm.am)
 end
 
 function setup_worker(host, port)
@@ -55,7 +73,7 @@ function setup_worker(host, port)
         Sockets.wait_connected(c) # >= Julia 1.3
     end
     # identify container id so that rmprocs can clean things up nicely if required
-    serialize(c, ENV["JULIA_YARN_CID"])
+    serialize(c, ENV["CONTAINER_ID"])
 
     redirect_stdout(c)
     redirect_stderr(c)
@@ -73,19 +91,22 @@ function _envdict(envhash::Base.EnvDict)
 end
 
 function _currprocname()
-    p = joinpath(Sys.BINDIR, Sys.get_process_title())
-    exists(p) && (return p)
+    # Julia throws ENOBUFS sometimes while fetching process title
+    pt = try
+        Sys.get_process_title()
+    catch
+        "julia"
+    end
+    p = joinpath(Sys.BINDIR, pt)
+    isfile(p) && (return p)
 
-    ("_" in keys(ENV)) && contains(ENV["_"], "julia") && (return ENV["_"])
+    haskey(ENV, "_") && contains(ENV["_"], "julia") && (return ENV["_"])
 
     "julia"
 end
 
 function container_start(manager::YarnManager, cmd::String, env::Dict{String,String}, ipaddr::IPv4, port::UInt16, cid::ContainerIdProto)
     try
-        iob = IOBuffer()
-        serialize(iob, cid)
-        env["JULIA_YARN_CID"] = base64encode(take!(iob))
         env["JULIA_YARN_KUKI"] = cluster_cookie()
 
         initargs = "using Elly; Elly.setup_worker($(ipaddr.host), $(port))"
@@ -125,7 +146,7 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
                 # keep the container id in userdata to be used with rmprocs if required
                 cidstr = deserialize(sock)
                 @debug("got container id string", cidstr)
-                cid = deserialize(IOBuffer(base64decode(cidstr)))
+                cid = parse_container_id(cidstr)
                 @debug("got container id", cid)
                 config.userdata = Dict(:container_id => cid)
                 push!(instances_arr, config)

@@ -8,16 +8,24 @@
 #   - Some related debate about this here: https://issues.apache.org/jira/browse/HADOOP-6685
 # Since that is unusable in anything other than Java, we are forced to operate only in unmanaged mode, where we get it from the application report.
 
-const YARN_CONTAINER_MEM_DEFAULT = 128
-const YARN_CONTAINER_CPU_DEFAULT = 1
-const YARN_CONTAINER_LOCATION_DEFAULT = "*"
-const YARN_CONTAINER_PRIORITY_DEFAULT = 1
-const YARN_NM_CONN_KEEPALIVE_SECS = 5*60
-
-
 """
 YarnAppMaster is a skeleton application master. It provides the generic scafolding methods which can be used to create specific
 application masters for different purposes.
+
+When initializing a YarnAppMaster instance as a managed app master, the scheduler address is picked up from the environment variable `JULIA_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS`.
+Tokens set by Yarn in the file pointed to by `HADOOP_TOKEN_FILE_LOCATION` are also read in automatically.
+
+When run as a managed app master, if a function is provided to be executed, then the application master is registered, the function is executed and then the application master is deregistered.
+This provides a convenient way to run simple Julia applications in a Yarn cluster. E.g.:
+
+```
+using Elly
+
+YarnAppMaster() do
+    ...
+    # execute Julia code
+end
+```
 """
 mutable struct YarnAppMaster
     amrm_conn::YarnAMRMProtocol
@@ -32,16 +40,13 @@ mutable struct YarnAppMaster
     available_cores::Int32
     nodes::YarnNodes
     containers::YarnContainers
-
     queue::AbstractString
-    managed::Bool
-
     response_id::Int32      # initial value must be 0, update with response_id sent from server on every response
-    
     registration::Union{Nothing,RegisterApplicationMasterResponseProto}
+    am_rm_task::Union{Nothing,Task}
     lck::Lock
 
-    function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation,
+    function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation=UserGroupInformation(),
                 amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
         amrm_conn = YarnAMRMProtocol(rmhost, rmport, ugi)
         lck = makelock()
@@ -50,8 +55,31 @@ mutable struct YarnAppMaster
         new(amrm_conn, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(ugi), YarnContainers(),
-            "", true, 0,
-            nothing, lck)
+            "", 0,
+            nothing, nothing, lck)
+    end
+
+    function YarnAppMaster(ugi::UserGroupInformation=UserGroupInformation())
+        rmschedaddress = ENV["JULIA_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS"]
+        @debug("got rm address", rmschedaddress)
+        parts = split(rmschedaddress, ":")
+        host = parts[1]
+        schedport = parse(Int, parts[2])
+        am = YarnAppMaster(host, schedport, ugi)
+        for token in find_tokens(ugi; kind="YARN_AM_RM_TOKEN")
+            add_token!(ugi, token_alias(am.amrm_conn.channel), token)
+        end
+        am
+    end
+end
+
+function YarnAppMaster(fn::Function, ugi::UserGroupInformation=UserGroupInformation())
+    yam = YarnAppMaster(ugi)
+    register(yam)
+    try
+        fn()
+    finally
+        unregister(yam, true)
     end
 end
 
@@ -88,18 +116,16 @@ function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     # keep the am_rm token
     tok = am_rm_token(app)
     channel = unmanagedappmaster.amrm_conn.channel
-    add_token(channel.ugi, token_alias(channel), tok)
+    @debug("adding token", alias=token_alias(channel))
+    add_token!(channel.ugi, token_alias(channel), tok)
 
     # register the unmanaged appmaster
-    unmanagedappmaster.managed = false
     register(unmanagedappmaster)
     wait_for_attempt_state(app, Int32(1), YarnApplicationAttemptStateProto.APP_ATTEMPT_RUNNING) || throw(YarnException("Application attempt could not be launched"))
 
     # initialize complete node list for appmaster
     nodes(client; nodelist=unmanagedappmaster.nodes)
 
-    # start the am_rm processing task once the app attempt starts running if it is an unmanaged application master
-    @async(process_am_rm(unmanagedappmaster))
     app
 end
 
@@ -126,7 +152,8 @@ function register(yam::YarnAppMaster)
     end
 
     # start the am_rm processing task on registration if it is a managed application master
-    yam.managed && @async(process_am_rm(yam))
+    yam.am_rm_task = @async process_am_rm(yam)
+
     nothing
 end
 
@@ -232,10 +259,10 @@ function _update_rm(yam::YarnAppMaster)
     # store/update tokens
     channel = yam.amrm_conn.channel
     ugi = channel.ugi
-    isfilled(resp, :am_rm_token) && add_token(ugi, token_alias(channel), resp.am_rm_token)
+    isfilled(resp, :am_rm_token) && add_token!(ugi, token_alias(channel), resp.am_rm_token)
     if isfilled(resp, :nm_tokens)
         for nmtok in resp.nm_tokens
-            add_token(ugi, token_alias(nmtok.nodeId), nmtok.token)
+            add_token!(ugi, token_alias(nmtok.nodeId), nmtok.token)
         end
     end
 

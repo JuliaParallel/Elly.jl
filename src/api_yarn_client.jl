@@ -4,6 +4,12 @@
 # - applicationclient_protocol.proto
 # - application_history_client.proto
 
+const YARN_CONTAINER_MEM_DEFAULT = 128
+const YARN_CONTAINER_CPU_DEFAULT = 1
+const YARN_CONTAINER_LOCATION_DEFAULT = "*"
+const YARN_CONTAINER_PRIORITY_DEFAULT = 1
+const YARN_NM_CONN_KEEPALIVE_SECS = 5*60
+
 """
 YarnClient holds a connection to the Yarn Resource Manager and provides
 APIs for application clients to interact with Yarn.
@@ -13,6 +19,14 @@ mutable struct YarnClient
 
     function YarnClient(host::AbstractString, port::Integer, ugi::UserGroupInformation=UserGroupInformation())
         new(YarnClientProtocol(host, port, ugi))
+    end
+
+    function YarnClient(ugi::UserGroupInformation=UserGroupInformation())
+        rmaddress = ENV["JULIA_YARN_RESOURCEMANAGER_ADDRESS"]
+        parts = split(rmaddress, ":")
+        host = parts[1]
+        port = parse(Int, parts[2])
+        YarnClient(host, port, ugi)
     end
 end
 
@@ -159,9 +173,25 @@ function _new_app(client::YarnClient)
     resp.application_id, resp.maximumCapability.memory, resp.maximumCapability.virtual_cores
 end
 
-function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Integer, cores::Integer; 
+function submit(client::YarnClient, cmd::Union{AbstractString,Vector}, mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cores::Integer=YARN_CONTAINER_CPU_DEFAULT, env::Dict{String,String}=Dict{String,String}(); kwargs...)
+    container_spec = launchcontext(cmd=cmd, env=env)
+    submit(client, container_spec, mem, cores; kwargs...)
+end
+
+function submit(client::YarnClient, container_spec::ContainerLaunchContextProto, mem::Integer=YARN_CONTAINER_MEM_DEFAULT, cores::Integer=YARN_CONTAINER_CPU_DEFAULT;
         priority::Int32=one(Int32), appname::AbstractString="EllyApp", queue::AbstractString="default", apptype::AbstractString="YARN", 
-        reuse::Bool=false, unmanaged::Bool=false)
+        reuse::Bool=false, unmanaged::Bool=false, schedaddr::String="")
+    @debug("submitting application", unmanaged=unmanaged, cmd=container_spec.command)
+
+    if !unmanaged
+        # the application master would need these environment variables to initialize itself
+        # TODO: we need ability to read hadoop configuration to avoid this
+        rm_chan = client.rm_conn.channel
+        isdefined(container_spec, :environment) || (container_spec.environment = StringStringMapProto[])
+        push!(container_spec.environment, StringStringMapProto(; key="JULIA_YARN_RESOURCEMANAGER_ADDRESS", value="$(rm_chan.host):$(rm_chan.port)"))
+        push!(container_spec.environment, StringStringMapProto(; key="JULIA_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS", value=schedaddr))
+    end
+
     appid, maxmem, maxcores = _new_app(client)
 
     prio = protobuild(PriorityProto, Dict(:priority => priority))
