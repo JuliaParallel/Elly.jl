@@ -44,19 +44,17 @@ mutable struct YarnAppMaster
     response_id::Int32      # initial value must be 0, update with response_id sent from server on every response
     registration::Union{Nothing,RegisterApplicationMasterResponseProto}
     am_rm_task::Union{Nothing,Task}
-    lck::Lock
+    lck::ReentrantLock
 
     function YarnAppMaster(rmhost::AbstractString, rmport::Integer, ugi::UserGroupInformation=UserGroupInformation(),
                 amhost::AbstractString="", amport::Integer=0, amurl::AbstractString="")
         amrm_conn = YarnAMRMProtocol(rmhost, rmport, ugi)
-        lck = makelock()
-        put!(lck, 1)
 
         new(amrm_conn, amhost, amport, amurl, 
             Int32(0), Int32(0), Int32(0), Int32(0),
             YarnNodes(ugi), YarnContainers(),
             "", 0,
-            nothing, nothing, lck)
+            nothing, nothing, ReentrantLock())
     end
 
     function YarnAppMaster(ugi::UserGroupInformation=UserGroupInformation())
@@ -83,17 +81,6 @@ function YarnAppMaster(fn::Function, ugi::UserGroupInformation=UserGroupInformat
     end
 end
 
-function withlock(fn, yam)
-    try
-        take!(yam.lck)
-        return fn()
-    catch ex
-        rethrow(ex)
-    finally
-        put!(yam.lck, 1)
-    end
-end
-
 function show(io::IO, yam::YarnAppMaster)
     show(io, yam.amrm_conn)
     if yam.registration !== nothing
@@ -111,7 +98,7 @@ callback(yam::YarnAppMaster, on_container_alloc::Union{Nothing,Function}, on_con
 function submit(client::YarnClient, unmanagedappmaster::YarnAppMaster)
     @debug("submitting unmanaged application")
     clc = launchcontext()
-    app = submit(client, clc, YARN_CONTAINER_MEM_DEFAULT, YARN_CONTAINER_CPU_DEFAULT; unmanaged=true)
+    app = submit(client, clc; unmanaged=true)
 
     # keep the am_rm token
     tok = am_rm_token(app)
@@ -137,7 +124,7 @@ function register(yam::YarnAppMaster)
     end
     !isempty(yam.tracking_url) && setproperty!(inp, :tracking_url, yam.tracking_url)
 
-    resp = withlock(yam) do
+    resp = lock(yam.lck) do
         registerApplicationMaster(yam.amrm_conn, inp)
     end
     yam.registration = resp
@@ -170,7 +157,7 @@ function _unregister(yam::YarnAppMaster, finalstatus::Int32, diagnostics::Abstra
     !isempty(yam.tracking_url) && setproperty!(inp, :tracking_url, yam.tracking_url)
     !isempty(diagnostics) && setproperty!(inp, :diagnostics, diagnostics)
   
-    resp = withlock(yam) do
+    resp = lock(yam.lck) do
         finishApplicationMaster(yam.amrm_conn, inp)
     end
     resp.isUnregistered && (yam.registration = nothing)
@@ -184,7 +171,8 @@ kill(yam::YarnAppMaster, diagnostics::AbstractString="") = _unregister(yam, Fina
 container_allocate(yam::YarnAppMaster, numcontainers::Int; opts...) = request_alloc(yam.containers, numcontainers; opts...)
 container_release(yam::YarnAppMaster, cids::ContainerIdProto...) = request_release(yam.containers, cids...)
 
-container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cid], container_spec)
+container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, container_id_string(cid), container_spec)
+container_start(yam::YarnAppMaster, cidstr::String, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cidstr], container_spec)
 function container_start(yam::YarnAppMaster, container::ContainerProto, container_spec::ContainerLaunchContextProto)
     @debug("starting", container)
     req = StartContainerRequestProto(container_launch_context=container_spec, container_token=container.container_token)
@@ -210,7 +198,8 @@ function container_start(yam::YarnAppMaster, container::ContainerProto, containe
     cid
 end
 
-container_stop(yam::YarnAppMaster, cid::ContainerIdProto) = container_stop(yam, yam.containers.containers[cid])
+container_stop(yam::YarnAppMaster, cid::ContainerIdProto) = container_stop(yam, container_id_string(cid))
+container_stop(yam::YarnAppMaster, cidstr::String) = container_stop(yam, yam.containers.containers[cidstr])
 function container_stop(yam::YarnAppMaster, container::ContainerProto)
     @debug("stopping", container)
 
@@ -249,7 +238,7 @@ function _update_rm(yam::YarnAppMaster)
     setproperty!(inp, :response_id, yam.response_id)
 
     #@debug(inp)
-    resp = withlock(yam) do
+    resp = lock(yam.lck) do
         allocate_resp = allocate(yam.amrm_conn, inp)
         yam.response_id = allocate_resp.response_id # next response id must match this
         allocate_resp

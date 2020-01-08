@@ -2,7 +2,9 @@
 
 `YarnManager` provides a Julia [ClusterManager](http://docs.julialang.org/en/latest/manual/parallel-computing/#clustermanagers) interface for 
 working with Yarn. It does not have the full functionality of the direct Yarn APIs, but it provides the familiar `addprocs`, `rmprocs` methods 
-for starting and stopping containers. 
+for starting and stopping containers.
+
+`YarnManager` works in both managed mode (both master and workers launched inside the cluster) and unmanaged mode (only workers launched inside the cluster). See section on ["Yarn Applications using Elly"](YARN.md) for details.
 
 It can be also used to get a distributed Julia shell in the Yarn cluster.
 
@@ -10,14 +12,25 @@ The below example walks through a simple example using a Julia on a Yarn cluster
 You can find the YARN manager parameters in the `$HADOOP_CONFIG_DIR/yarn-site.xml` file 
 [Hadoop Docs](https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html).
 
-Bring up the Julia processes on the Yarn cluster:
+Bring up the Julia processes on the Yarn cluster. Note that Julia should be installed on all nodes of the cluster at the same path for this to work.
 
 ````
 julia> using Elly
 
-julia> yarncm = YarnManager(yarnhost="localhost", rmport=8032, schedport=8030, launch_timeout=60);
+julia> yarncm = YarnManager(
+        yarnhost="localhost",
+        rmport=8032,
+        schedport=8030,
+        launch_timeout=60,
+        unmanaged=false     # pass true when running in unmanaged mode
+    );
 
-julia> addprocs(yarncm; np=8, env=Dict("JULIA_PKGDIR"=>Pkg.dir()));
+julia>env = Dict(
+    "JULIA_LOAD_PATH"=>join([Base.LOAD_PATH..., "/usr/local/julia/packages"], ':'),
+    "JULIA_DEPOT_PATH"=>join([Base.DEPOT_PATH..., "/usr/local/julia"], ':')
+);
+
+julia> addprocs(yarncm; np=8, env=env);
 
 julia> @everywhere println(myid())
 1
@@ -32,7 +45,8 @@ julia> @everywhere println(myid())
 ````
 
 Next, we try some trivial computation on all nodes. We use a file `dart.jl` that contains some code to
-arrive at an approximate value of pi using a Monte Carlo method:
+arrive at an approximate value of pi using a Monte Carlo method. Note that `dart.jl` should be made
+available throughout the cluster on all nodes at the same path.
 
 ````
 # dart.jl
@@ -88,3 +102,12 @@ julia> @everywhere println(myid())
 
 julia> Elly.disconnect(yarncm);
 ````
+
+`YarnManager` can also be used in the familiar Julia `do` block by passing a function to execute in the context of the manager, e.g.:
+
+```
+YarnManager(launch_timeout=60, unmanaged=false) do yarncm
+    # use yarncm here...
+    ...
+end
+```

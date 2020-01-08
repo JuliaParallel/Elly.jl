@@ -35,3 +35,19 @@ function parse_container_id(cidstr::String)
     attemptid_proto = ApplicationAttemptIdProto(; application_id=appid_proto, attemptId=attemptid)
     ContainerIdProto(; app_id=appid_proto, app_attempt_id=attemptid_proto, id=cid)
 end
+
+function container_id_string(cid::ContainerIdProto)
+    app_id = isdefined(cid, :app_id) ? cid.app_id : cid.app_attempt_id.application_id
+    attempt_id = isdefined(cid, :app_attempt_id) ? cid.app_attempt_id.attemptId : 0
+    id = cid.id
+    epoch = id >> 40
+    id = CONTAINER_ID_BITMASK & id
+
+    parts = [CONTAINER_PREFIX]
+    (epoch > 0) && push!(parts, EPOCH_PREFIX * lpad(epoch, 2, "0"))
+    push!(parts, string(app_id.cluster_timestamp))
+    push!(parts, lpad(app_id.id, 4, "0"))
+    push!(parts, lpad(attempt_id, 2, "0"))
+    push!(parts, lpad(id, 6, "0"))
+    join(parts, CONTAINER_ID_SPLITTER)
+end

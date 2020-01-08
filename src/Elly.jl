@@ -42,9 +42,6 @@ export YarnAppMaster, register, unregister, kill, can_schedule_mem, can_schedule
 
 export YarnManager, launch, manage
 
-const Lock = Channel
-makelock() = Channel{Int}(1)
-
 include("hadoop/hadoop.jl")
 using Elly.hadoop
 using Elly.hadoop.common
