@@ -15,17 +15,29 @@ end
 
 function test_container_id()
     @info("testing container ids")
-    cid = Elly.parse_container_id("container_1577681661884_0005_01_000001")
+    cidstr = "container_1577681661884_0005_01_000001"
+    cid = Elly.parse_container_id(cidstr)
     @test cid.id == 1
     @test cid.app_id.cluster_timestamp == 1577681661884
     @test cid.app_id.id == 5
     @test cid.app_attempt_id.attemptId == 1
+    @test Elly.container_id_string(cid) == cidstr
 
-    cid = Elly.parse_container_id("container_e17_1410901177871_0001_01_000005")
+    cidstr = "container_e17_1410901177871_0001_01_000005"
+    cid = Elly.parse_container_id(cidstr)
     @test cid.id == 18691697672197
     @test cid.app_id.cluster_timestamp == 1410901177871
     @test cid.app_id.id == 1
     @test cid.app_attempt_id.attemptId == 1
+    @test Elly.container_id_string(cid) == cidstr
+
+    cidstr = "container_e03_1465095377475_0007_02_000001"
+    cid = Elly.parse_container_id(cidstr)
+    @test cid.id == 3298534883329
+    @test cid.app_id.cluster_timestamp == 1465095377475
+    @test cid.app_id.id == 7
+    @test cid.app_attempt_id.attemptId == 2
+    @test Elly.container_id_string(cid) == cidstr
 
     nothing
 end
