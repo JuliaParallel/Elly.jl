@@ -273,10 +273,10 @@ It also holds the allocation and release pipelines that are used by application 
 Also schedules callbacks as tasks when containers are allocated or terminated.
 """
 mutable struct YarnContainers
-    containers::Dict{ContainerIdProto,ContainerProto}
-    status::Dict{ContainerIdProto,ContainerStatusProto}
-    active::Set{ContainerIdProto}
-    busy::Set{ContainerIdProto}
+    containers::Dict{String,ContainerProto}
+    status::Dict{String,ContainerStatusProto}
+    active::Set{String}
+    busy::Set{String}
 
     alloc_pipeline::RequestPipeline{ResourceRequestProto}
     release_pipeline::RequestPipeline{ContainerIdProto}
@@ -286,7 +286,7 @@ mutable struct YarnContainers
     on_container_finish::Union{Nothing,Function}
 
     function YarnContainers()
-        new(Dict{ContainerIdProto,ContainerProto}(), Dict{ContainerIdProto,ContainerStatusProto}(), Set{ContainerIdProto}(), Set{ContainerIdProto}(),
+        new(Dict{String,ContainerProto}(), Dict{String,ContainerStatusProto}(), Set{String}(), Set{String}(),
             RequestPipeline{ResourceRequestProto}(), RequestPipeline{ContainerIdProto}(), 0, nothing, nothing)
     end
 end
@@ -313,8 +313,9 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
     if isfilled(arp, :allocated_containers)
         for cont in arp.allocated_containers
             id = cont.id
-            contlist[id] = cont
-            push!(active, id)
+            idstr = container_id_string(id)
+            contlist[idstr] = cont
+            push!(active, idstr)
             @debug("calling callback for alloc")
             (cballoc === nothing) || @async cballoc(id)
         end
@@ -323,11 +324,12 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
         @debug("have completed containers")
         for contst in arp.completed_container_statuses
             id = contst.container_id
-            status[id] = contst
-            @debug("container finished", id, active=(id in active))
-            (id in active) && pop!(active, id)
-            (id in busy) && pop!(busy, id)
-            @debug("calling callback for finish")
+            idstr = container_id_string(id)
+            status[idstr] = contst
+            @debug("container finished", idstr, isactive=(idstr in active), isbusy=(idstr in busy))
+            (idstr in active) && pop!(active, idstr)
+            (idstr in busy) && pop!(busy, idstr)
+            @debug("calling callback for finish", id)
             (cbfinish === nothing) || @async cbfinish(id)
         end
     end
@@ -359,7 +361,7 @@ end
 function set_busy(containers::YarnContainers, cids::ContainerIdProto...)
     busy = containers.busy
     for cid in cids
-        push!(busy, cid)
+        push!(busy, container_id_string(cid))
     end
     nothing
 end
@@ -367,7 +369,8 @@ end
 function set_free(containers::YarnContainers, cids::ContainerIdProto...)
     busy = containers.busy
     for cid in cids
-        pop!(busy, cid)
+        cidstr = container_id_string(cid)
+        (cidstr in busy) && pop!(busy, cidstr)
     end
     nothing
 end

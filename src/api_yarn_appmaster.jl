@@ -171,7 +171,8 @@ kill(yam::YarnAppMaster, diagnostics::AbstractString="") = _unregister(yam, Fina
 container_allocate(yam::YarnAppMaster, numcontainers::Int; opts...) = request_alloc(yam.containers, numcontainers; opts...)
 container_release(yam::YarnAppMaster, cids::ContainerIdProto...) = request_release(yam.containers, cids...)
 
-container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cid], container_spec)
+container_start(yam::YarnAppMaster, cid::ContainerIdProto, container_spec::ContainerLaunchContextProto) = container_start(yam, container_id_string(cid), container_spec)
+container_start(yam::YarnAppMaster, cidstr::String, container_spec::ContainerLaunchContextProto) = container_start(yam, yam.containers.containers[cidstr], container_spec)
 function container_start(yam::YarnAppMaster, container::ContainerProto, container_spec::ContainerLaunchContextProto)
     @debug("starting", container)
     req = StartContainerRequestProto(container_launch_context=container_spec, container_token=container.container_token)
@@ -197,7 +198,8 @@ function container_start(yam::YarnAppMaster, container::ContainerProto, containe
     cid
 end
 
-container_stop(yam::YarnAppMaster, cid::ContainerIdProto) = container_stop(yam, yam.containers.containers[cid])
+container_stop(yam::YarnAppMaster, cid::ContainerIdProto) = container_stop(yam, container_id_string(cid))
+container_stop(yam::YarnAppMaster, cidstr::String) = container_stop(yam, yam.containers.containers[cidstr])
 function container_stop(yam::YarnAppMaster, container::ContainerProto)
     @debug("stopping", container)
 

@@ -122,6 +122,9 @@ function container_start(manager::YarnManager, cmd::String, env::Dict{String,Str
     end
 end
 
+container_stop(manager::YarnManager, cid::ContainerIdProto) = container_stop(manager.am, cid)
+container_release(manager::YarnManager, cid::ContainerIdProto) = container_release(manager.am, cid)
+
 function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Condition)
     @debug("YarnManager launch", params)
 
@@ -179,10 +182,18 @@ function launch(manager::YarnManager, params::Dict, instances_arr::Array, c::Con
 end
 
 function manage(manager::YarnManager, id::Integer, config::WorkerConfig, op::Symbol)
+    @debug("YarnManager manage", id, op, container=config.userdata, nprocs=nprocs())
     # This function needs to exist, but so far we don't do anything
-    if op == :deregister
-        @debug("YarnManager manage", id, op, nprocs=nprocs())
-        !manager.keep_connected && (1 == nprocs()) && (@async disconnect(manager))
+    if op in [:deregister, :finalize, :interrupt]
+        if (config.userdata !== nothing) && haskey(config.userdata, :container_id)
+            cid = config.userdata[:container_id]
+            cidstr = container_id_string(cid)
+            if cidstr in manager.am.containers.active
+                container_stop(manager, cid)
+                container_release(manager, cid)
+            end
+        end
+        !manager.keep_connected && (1 == nprocs()) && disconnect(manager)
     end
     nothing
 end

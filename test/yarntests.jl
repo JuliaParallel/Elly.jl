@@ -60,8 +60,7 @@ function make_julia_env()
         end
     end
     if !("JULIA_LOAD_PATH" in keys(env))
-        home = ENV["HOME"]
-        env["JULIA_LOAD_PATH"] = join(Base.LOAD_PATH, ':') * ":$(home)/.julia/dev:$(home)/.julia/packages"
+        env["JULIA_LOAD_PATH"] = join([Base.LOAD_PATH..., joinpath(Base.homedir(), ".julia", "dev"), joinpath(Base.homedir(), ".julia", "packages")], ':')
     end
     if !("JULIA_DEPOT_PATH" in keys(env))
         env["JULIA_DEPOT_PATH"] = join(Base.DEPOT_PATH, ':')
@@ -84,6 +83,7 @@ function test_yarn_clustermanager(yarncm::YarnManager, limitedtestenv::Bool)
     @everywhere println("hi")
     rmprocs(workers())
     @test nprocs() == 1
+    @test yarncm.am.registration !== nothing # because keep_connected is true by default
     nothing
 end
 
