@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 import ..hadoop
@@ -417,3 +418,4 @@ getServiceStatus(stub::HAServiceProtocolServiceStub, controller::ProtoRpcControl
 getServiceStatus(stub::HAServiceProtocolServiceBlockingStub, controller::ProtoRpcController, inp::hadoop.common.GetServiceStatusRequestProto) = call_method(stub.impl, _HAServiceProtocolService_methods[5], controller, inp)
 
 export HAServiceStateProto, HARequestSource, HAStateChangeRequestInfoProto, MonitorHealthRequestProto, MonitorHealthResponseProto, TransitionToActiveRequestProto, TransitionToActiveResponseProto, TransitionToStandbyRequestProto, TransitionToStandbyResponseProto, TransitionToObserverRequestProto, TransitionToObserverResponseProto, GetServiceStatusRequestProto, GetServiceStatusResponseProto, HAServiceProtocolService, HAServiceProtocolServiceStub, HAServiceProtocolServiceBlockingStub, monitorHealth, transitionToActive, transitionToStandby, transitionToObserver, getServiceStatus
+# COV_EXCL_STOP

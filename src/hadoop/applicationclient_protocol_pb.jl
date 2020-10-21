@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 import ..hadoop
@@ -141,3 +142,4 @@ getResourceTypeInfo(stub::ApplicationClientProtocolServiceStub, controller::Prot
 getResourceTypeInfo(stub::ApplicationClientProtocolServiceBlockingStub, controller::ProtoRpcController, inp::hadoop.yarn.GetAllResourceTypeInfoRequestProto) = call_method(stub.impl, _ApplicationClientProtocolService_methods[30], controller, inp)
 
 export ApplicationClientProtocolService, ApplicationClientProtocolServiceStub, ApplicationClientProtocolServiceBlockingStub, getNewApplication, getApplicationReport, submitApplication, failApplicationAttempt, forceKillApplication, getClusterMetrics, getApplications, getClusterNodes, getQueueInfo, getQueueUserAcls, getDelegationToken, renewDelegationToken, cancelDelegationToken, moveApplicationAcrossQueues, getApplicationAttemptReport, getApplicationAttempts, getContainerReport, getContainers, getNewReservation, submitReservation, updateReservation, deleteReservation, listReservations, getNodeToLabels, getLabelsToNodes, getClusterNodeLabels, updateApplicationPriority, signalToContainer, updateApplicationTimeouts, getResourceTypeInfo
+# COV_EXCL_STOP

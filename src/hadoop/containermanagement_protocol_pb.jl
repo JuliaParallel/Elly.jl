@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 
@@ -64,3 +65,4 @@ commitLastReInitialization(stub::ContainerManagementProtocolServiceStub, control
 commitLastReInitialization(stub::ContainerManagementProtocolServiceBlockingStub, controller::ProtoRpcController, inp::hadoop.yarn.ContainerIdProto) = call_method(stub.impl, _ContainerManagementProtocolService_methods[11], controller, inp)
 
 export ContainerManagementProtocolService, ContainerManagementProtocolServiceStub, ContainerManagementProtocolServiceBlockingStub, startContainers, stopContainers, getContainerStatuses, increaseContainersResource, updateContainer, signalToContainer, localize, reInitializeContainer, restartContainer, rollbackLastReInitialization, commitLastReInitialization
+# COV_EXCL_STOP

@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 
@@ -44,3 +45,4 @@ function Base.getproperty(obj::RequestHeaderProto, name::Symbol)
 end
 
 export RequestHeaderProto
+# COV_EXCL_STOP

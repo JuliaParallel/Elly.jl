@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 import ..hadoop
@@ -57,3 +58,4 @@ cancelDelegationToken(stub::ApplicationHistoryProtocolServiceStub, controller::P
 cancelDelegationToken(stub::ApplicationHistoryProtocolServiceBlockingStub, controller::ProtoRpcController, inp::hadoop.common.CancelDelegationTokenRequestProto) = call_method(stub.impl, _ApplicationHistoryProtocolService_methods[9], controller, inp)
 
 export ApplicationHistoryProtocolService, ApplicationHistoryProtocolServiceStub, ApplicationHistoryProtocolServiceBlockingStub, getApplicationReport, getApplications, getApplicationAttemptReport, getApplicationAttempts, getContainerReport, getContainers, getDelegationToken, renewDelegationToken, cancelDelegationToken
+# COV_EXCL_STOP

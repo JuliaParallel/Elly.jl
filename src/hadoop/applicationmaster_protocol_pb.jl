@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 
@@ -32,3 +33,4 @@ allocate(stub::ApplicationMasterProtocolServiceStub, controller::ProtoRpcControl
 allocate(stub::ApplicationMasterProtocolServiceBlockingStub, controller::ProtoRpcController, inp::hadoop.yarn.AllocateRequestProto) = call_method(stub.impl, _ApplicationMasterProtocolService_methods[3], controller, inp)
 
 export ApplicationMasterProtocolService, ApplicationMasterProtocolServiceStub, ApplicationMasterProtocolServiceBlockingStub, registerApplicationMaster, finishApplicationMaster, allocate
+# COV_EXCL_STOP

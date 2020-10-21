@@ -1,3 +1,4 @@
+# COV_EXCL_START
 module hadoop
   const _ProtoBuf_Top_ = @static isdefined(parentmodule(@__MODULE__), :_ProtoBuf_Top_) ? (parentmodule(@__MODULE__))._ProtoBuf_Top_ : parentmodule(@__MODULE__)
   module common
@@ -28,3 +29,4 @@ module hadoop
     include("application_history_client_pb.jl")
   end
 end
+# COV_EXCL_STOP

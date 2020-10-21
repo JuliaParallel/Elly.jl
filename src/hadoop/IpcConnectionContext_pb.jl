@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 
@@ -80,3 +81,4 @@ function Base.getproperty(obj::IpcConnectionContextProto, name::Symbol)
 end
 
 export UserInformationProto, IpcConnectionContextProto
+# COV_EXCL_STOP

@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 
@@ -318,3 +319,4 @@ function Base.getproperty(obj::RpcSaslProto, name::Symbol)
 end
 
 export RpcKindProto, RPCTraceInfoProto, RPCCallerContextProto, RpcRequestHeaderProto_OperationProto, RpcRequestHeaderProto, RpcResponseHeaderProto_RpcStatusProto, RpcResponseHeaderProto_RpcErrorCodeProto, RpcResponseHeaderProto, RpcSaslProto_SaslState, RpcSaslProto_SaslAuth, RpcSaslProto
+# COV_EXCL_STOP

@@ -1,4 +1,5 @@
 # syntax: proto2
+# COV_EXCL_START
 using ProtoBuf
 import ProtoBuf.meta
 
@@ -343,3 +344,4 @@ function meta(::Type{RemoveXAttrResponseProto})
 end
 
 export XAttrSetFlagProto, XAttrProto_XAttrNamespaceProto, XAttrProto, SetXAttrRequestProto, SetXAttrResponseProto, GetXAttrsRequestProto, GetXAttrsResponseProto, ListXAttrsRequestProto, ListXAttrsResponseProto, RemoveXAttrRequestProto, RemoveXAttrResponseProto
+# COV_EXCL_STOP
