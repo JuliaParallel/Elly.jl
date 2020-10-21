@@ -3,1114 +3,5703 @@ using ProtoBuf
 import ProtoBuf.meta
 import ..hadoop
 
-struct __enum_CreateFlagProto <: ProtoEnum
-    CREATE::Int32
-    OVERWRITE::Int32
-    APPEND::Int32
-    LAZY_PERSIST::Int32
-    NEW_BLOCK::Int32
-    __enum_CreateFlagProto() = new(1,2,4,16,32)
-end #struct __enum_CreateFlagProto
-const CreateFlagProto = __enum_CreateFlagProto()
+const CreateFlagProto = (;[
+    Symbol("CREATE") => Int32(1),
+    Symbol("OVERWRITE") => Int32(2),
+    Symbol("APPEND") => Int32(4),
+    Symbol("LAZY_PERSIST") => Int32(16),
+    Symbol("NEW_BLOCK") => Int32(32),
+]...)
 
-struct __enum_AddBlockFlagProto <: ProtoEnum
-    NO_LOCAL_WRITE::Int32
-    __enum_AddBlockFlagProto() = new(1)
-end #struct __enum_AddBlockFlagProto
-const AddBlockFlagProto = __enum_AddBlockFlagProto()
+const AddBlockFlagProto = (;[
+    Symbol("NO_LOCAL_WRITE") => Int32(1),
+]...)
 
-struct __enum_DatanodeReportTypeProto <: ProtoEnum
-    ALL::Int32
-    LIVE::Int32
-    DEAD::Int32
-    DECOMMISSIONING::Int32
-    ENTERING_MAINTENANCE::Int32
-    IN_MAINTENANCE::Int32
-    __enum_DatanodeReportTypeProto() = new(1,2,3,4,5,6)
-end #struct __enum_DatanodeReportTypeProto
-const DatanodeReportTypeProto = __enum_DatanodeReportTypeProto()
+const DatanodeReportTypeProto = (;[
+    Symbol("ALL") => Int32(1),
+    Symbol("LIVE") => Int32(2),
+    Symbol("DEAD") => Int32(3),
+    Symbol("DECOMMISSIONING") => Int32(4),
+    Symbol("ENTERING_MAINTENANCE") => Int32(5),
+    Symbol("IN_MAINTENANCE") => Int32(6),
+]...)
 
-struct __enum_SafeModeActionProto <: ProtoEnum
-    SAFEMODE_LEAVE::Int32
-    SAFEMODE_ENTER::Int32
-    SAFEMODE_GET::Int32
-    SAFEMODE_FORCE_EXIT::Int32
-    __enum_SafeModeActionProto() = new(1,2,3,4)
-end #struct __enum_SafeModeActionProto
-const SafeModeActionProto = __enum_SafeModeActionProto()
+const SafeModeActionProto = (;[
+    Symbol("SAFEMODE_LEAVE") => Int32(1),
+    Symbol("SAFEMODE_ENTER") => Int32(2),
+    Symbol("SAFEMODE_GET") => Int32(3),
+    Symbol("SAFEMODE_FORCE_EXIT") => Int32(4),
+]...)
 
-struct __enum_RollingUpgradeActionProto <: ProtoEnum
-    QUERY::Int32
-    START::Int32
-    FINALIZE::Int32
-    __enum_RollingUpgradeActionProto() = new(1,2,3)
-end #struct __enum_RollingUpgradeActionProto
-const RollingUpgradeActionProto = __enum_RollingUpgradeActionProto()
+const RollingUpgradeActionProto = (;[
+    Symbol("QUERY") => Int32(1),
+    Symbol("START") => Int32(2),
+    Symbol("FINALIZE") => Int32(3),
+]...)
 
-struct __enum_CacheFlagProto <: ProtoEnum
-    FORCE::Int32
-    __enum_CacheFlagProto() = new(1)
-end #struct __enum_CacheFlagProto
-const CacheFlagProto = __enum_CacheFlagProto()
+const CacheFlagProto = (;[
+    Symbol("FORCE") => Int32(1),
+]...)
 
 mutable struct GetBlockLocationsRequestProto <: ProtoType
-    src::AbstractString
-    offset::UInt64
-    length::UInt64
-    GetBlockLocationsRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetBlockLocationsRequestProto
-const __req_GetBlockLocationsRequestProto = Symbol[:src,:offset,:length]
-meta(t::Type{GetBlockLocationsRequestProto}) = meta(t, __req_GetBlockLocationsRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetBlockLocationsRequestProto(; kwargs...)
+        obj = new(meta(GetBlockLocationsRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetBlockLocationsRequestProto
+const __meta_GetBlockLocationsRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetBlockLocationsRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetBlockLocationsRequestProto)
+            __meta_GetBlockLocationsRequestProto[] = target = ProtoMeta(GetBlockLocationsRequestProto)
+            req = Symbol[:src,:offset,:length]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :offset => UInt64, :length => UInt64]
+            meta(target, GetBlockLocationsRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetBlockLocationsRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetBlockLocationsRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :offset
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :length
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetBlockLocationsResponseProto <: ProtoType
-    locations::LocatedBlocksProto
-    GetBlockLocationsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetBlockLocationsResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetBlockLocationsResponseProto(; kwargs...)
+        obj = new(meta(GetBlockLocationsResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetBlockLocationsResponseProto
+const __meta_GetBlockLocationsResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetBlockLocationsResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetBlockLocationsResponseProto)
+            __meta_GetBlockLocationsResponseProto[] = target = ProtoMeta(GetBlockLocationsResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:locations => LocatedBlocksProto]
+            meta(target, GetBlockLocationsResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetBlockLocationsResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetBlockLocationsResponseProto, name::Symbol)
+    if name === :locations
+        return (obj.__protobuf_jl_internal_values[name])::LocatedBlocksProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetServerDefaultsRequestProto <: ProtoType
-    GetServerDefaultsRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetServerDefaultsRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetServerDefaultsRequestProto(; kwargs...)
+        obj = new(meta(GetServerDefaultsRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetServerDefaultsRequestProto
+const __meta_GetServerDefaultsRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetServerDefaultsRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetServerDefaultsRequestProto)
+            __meta_GetServerDefaultsRequestProto[] = target = ProtoMeta(GetServerDefaultsRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, GetServerDefaultsRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetServerDefaultsRequestProto[]
+    end
+end
 
 mutable struct GetServerDefaultsResponseProto <: ProtoType
-    serverDefaults::FsServerDefaultsProto
-    GetServerDefaultsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetServerDefaultsResponseProto
-const __req_GetServerDefaultsResponseProto = Symbol[:serverDefaults]
-meta(t::Type{GetServerDefaultsResponseProto}) = meta(t, __req_GetServerDefaultsResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetServerDefaultsResponseProto(; kwargs...)
+        obj = new(meta(GetServerDefaultsResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetServerDefaultsResponseProto
+const __meta_GetServerDefaultsResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetServerDefaultsResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetServerDefaultsResponseProto)
+            __meta_GetServerDefaultsResponseProto[] = target = ProtoMeta(GetServerDefaultsResponseProto)
+            req = Symbol[:serverDefaults]
+            allflds = Pair{Symbol,Union{Type,String}}[:serverDefaults => FsServerDefaultsProto]
+            meta(target, GetServerDefaultsResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetServerDefaultsResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetServerDefaultsResponseProto, name::Symbol)
+    if name === :serverDefaults
+        return (obj.__protobuf_jl_internal_values[name])::FsServerDefaultsProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CreateRequestProto <: ProtoType
-    src::AbstractString
-    masked::FsPermissionProto
-    clientName::AbstractString
-    createFlag::UInt32
-    createParent::Bool
-    replication::UInt32
-    blockSize::UInt64
-    cryptoProtocolVersion::Base.Vector{Int32}
-    CreateRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CreateRequestProto
-const __req_CreateRequestProto = Symbol[:src,:masked,:clientName,:createFlag,:createParent,:replication,:blockSize]
-meta(t::Type{CreateRequestProto}) = meta(t, __req_CreateRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CreateRequestProto(; kwargs...)
+        obj = new(meta(CreateRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CreateRequestProto
+const __meta_CreateRequestProto = Ref{ProtoMeta}()
+function meta(::Type{CreateRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CreateRequestProto)
+            __meta_CreateRequestProto[] = target = ProtoMeta(CreateRequestProto)
+            req = Symbol[:src,:masked,:clientName,:createFlag,:createParent,:replication,:blockSize]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :masked => FsPermissionProto, :clientName => AbstractString, :createFlag => UInt32, :createParent => Bool, :replication => UInt32, :blockSize => UInt64, :cryptoProtocolVersion => Base.Vector{Int32}]
+            meta(target, CreateRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CreateRequestProto[]
+    end
+end
+function Base.getproperty(obj::CreateRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :masked
+        return (obj.__protobuf_jl_internal_values[name])::FsPermissionProto
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :createFlag
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    elseif name === :createParent
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    elseif name === :replication
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    elseif name === :blockSize
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :cryptoProtocolVersion
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int32}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CreateResponseProto <: ProtoType
-    fs::HdfsFileStatusProto
-    CreateResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CreateResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CreateResponseProto(; kwargs...)
+        obj = new(meta(CreateResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CreateResponseProto
+const __meta_CreateResponseProto = Ref{ProtoMeta}()
+function meta(::Type{CreateResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CreateResponseProto)
+            __meta_CreateResponseProto[] = target = ProtoMeta(CreateResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:fs => HdfsFileStatusProto]
+            meta(target, CreateResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CreateResponseProto[]
+    end
+end
+function Base.getproperty(obj::CreateResponseProto, name::Symbol)
+    if name === :fs
+        return (obj.__protobuf_jl_internal_values[name])::HdfsFileStatusProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AppendRequestProto <: ProtoType
-    src::AbstractString
-    clientName::AbstractString
-    flag::UInt32
-    AppendRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AppendRequestProto
-const __req_AppendRequestProto = Symbol[:src,:clientName]
-meta(t::Type{AppendRequestProto}) = meta(t, __req_AppendRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AppendRequestProto(; kwargs...)
+        obj = new(meta(AppendRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AppendRequestProto
+const __meta_AppendRequestProto = Ref{ProtoMeta}()
+function meta(::Type{AppendRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AppendRequestProto)
+            __meta_AppendRequestProto[] = target = ProtoMeta(AppendRequestProto)
+            req = Symbol[:src,:clientName]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :clientName => AbstractString, :flag => UInt32]
+            meta(target, AppendRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AppendRequestProto[]
+    end
+end
+function Base.getproperty(obj::AppendRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :flag
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AppendResponseProto <: ProtoType
-    block::LocatedBlockProto
-    stat::HdfsFileStatusProto
-    AppendResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AppendResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AppendResponseProto(; kwargs...)
+        obj = new(meta(AppendResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AppendResponseProto
+const __meta_AppendResponseProto = Ref{ProtoMeta}()
+function meta(::Type{AppendResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AppendResponseProto)
+            __meta_AppendResponseProto[] = target = ProtoMeta(AppendResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:block => LocatedBlockProto, :stat => HdfsFileStatusProto]
+            meta(target, AppendResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AppendResponseProto[]
+    end
+end
+function Base.getproperty(obj::AppendResponseProto, name::Symbol)
+    if name === :block
+        return (obj.__protobuf_jl_internal_values[name])::LocatedBlockProto
+    elseif name === :stat
+        return (obj.__protobuf_jl_internal_values[name])::HdfsFileStatusProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetReplicationRequestProto <: ProtoType
-    src::AbstractString
-    replication::UInt32
-    SetReplicationRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetReplicationRequestProto
-const __req_SetReplicationRequestProto = Symbol[:src,:replication]
-meta(t::Type{SetReplicationRequestProto}) = meta(t, __req_SetReplicationRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetReplicationRequestProto(; kwargs...)
+        obj = new(meta(SetReplicationRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetReplicationRequestProto
+const __meta_SetReplicationRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SetReplicationRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetReplicationRequestProto)
+            __meta_SetReplicationRequestProto[] = target = ProtoMeta(SetReplicationRequestProto)
+            req = Symbol[:src,:replication]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :replication => UInt32]
+            meta(target, SetReplicationRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetReplicationRequestProto[]
+    end
+end
+function Base.getproperty(obj::SetReplicationRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :replication
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetReplicationResponseProto <: ProtoType
-    result::Bool
-    SetReplicationResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetReplicationResponseProto
-const __req_SetReplicationResponseProto = Symbol[:result]
-meta(t::Type{SetReplicationResponseProto}) = meta(t, __req_SetReplicationResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetReplicationResponseProto(; kwargs...)
+        obj = new(meta(SetReplicationResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetReplicationResponseProto
+const __meta_SetReplicationResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SetReplicationResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetReplicationResponseProto)
+            __meta_SetReplicationResponseProto[] = target = ProtoMeta(SetReplicationResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, SetReplicationResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetReplicationResponseProto[]
+    end
+end
+function Base.getproperty(obj::SetReplicationResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetStoragePolicyRequestProto <: ProtoType
-    src::AbstractString
-    policyName::AbstractString
-    SetStoragePolicyRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetStoragePolicyRequestProto
-const __req_SetStoragePolicyRequestProto = Symbol[:src,:policyName]
-meta(t::Type{SetStoragePolicyRequestProto}) = meta(t, __req_SetStoragePolicyRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetStoragePolicyRequestProto(; kwargs...)
+        obj = new(meta(SetStoragePolicyRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetStoragePolicyRequestProto
+const __meta_SetStoragePolicyRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SetStoragePolicyRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetStoragePolicyRequestProto)
+            __meta_SetStoragePolicyRequestProto[] = target = ProtoMeta(SetStoragePolicyRequestProto)
+            req = Symbol[:src,:policyName]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :policyName => AbstractString]
+            meta(target, SetStoragePolicyRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetStoragePolicyRequestProto[]
+    end
+end
+function Base.getproperty(obj::SetStoragePolicyRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :policyName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetStoragePolicyResponseProto <: ProtoType
-    SetStoragePolicyResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetStoragePolicyResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetStoragePolicyResponseProto(; kwargs...)
+        obj = new(meta(SetStoragePolicyResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetStoragePolicyResponseProto
+const __meta_SetStoragePolicyResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SetStoragePolicyResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetStoragePolicyResponseProto)
+            __meta_SetStoragePolicyResponseProto[] = target = ProtoMeta(SetStoragePolicyResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, SetStoragePolicyResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetStoragePolicyResponseProto[]
+    end
+end
 
 mutable struct UnsetStoragePolicyRequestProto <: ProtoType
-    src::AbstractString
-    UnsetStoragePolicyRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct UnsetStoragePolicyRequestProto
-const __req_UnsetStoragePolicyRequestProto = Symbol[:src]
-meta(t::Type{UnsetStoragePolicyRequestProto}) = meta(t, __req_UnsetStoragePolicyRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function UnsetStoragePolicyRequestProto(; kwargs...)
+        obj = new(meta(UnsetStoragePolicyRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct UnsetStoragePolicyRequestProto
+const __meta_UnsetStoragePolicyRequestProto = Ref{ProtoMeta}()
+function meta(::Type{UnsetStoragePolicyRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_UnsetStoragePolicyRequestProto)
+            __meta_UnsetStoragePolicyRequestProto[] = target = ProtoMeta(UnsetStoragePolicyRequestProto)
+            req = Symbol[:src]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString]
+            meta(target, UnsetStoragePolicyRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_UnsetStoragePolicyRequestProto[]
+    end
+end
+function Base.getproperty(obj::UnsetStoragePolicyRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct UnsetStoragePolicyResponseProto <: ProtoType
-    UnsetStoragePolicyResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct UnsetStoragePolicyResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function UnsetStoragePolicyResponseProto(; kwargs...)
+        obj = new(meta(UnsetStoragePolicyResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct UnsetStoragePolicyResponseProto
+const __meta_UnsetStoragePolicyResponseProto = Ref{ProtoMeta}()
+function meta(::Type{UnsetStoragePolicyResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_UnsetStoragePolicyResponseProto)
+            __meta_UnsetStoragePolicyResponseProto[] = target = ProtoMeta(UnsetStoragePolicyResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, UnsetStoragePolicyResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_UnsetStoragePolicyResponseProto[]
+    end
+end
 
 mutable struct GetStoragePolicyRequestProto <: ProtoType
-    path::AbstractString
-    GetStoragePolicyRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetStoragePolicyRequestProto
-const __req_GetStoragePolicyRequestProto = Symbol[:path]
-meta(t::Type{GetStoragePolicyRequestProto}) = meta(t, __req_GetStoragePolicyRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetStoragePolicyRequestProto(; kwargs...)
+        obj = new(meta(GetStoragePolicyRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetStoragePolicyRequestProto
+const __meta_GetStoragePolicyRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetStoragePolicyRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetStoragePolicyRequestProto)
+            __meta_GetStoragePolicyRequestProto[] = target = ProtoMeta(GetStoragePolicyRequestProto)
+            req = Symbol[:path]
+            allflds = Pair{Symbol,Union{Type,String}}[:path => AbstractString]
+            meta(target, GetStoragePolicyRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetStoragePolicyRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetStoragePolicyRequestProto, name::Symbol)
+    if name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetStoragePolicyResponseProto <: ProtoType
-    storagePolicy::BlockStoragePolicyProto
-    GetStoragePolicyResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetStoragePolicyResponseProto
-const __req_GetStoragePolicyResponseProto = Symbol[:storagePolicy]
-meta(t::Type{GetStoragePolicyResponseProto}) = meta(t, __req_GetStoragePolicyResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetStoragePolicyResponseProto(; kwargs...)
+        obj = new(meta(GetStoragePolicyResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetStoragePolicyResponseProto
+const __meta_GetStoragePolicyResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetStoragePolicyResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetStoragePolicyResponseProto)
+            __meta_GetStoragePolicyResponseProto[] = target = ProtoMeta(GetStoragePolicyResponseProto)
+            req = Symbol[:storagePolicy]
+            allflds = Pair{Symbol,Union{Type,String}}[:storagePolicy => BlockStoragePolicyProto]
+            meta(target, GetStoragePolicyResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetStoragePolicyResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetStoragePolicyResponseProto, name::Symbol)
+    if name === :storagePolicy
+        return (obj.__protobuf_jl_internal_values[name])::BlockStoragePolicyProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetStoragePoliciesRequestProto <: ProtoType
-    GetStoragePoliciesRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetStoragePoliciesRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetStoragePoliciesRequestProto(; kwargs...)
+        obj = new(meta(GetStoragePoliciesRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetStoragePoliciesRequestProto
+const __meta_GetStoragePoliciesRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetStoragePoliciesRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetStoragePoliciesRequestProto)
+            __meta_GetStoragePoliciesRequestProto[] = target = ProtoMeta(GetStoragePoliciesRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, GetStoragePoliciesRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetStoragePoliciesRequestProto[]
+    end
+end
 
 mutable struct GetStoragePoliciesResponseProto <: ProtoType
-    policies::Base.Vector{BlockStoragePolicyProto}
-    GetStoragePoliciesResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetStoragePoliciesResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetStoragePoliciesResponseProto(; kwargs...)
+        obj = new(meta(GetStoragePoliciesResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetStoragePoliciesResponseProto
+const __meta_GetStoragePoliciesResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetStoragePoliciesResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetStoragePoliciesResponseProto)
+            __meta_GetStoragePoliciesResponseProto[] = target = ProtoMeta(GetStoragePoliciesResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:policies => Base.Vector{BlockStoragePolicyProto}]
+            meta(target, GetStoragePoliciesResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetStoragePoliciesResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetStoragePoliciesResponseProto, name::Symbol)
+    if name === :policies
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{BlockStoragePolicyProto}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetPermissionRequestProto <: ProtoType
-    src::AbstractString
-    permission::FsPermissionProto
-    SetPermissionRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetPermissionRequestProto
-const __req_SetPermissionRequestProto = Symbol[:src,:permission]
-meta(t::Type{SetPermissionRequestProto}) = meta(t, __req_SetPermissionRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetPermissionRequestProto(; kwargs...)
+        obj = new(meta(SetPermissionRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetPermissionRequestProto
+const __meta_SetPermissionRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SetPermissionRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetPermissionRequestProto)
+            __meta_SetPermissionRequestProto[] = target = ProtoMeta(SetPermissionRequestProto)
+            req = Symbol[:src,:permission]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :permission => FsPermissionProto]
+            meta(target, SetPermissionRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetPermissionRequestProto[]
+    end
+end
+function Base.getproperty(obj::SetPermissionRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :permission
+        return (obj.__protobuf_jl_internal_values[name])::FsPermissionProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetPermissionResponseProto <: ProtoType
-    SetPermissionResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetPermissionResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetPermissionResponseProto(; kwargs...)
+        obj = new(meta(SetPermissionResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetPermissionResponseProto
+const __meta_SetPermissionResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SetPermissionResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetPermissionResponseProto)
+            __meta_SetPermissionResponseProto[] = target = ProtoMeta(SetPermissionResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, SetPermissionResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetPermissionResponseProto[]
+    end
+end
 
 mutable struct SetOwnerRequestProto <: ProtoType
-    src::AbstractString
-    username::AbstractString
-    groupname::AbstractString
-    SetOwnerRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetOwnerRequestProto
-const __req_SetOwnerRequestProto = Symbol[:src]
-meta(t::Type{SetOwnerRequestProto}) = meta(t, __req_SetOwnerRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetOwnerRequestProto(; kwargs...)
+        obj = new(meta(SetOwnerRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetOwnerRequestProto
+const __meta_SetOwnerRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SetOwnerRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetOwnerRequestProto)
+            __meta_SetOwnerRequestProto[] = target = ProtoMeta(SetOwnerRequestProto)
+            req = Symbol[:src]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :username => AbstractString, :groupname => AbstractString]
+            meta(target, SetOwnerRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetOwnerRequestProto[]
+    end
+end
+function Base.getproperty(obj::SetOwnerRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :username
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :groupname
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetOwnerResponseProto <: ProtoType
-    SetOwnerResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetOwnerResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetOwnerResponseProto(; kwargs...)
+        obj = new(meta(SetOwnerResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetOwnerResponseProto
+const __meta_SetOwnerResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SetOwnerResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetOwnerResponseProto)
+            __meta_SetOwnerResponseProto[] = target = ProtoMeta(SetOwnerResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, SetOwnerResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetOwnerResponseProto[]
+    end
+end
 
 mutable struct AbandonBlockRequestProto <: ProtoType
-    b::ExtendedBlockProto
-    src::AbstractString
-    holder::AbstractString
-    fileId::UInt64
-    AbandonBlockRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AbandonBlockRequestProto
-const __req_AbandonBlockRequestProto = Symbol[:b,:src,:holder]
-const __val_AbandonBlockRequestProto = Dict(:fileId => 0)
-meta(t::Type{AbandonBlockRequestProto}) = meta(t, __req_AbandonBlockRequestProto, ProtoBuf.DEF_FNUM, __val_AbandonBlockRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AbandonBlockRequestProto(; kwargs...)
+        obj = new(meta(AbandonBlockRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AbandonBlockRequestProto
+const __meta_AbandonBlockRequestProto = Ref{ProtoMeta}()
+function meta(::Type{AbandonBlockRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AbandonBlockRequestProto)
+            __meta_AbandonBlockRequestProto[] = target = ProtoMeta(AbandonBlockRequestProto)
+            req = Symbol[:b,:src,:holder]
+            val = Dict{Symbol,Any}(:fileId => 0)
+            allflds = Pair{Symbol,Union{Type,String}}[:b => ExtendedBlockProto, :src => AbstractString, :holder => AbstractString, :fileId => UInt64]
+            meta(target, AbandonBlockRequestProto, allflds, req, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AbandonBlockRequestProto[]
+    end
+end
+function Base.getproperty(obj::AbandonBlockRequestProto, name::Symbol)
+    if name === :b
+        return (obj.__protobuf_jl_internal_values[name])::ExtendedBlockProto
+    elseif name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :holder
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :fileId
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AbandonBlockResponseProto <: ProtoType
-    AbandonBlockResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AbandonBlockResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AbandonBlockResponseProto(; kwargs...)
+        obj = new(meta(AbandonBlockResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AbandonBlockResponseProto
+const __meta_AbandonBlockResponseProto = Ref{ProtoMeta}()
+function meta(::Type{AbandonBlockResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AbandonBlockResponseProto)
+            __meta_AbandonBlockResponseProto[] = target = ProtoMeta(AbandonBlockResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, AbandonBlockResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AbandonBlockResponseProto[]
+    end
+end
 
 mutable struct AddBlockRequestProto <: ProtoType
-    src::AbstractString
-    clientName::AbstractString
-    previous::ExtendedBlockProto
-    excludeNodes::Base.Vector{DatanodeInfoProto}
-    fileId::UInt64
-    favoredNodes::Base.Vector{AbstractString}
-    flags::Base.Vector{Int32}
-    AddBlockRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AddBlockRequestProto
-const __req_AddBlockRequestProto = Symbol[:src,:clientName]
-const __val_AddBlockRequestProto = Dict(:fileId => 0)
-meta(t::Type{AddBlockRequestProto}) = meta(t, __req_AddBlockRequestProto, ProtoBuf.DEF_FNUM, __val_AddBlockRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AddBlockRequestProto(; kwargs...)
+        obj = new(meta(AddBlockRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AddBlockRequestProto
+const __meta_AddBlockRequestProto = Ref{ProtoMeta}()
+function meta(::Type{AddBlockRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AddBlockRequestProto)
+            __meta_AddBlockRequestProto[] = target = ProtoMeta(AddBlockRequestProto)
+            req = Symbol[:src,:clientName]
+            val = Dict{Symbol,Any}(:fileId => 0)
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :clientName => AbstractString, :previous => ExtendedBlockProto, :excludeNodes => Base.Vector{DatanodeInfoProto}, :fileId => UInt64, :favoredNodes => Base.Vector{AbstractString}, :flags => Base.Vector{Int32}]
+            meta(target, AddBlockRequestProto, allflds, req, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AddBlockRequestProto[]
+    end
+end
+function Base.getproperty(obj::AddBlockRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :previous
+        return (obj.__protobuf_jl_internal_values[name])::ExtendedBlockProto
+    elseif name === :excludeNodes
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{DatanodeInfoProto}
+    elseif name === :fileId
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :favoredNodes
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{AbstractString}
+    elseif name === :flags
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int32}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AddBlockResponseProto <: ProtoType
-    block::LocatedBlockProto
-    AddBlockResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AddBlockResponseProto
-const __req_AddBlockResponseProto = Symbol[:block]
-meta(t::Type{AddBlockResponseProto}) = meta(t, __req_AddBlockResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AddBlockResponseProto(; kwargs...)
+        obj = new(meta(AddBlockResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AddBlockResponseProto
+const __meta_AddBlockResponseProto = Ref{ProtoMeta}()
+function meta(::Type{AddBlockResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AddBlockResponseProto)
+            __meta_AddBlockResponseProto[] = target = ProtoMeta(AddBlockResponseProto)
+            req = Symbol[:block]
+            allflds = Pair{Symbol,Union{Type,String}}[:block => LocatedBlockProto]
+            meta(target, AddBlockResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AddBlockResponseProto[]
+    end
+end
+function Base.getproperty(obj::AddBlockResponseProto, name::Symbol)
+    if name === :block
+        return (obj.__protobuf_jl_internal_values[name])::LocatedBlockProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetAdditionalDatanodeRequestProto <: ProtoType
-    src::AbstractString
-    blk::ExtendedBlockProto
-    existings::Base.Vector{DatanodeInfoProto}
-    excludes::Base.Vector{DatanodeInfoProto}
-    numAdditionalNodes::UInt32
-    clientName::AbstractString
-    existingStorageUuids::Base.Vector{AbstractString}
-    fileId::UInt64
-    GetAdditionalDatanodeRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetAdditionalDatanodeRequestProto
-const __req_GetAdditionalDatanodeRequestProto = Symbol[:src,:blk,:numAdditionalNodes,:clientName]
-const __val_GetAdditionalDatanodeRequestProto = Dict(:fileId => 0)
-meta(t::Type{GetAdditionalDatanodeRequestProto}) = meta(t, __req_GetAdditionalDatanodeRequestProto, ProtoBuf.DEF_FNUM, __val_GetAdditionalDatanodeRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetAdditionalDatanodeRequestProto(; kwargs...)
+        obj = new(meta(GetAdditionalDatanodeRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetAdditionalDatanodeRequestProto
+const __meta_GetAdditionalDatanodeRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetAdditionalDatanodeRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetAdditionalDatanodeRequestProto)
+            __meta_GetAdditionalDatanodeRequestProto[] = target = ProtoMeta(GetAdditionalDatanodeRequestProto)
+            req = Symbol[:src,:blk,:numAdditionalNodes,:clientName]
+            val = Dict{Symbol,Any}(:fileId => 0)
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :blk => ExtendedBlockProto, :existings => Base.Vector{DatanodeInfoProto}, :excludes => Base.Vector{DatanodeInfoProto}, :numAdditionalNodes => UInt32, :clientName => AbstractString, :existingStorageUuids => Base.Vector{AbstractString}, :fileId => UInt64]
+            meta(target, GetAdditionalDatanodeRequestProto, allflds, req, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetAdditionalDatanodeRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetAdditionalDatanodeRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :blk
+        return (obj.__protobuf_jl_internal_values[name])::ExtendedBlockProto
+    elseif name === :existings
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{DatanodeInfoProto}
+    elseif name === :excludes
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{DatanodeInfoProto}
+    elseif name === :numAdditionalNodes
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :existingStorageUuids
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{AbstractString}
+    elseif name === :fileId
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetAdditionalDatanodeResponseProto <: ProtoType
-    block::LocatedBlockProto
-    GetAdditionalDatanodeResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetAdditionalDatanodeResponseProto
-const __req_GetAdditionalDatanodeResponseProto = Symbol[:block]
-meta(t::Type{GetAdditionalDatanodeResponseProto}) = meta(t, __req_GetAdditionalDatanodeResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetAdditionalDatanodeResponseProto(; kwargs...)
+        obj = new(meta(GetAdditionalDatanodeResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetAdditionalDatanodeResponseProto
+const __meta_GetAdditionalDatanodeResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetAdditionalDatanodeResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetAdditionalDatanodeResponseProto)
+            __meta_GetAdditionalDatanodeResponseProto[] = target = ProtoMeta(GetAdditionalDatanodeResponseProto)
+            req = Symbol[:block]
+            allflds = Pair{Symbol,Union{Type,String}}[:block => LocatedBlockProto]
+            meta(target, GetAdditionalDatanodeResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetAdditionalDatanodeResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetAdditionalDatanodeResponseProto, name::Symbol)
+    if name === :block
+        return (obj.__protobuf_jl_internal_values[name])::LocatedBlockProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CompleteRequestProto <: ProtoType
-    src::AbstractString
-    clientName::AbstractString
-    last::ExtendedBlockProto
-    fileId::UInt64
-    CompleteRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CompleteRequestProto
-const __req_CompleteRequestProto = Symbol[:src,:clientName]
-const __val_CompleteRequestProto = Dict(:fileId => 0)
-meta(t::Type{CompleteRequestProto}) = meta(t, __req_CompleteRequestProto, ProtoBuf.DEF_FNUM, __val_CompleteRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CompleteRequestProto(; kwargs...)
+        obj = new(meta(CompleteRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CompleteRequestProto
+const __meta_CompleteRequestProto = Ref{ProtoMeta}()
+function meta(::Type{CompleteRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CompleteRequestProto)
+            __meta_CompleteRequestProto[] = target = ProtoMeta(CompleteRequestProto)
+            req = Symbol[:src,:clientName]
+            val = Dict{Symbol,Any}(:fileId => 0)
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :clientName => AbstractString, :last => ExtendedBlockProto, :fileId => UInt64]
+            meta(target, CompleteRequestProto, allflds, req, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CompleteRequestProto[]
+    end
+end
+function Base.getproperty(obj::CompleteRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :last
+        return (obj.__protobuf_jl_internal_values[name])::ExtendedBlockProto
+    elseif name === :fileId
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CompleteResponseProto <: ProtoType
-    result::Bool
-    CompleteResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CompleteResponseProto
-const __req_CompleteResponseProto = Symbol[:result]
-meta(t::Type{CompleteResponseProto}) = meta(t, __req_CompleteResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CompleteResponseProto(; kwargs...)
+        obj = new(meta(CompleteResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CompleteResponseProto
+const __meta_CompleteResponseProto = Ref{ProtoMeta}()
+function meta(::Type{CompleteResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CompleteResponseProto)
+            __meta_CompleteResponseProto[] = target = ProtoMeta(CompleteResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, CompleteResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CompleteResponseProto[]
+    end
+end
+function Base.getproperty(obj::CompleteResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ReportBadBlocksRequestProto <: ProtoType
-    blocks::Base.Vector{LocatedBlockProto}
-    ReportBadBlocksRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ReportBadBlocksRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ReportBadBlocksRequestProto(; kwargs...)
+        obj = new(meta(ReportBadBlocksRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ReportBadBlocksRequestProto
+const __meta_ReportBadBlocksRequestProto = Ref{ProtoMeta}()
+function meta(::Type{ReportBadBlocksRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ReportBadBlocksRequestProto)
+            __meta_ReportBadBlocksRequestProto[] = target = ProtoMeta(ReportBadBlocksRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:blocks => Base.Vector{LocatedBlockProto}]
+            meta(target, ReportBadBlocksRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ReportBadBlocksRequestProto[]
+    end
+end
+function Base.getproperty(obj::ReportBadBlocksRequestProto, name::Symbol)
+    if name === :blocks
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{LocatedBlockProto}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ReportBadBlocksResponseProto <: ProtoType
-    ReportBadBlocksResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ReportBadBlocksResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ReportBadBlocksResponseProto(; kwargs...)
+        obj = new(meta(ReportBadBlocksResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ReportBadBlocksResponseProto
+const __meta_ReportBadBlocksResponseProto = Ref{ProtoMeta}()
+function meta(::Type{ReportBadBlocksResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ReportBadBlocksResponseProto)
+            __meta_ReportBadBlocksResponseProto[] = target = ProtoMeta(ReportBadBlocksResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, ReportBadBlocksResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ReportBadBlocksResponseProto[]
+    end
+end
 
 mutable struct ConcatRequestProto <: ProtoType
-    trg::AbstractString
-    srcs::Base.Vector{AbstractString}
-    ConcatRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ConcatRequestProto
-const __req_ConcatRequestProto = Symbol[:trg]
-meta(t::Type{ConcatRequestProto}) = meta(t, __req_ConcatRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ConcatRequestProto(; kwargs...)
+        obj = new(meta(ConcatRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ConcatRequestProto
+const __meta_ConcatRequestProto = Ref{ProtoMeta}()
+function meta(::Type{ConcatRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ConcatRequestProto)
+            __meta_ConcatRequestProto[] = target = ProtoMeta(ConcatRequestProto)
+            req = Symbol[:trg]
+            allflds = Pair{Symbol,Union{Type,String}}[:trg => AbstractString, :srcs => Base.Vector{AbstractString}]
+            meta(target, ConcatRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ConcatRequestProto[]
+    end
+end
+function Base.getproperty(obj::ConcatRequestProto, name::Symbol)
+    if name === :trg
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :srcs
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{AbstractString}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ConcatResponseProto <: ProtoType
-    ConcatResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ConcatResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ConcatResponseProto(; kwargs...)
+        obj = new(meta(ConcatResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ConcatResponseProto
+const __meta_ConcatResponseProto = Ref{ProtoMeta}()
+function meta(::Type{ConcatResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ConcatResponseProto)
+            __meta_ConcatResponseProto[] = target = ProtoMeta(ConcatResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, ConcatResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ConcatResponseProto[]
+    end
+end
 
 mutable struct TruncateRequestProto <: ProtoType
-    src::AbstractString
-    newLength::UInt64
-    clientName::AbstractString
-    TruncateRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct TruncateRequestProto
-const __req_TruncateRequestProto = Symbol[:src,:newLength,:clientName]
-meta(t::Type{TruncateRequestProto}) = meta(t, __req_TruncateRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function TruncateRequestProto(; kwargs...)
+        obj = new(meta(TruncateRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct TruncateRequestProto
+const __meta_TruncateRequestProto = Ref{ProtoMeta}()
+function meta(::Type{TruncateRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_TruncateRequestProto)
+            __meta_TruncateRequestProto[] = target = ProtoMeta(TruncateRequestProto)
+            req = Symbol[:src,:newLength,:clientName]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :newLength => UInt64, :clientName => AbstractString]
+            meta(target, TruncateRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_TruncateRequestProto[]
+    end
+end
+function Base.getproperty(obj::TruncateRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :newLength
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct TruncateResponseProto <: ProtoType
-    result::Bool
-    TruncateResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct TruncateResponseProto
-const __req_TruncateResponseProto = Symbol[:result]
-meta(t::Type{TruncateResponseProto}) = meta(t, __req_TruncateResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function TruncateResponseProto(; kwargs...)
+        obj = new(meta(TruncateResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct TruncateResponseProto
+const __meta_TruncateResponseProto = Ref{ProtoMeta}()
+function meta(::Type{TruncateResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_TruncateResponseProto)
+            __meta_TruncateResponseProto[] = target = ProtoMeta(TruncateResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, TruncateResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_TruncateResponseProto[]
+    end
+end
+function Base.getproperty(obj::TruncateResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RenameRequestProto <: ProtoType
-    src::AbstractString
-    dst::AbstractString
-    RenameRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RenameRequestProto
-const __req_RenameRequestProto = Symbol[:src,:dst]
-meta(t::Type{RenameRequestProto}) = meta(t, __req_RenameRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RenameRequestProto(; kwargs...)
+        obj = new(meta(RenameRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RenameRequestProto
+const __meta_RenameRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RenameRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RenameRequestProto)
+            __meta_RenameRequestProto[] = target = ProtoMeta(RenameRequestProto)
+            req = Symbol[:src,:dst]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :dst => AbstractString]
+            meta(target, RenameRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RenameRequestProto[]
+    end
+end
+function Base.getproperty(obj::RenameRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :dst
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RenameResponseProto <: ProtoType
-    result::Bool
-    RenameResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RenameResponseProto
-const __req_RenameResponseProto = Symbol[:result]
-meta(t::Type{RenameResponseProto}) = meta(t, __req_RenameResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RenameResponseProto(; kwargs...)
+        obj = new(meta(RenameResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RenameResponseProto
+const __meta_RenameResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RenameResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RenameResponseProto)
+            __meta_RenameResponseProto[] = target = ProtoMeta(RenameResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, RenameResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RenameResponseProto[]
+    end
+end
+function Base.getproperty(obj::RenameResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct Rename2RequestProto <: ProtoType
-    src::AbstractString
-    dst::AbstractString
-    overwriteDest::Bool
-    moveToTrash::Bool
-    Rename2RequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct Rename2RequestProto
-const __req_Rename2RequestProto = Symbol[:src,:dst,:overwriteDest]
-meta(t::Type{Rename2RequestProto}) = meta(t, __req_Rename2RequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function Rename2RequestProto(; kwargs...)
+        obj = new(meta(Rename2RequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct Rename2RequestProto
+const __meta_Rename2RequestProto = Ref{ProtoMeta}()
+function meta(::Type{Rename2RequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_Rename2RequestProto)
+            __meta_Rename2RequestProto[] = target = ProtoMeta(Rename2RequestProto)
+            req = Symbol[:src,:dst,:overwriteDest]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :dst => AbstractString, :overwriteDest => Bool, :moveToTrash => Bool]
+            meta(target, Rename2RequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_Rename2RequestProto[]
+    end
+end
+function Base.getproperty(obj::Rename2RequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :dst
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :overwriteDest
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    elseif name === :moveToTrash
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct Rename2ResponseProto <: ProtoType
-    Rename2ResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct Rename2ResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function Rename2ResponseProto(; kwargs...)
+        obj = new(meta(Rename2ResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct Rename2ResponseProto
+const __meta_Rename2ResponseProto = Ref{ProtoMeta}()
+function meta(::Type{Rename2ResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_Rename2ResponseProto)
+            __meta_Rename2ResponseProto[] = target = ProtoMeta(Rename2ResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, Rename2ResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_Rename2ResponseProto[]
+    end
+end
 
 mutable struct DeleteRequestProto <: ProtoType
-    src::AbstractString
-    recursive::Bool
-    DeleteRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct DeleteRequestProto
-const __req_DeleteRequestProto = Symbol[:src,:recursive]
-meta(t::Type{DeleteRequestProto}) = meta(t, __req_DeleteRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function DeleteRequestProto(; kwargs...)
+        obj = new(meta(DeleteRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct DeleteRequestProto
+const __meta_DeleteRequestProto = Ref{ProtoMeta}()
+function meta(::Type{DeleteRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_DeleteRequestProto)
+            __meta_DeleteRequestProto[] = target = ProtoMeta(DeleteRequestProto)
+            req = Symbol[:src,:recursive]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :recursive => Bool]
+            meta(target, DeleteRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_DeleteRequestProto[]
+    end
+end
+function Base.getproperty(obj::DeleteRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :recursive
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct DeleteResponseProto <: ProtoType
-    result::Bool
-    DeleteResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct DeleteResponseProto
-const __req_DeleteResponseProto = Symbol[:result]
-meta(t::Type{DeleteResponseProto}) = meta(t, __req_DeleteResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function DeleteResponseProto(; kwargs...)
+        obj = new(meta(DeleteResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct DeleteResponseProto
+const __meta_DeleteResponseProto = Ref{ProtoMeta}()
+function meta(::Type{DeleteResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_DeleteResponseProto)
+            __meta_DeleteResponseProto[] = target = ProtoMeta(DeleteResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, DeleteResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_DeleteResponseProto[]
+    end
+end
+function Base.getproperty(obj::DeleteResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct MkdirsRequestProto <: ProtoType
-    src::AbstractString
-    masked::FsPermissionProto
-    createParent::Bool
-    MkdirsRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct MkdirsRequestProto
-const __req_MkdirsRequestProto = Symbol[:src,:masked,:createParent]
-meta(t::Type{MkdirsRequestProto}) = meta(t, __req_MkdirsRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function MkdirsRequestProto(; kwargs...)
+        obj = new(meta(MkdirsRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct MkdirsRequestProto
+const __meta_MkdirsRequestProto = Ref{ProtoMeta}()
+function meta(::Type{MkdirsRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_MkdirsRequestProto)
+            __meta_MkdirsRequestProto[] = target = ProtoMeta(MkdirsRequestProto)
+            req = Symbol[:src,:masked,:createParent]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :masked => FsPermissionProto, :createParent => Bool]
+            meta(target, MkdirsRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_MkdirsRequestProto[]
+    end
+end
+function Base.getproperty(obj::MkdirsRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :masked
+        return (obj.__protobuf_jl_internal_values[name])::FsPermissionProto
+    elseif name === :createParent
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct MkdirsResponseProto <: ProtoType
-    result::Bool
-    MkdirsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct MkdirsResponseProto
-const __req_MkdirsResponseProto = Symbol[:result]
-meta(t::Type{MkdirsResponseProto}) = meta(t, __req_MkdirsResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function MkdirsResponseProto(; kwargs...)
+        obj = new(meta(MkdirsResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct MkdirsResponseProto
+const __meta_MkdirsResponseProto = Ref{ProtoMeta}()
+function meta(::Type{MkdirsResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_MkdirsResponseProto)
+            __meta_MkdirsResponseProto[] = target = ProtoMeta(MkdirsResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, MkdirsResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_MkdirsResponseProto[]
+    end
+end
+function Base.getproperty(obj::MkdirsResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetListingRequestProto <: ProtoType
-    src::AbstractString
-    startAfter::Array{UInt8,1}
-    needLocation::Bool
-    GetListingRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetListingRequestProto
-const __req_GetListingRequestProto = Symbol[:src,:startAfter,:needLocation]
-meta(t::Type{GetListingRequestProto}) = meta(t, __req_GetListingRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetListingRequestProto(; kwargs...)
+        obj = new(meta(GetListingRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetListingRequestProto
+const __meta_GetListingRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetListingRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetListingRequestProto)
+            __meta_GetListingRequestProto[] = target = ProtoMeta(GetListingRequestProto)
+            req = Symbol[:src,:startAfter,:needLocation]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :startAfter => Array{UInt8,1}, :needLocation => Bool]
+            meta(target, GetListingRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetListingRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetListingRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :startAfter
+        return (obj.__protobuf_jl_internal_values[name])::Array{UInt8,1}
+    elseif name === :needLocation
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetListingResponseProto <: ProtoType
-    dirList::DirectoryListingProto
-    GetListingResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetListingResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetListingResponseProto(; kwargs...)
+        obj = new(meta(GetListingResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetListingResponseProto
+const __meta_GetListingResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetListingResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetListingResponseProto)
+            __meta_GetListingResponseProto[] = target = ProtoMeta(GetListingResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:dirList => DirectoryListingProto]
+            meta(target, GetListingResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetListingResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetListingResponseProto, name::Symbol)
+    if name === :dirList
+        return (obj.__protobuf_jl_internal_values[name])::DirectoryListingProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetSnapshottableDirListingRequestProto <: ProtoType
-    GetSnapshottableDirListingRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetSnapshottableDirListingRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetSnapshottableDirListingRequestProto(; kwargs...)
+        obj = new(meta(GetSnapshottableDirListingRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetSnapshottableDirListingRequestProto
+const __meta_GetSnapshottableDirListingRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetSnapshottableDirListingRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetSnapshottableDirListingRequestProto)
+            __meta_GetSnapshottableDirListingRequestProto[] = target = ProtoMeta(GetSnapshottableDirListingRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, GetSnapshottableDirListingRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetSnapshottableDirListingRequestProto[]
+    end
+end
 
 mutable struct GetSnapshottableDirListingResponseProto <: ProtoType
-    snapshottableDirList::SnapshottableDirectoryListingProto
-    GetSnapshottableDirListingResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetSnapshottableDirListingResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetSnapshottableDirListingResponseProto(; kwargs...)
+        obj = new(meta(GetSnapshottableDirListingResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetSnapshottableDirListingResponseProto
+const __meta_GetSnapshottableDirListingResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetSnapshottableDirListingResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetSnapshottableDirListingResponseProto)
+            __meta_GetSnapshottableDirListingResponseProto[] = target = ProtoMeta(GetSnapshottableDirListingResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:snapshottableDirList => SnapshottableDirectoryListingProto]
+            meta(target, GetSnapshottableDirListingResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetSnapshottableDirListingResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetSnapshottableDirListingResponseProto, name::Symbol)
+    if name === :snapshottableDirList
+        return (obj.__protobuf_jl_internal_values[name])::SnapshottableDirectoryListingProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetSnapshotDiffReportRequestProto <: ProtoType
-    snapshotRoot::AbstractString
-    fromSnapshot::AbstractString
-    toSnapshot::AbstractString
-    GetSnapshotDiffReportRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetSnapshotDiffReportRequestProto
-const __req_GetSnapshotDiffReportRequestProto = Symbol[:snapshotRoot,:fromSnapshot,:toSnapshot]
-meta(t::Type{GetSnapshotDiffReportRequestProto}) = meta(t, __req_GetSnapshotDiffReportRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetSnapshotDiffReportRequestProto(; kwargs...)
+        obj = new(meta(GetSnapshotDiffReportRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetSnapshotDiffReportRequestProto
+const __meta_GetSnapshotDiffReportRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetSnapshotDiffReportRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetSnapshotDiffReportRequestProto)
+            __meta_GetSnapshotDiffReportRequestProto[] = target = ProtoMeta(GetSnapshotDiffReportRequestProto)
+            req = Symbol[:snapshotRoot,:fromSnapshot,:toSnapshot]
+            allflds = Pair{Symbol,Union{Type,String}}[:snapshotRoot => AbstractString, :fromSnapshot => AbstractString, :toSnapshot => AbstractString]
+            meta(target, GetSnapshotDiffReportRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetSnapshotDiffReportRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetSnapshotDiffReportRequestProto, name::Symbol)
+    if name === :snapshotRoot
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :fromSnapshot
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :toSnapshot
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetSnapshotDiffReportResponseProto <: ProtoType
-    diffReport::SnapshotDiffReportProto
-    GetSnapshotDiffReportResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetSnapshotDiffReportResponseProto
-const __req_GetSnapshotDiffReportResponseProto = Symbol[:diffReport]
-meta(t::Type{GetSnapshotDiffReportResponseProto}) = meta(t, __req_GetSnapshotDiffReportResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetSnapshotDiffReportResponseProto(; kwargs...)
+        obj = new(meta(GetSnapshotDiffReportResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetSnapshotDiffReportResponseProto
+const __meta_GetSnapshotDiffReportResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetSnapshotDiffReportResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetSnapshotDiffReportResponseProto)
+            __meta_GetSnapshotDiffReportResponseProto[] = target = ProtoMeta(GetSnapshotDiffReportResponseProto)
+            req = Symbol[:diffReport]
+            allflds = Pair{Symbol,Union{Type,String}}[:diffReport => SnapshotDiffReportProto]
+            meta(target, GetSnapshotDiffReportResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetSnapshotDiffReportResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetSnapshotDiffReportResponseProto, name::Symbol)
+    if name === :diffReport
+        return (obj.__protobuf_jl_internal_values[name])::SnapshotDiffReportProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RenewLeaseRequestProto <: ProtoType
-    clientName::AbstractString
-    RenewLeaseRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RenewLeaseRequestProto
-const __req_RenewLeaseRequestProto = Symbol[:clientName]
-meta(t::Type{RenewLeaseRequestProto}) = meta(t, __req_RenewLeaseRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RenewLeaseRequestProto(; kwargs...)
+        obj = new(meta(RenewLeaseRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RenewLeaseRequestProto
+const __meta_RenewLeaseRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RenewLeaseRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RenewLeaseRequestProto)
+            __meta_RenewLeaseRequestProto[] = target = ProtoMeta(RenewLeaseRequestProto)
+            req = Symbol[:clientName]
+            allflds = Pair{Symbol,Union{Type,String}}[:clientName => AbstractString]
+            meta(target, RenewLeaseRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RenewLeaseRequestProto[]
+    end
+end
+function Base.getproperty(obj::RenewLeaseRequestProto, name::Symbol)
+    if name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RenewLeaseResponseProto <: ProtoType
-    RenewLeaseResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RenewLeaseResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RenewLeaseResponseProto(; kwargs...)
+        obj = new(meta(RenewLeaseResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RenewLeaseResponseProto
+const __meta_RenewLeaseResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RenewLeaseResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RenewLeaseResponseProto)
+            __meta_RenewLeaseResponseProto[] = target = ProtoMeta(RenewLeaseResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, RenewLeaseResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RenewLeaseResponseProto[]
+    end
+end
 
 mutable struct RecoverLeaseRequestProto <: ProtoType
-    src::AbstractString
-    clientName::AbstractString
-    RecoverLeaseRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RecoverLeaseRequestProto
-const __req_RecoverLeaseRequestProto = Symbol[:src,:clientName]
-meta(t::Type{RecoverLeaseRequestProto}) = meta(t, __req_RecoverLeaseRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RecoverLeaseRequestProto(; kwargs...)
+        obj = new(meta(RecoverLeaseRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RecoverLeaseRequestProto
+const __meta_RecoverLeaseRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RecoverLeaseRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RecoverLeaseRequestProto)
+            __meta_RecoverLeaseRequestProto[] = target = ProtoMeta(RecoverLeaseRequestProto)
+            req = Symbol[:src,:clientName]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :clientName => AbstractString]
+            meta(target, RecoverLeaseRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RecoverLeaseRequestProto[]
+    end
+end
+function Base.getproperty(obj::RecoverLeaseRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RecoverLeaseResponseProto <: ProtoType
-    result::Bool
-    RecoverLeaseResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RecoverLeaseResponseProto
-const __req_RecoverLeaseResponseProto = Symbol[:result]
-meta(t::Type{RecoverLeaseResponseProto}) = meta(t, __req_RecoverLeaseResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RecoverLeaseResponseProto(; kwargs...)
+        obj = new(meta(RecoverLeaseResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RecoverLeaseResponseProto
+const __meta_RecoverLeaseResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RecoverLeaseResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RecoverLeaseResponseProto)
+            __meta_RecoverLeaseResponseProto[] = target = ProtoMeta(RecoverLeaseResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, RecoverLeaseResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RecoverLeaseResponseProto[]
+    end
+end
+function Base.getproperty(obj::RecoverLeaseResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetFsStatusRequestProto <: ProtoType
-    GetFsStatusRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetFsStatusRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetFsStatusRequestProto(; kwargs...)
+        obj = new(meta(GetFsStatusRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetFsStatusRequestProto
+const __meta_GetFsStatusRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetFsStatusRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetFsStatusRequestProto)
+            __meta_GetFsStatusRequestProto[] = target = ProtoMeta(GetFsStatusRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, GetFsStatusRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetFsStatusRequestProto[]
+    end
+end
 
 mutable struct GetFsStatsResponseProto <: ProtoType
-    capacity::UInt64
-    used::UInt64
-    remaining::UInt64
-    under_replicated::UInt64
-    corrupt_blocks::UInt64
-    missing_blocks::UInt64
-    missing_repl_one_blocks::UInt64
-    blocks_in_future::UInt64
-    pending_deletion_blocks::UInt64
-    GetFsStatsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetFsStatsResponseProto
-const __req_GetFsStatsResponseProto = Symbol[:capacity,:used,:remaining,:under_replicated,:corrupt_blocks,:missing_blocks]
-meta(t::Type{GetFsStatsResponseProto}) = meta(t, __req_GetFsStatsResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetFsStatsResponseProto(; kwargs...)
+        obj = new(meta(GetFsStatsResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetFsStatsResponseProto
+const __meta_GetFsStatsResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetFsStatsResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetFsStatsResponseProto)
+            __meta_GetFsStatsResponseProto[] = target = ProtoMeta(GetFsStatsResponseProto)
+            req = Symbol[:capacity,:used,:remaining,:under_replicated,:corrupt_blocks,:missing_blocks]
+            allflds = Pair{Symbol,Union{Type,String}}[:capacity => UInt64, :used => UInt64, :remaining => UInt64, :under_replicated => UInt64, :corrupt_blocks => UInt64, :missing_blocks => UInt64, :missing_repl_one_blocks => UInt64, :blocks_in_future => UInt64, :pending_deletion_blocks => UInt64]
+            meta(target, GetFsStatsResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetFsStatsResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetFsStatsResponseProto, name::Symbol)
+    if name === :capacity
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :used
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :remaining
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :under_replicated
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :corrupt_blocks
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :missing_blocks
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :missing_repl_one_blocks
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :blocks_in_future
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :pending_deletion_blocks
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetDatanodeReportRequestProto <: ProtoType
-    _type::Int32
-    GetDatanodeReportRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetDatanodeReportRequestProto
-const __req_GetDatanodeReportRequestProto = Symbol[:_type]
-meta(t::Type{GetDatanodeReportRequestProto}) = meta(t, __req_GetDatanodeReportRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetDatanodeReportRequestProto(; kwargs...)
+        obj = new(meta(GetDatanodeReportRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetDatanodeReportRequestProto
+const __meta_GetDatanodeReportRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetDatanodeReportRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetDatanodeReportRequestProto)
+            __meta_GetDatanodeReportRequestProto[] = target = ProtoMeta(GetDatanodeReportRequestProto)
+            req = Symbol[:_type]
+            allflds = Pair{Symbol,Union{Type,String}}[:_type => Int32]
+            meta(target, GetDatanodeReportRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetDatanodeReportRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetDatanodeReportRequestProto, name::Symbol)
+    if name === :_type
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetDatanodeReportResponseProto <: ProtoType
-    di::Base.Vector{DatanodeInfoProto}
-    GetDatanodeReportResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetDatanodeReportResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetDatanodeReportResponseProto(; kwargs...)
+        obj = new(meta(GetDatanodeReportResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetDatanodeReportResponseProto
+const __meta_GetDatanodeReportResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetDatanodeReportResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetDatanodeReportResponseProto)
+            __meta_GetDatanodeReportResponseProto[] = target = ProtoMeta(GetDatanodeReportResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:di => Base.Vector{DatanodeInfoProto}]
+            meta(target, GetDatanodeReportResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetDatanodeReportResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetDatanodeReportResponseProto, name::Symbol)
+    if name === :di
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{DatanodeInfoProto}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetDatanodeStorageReportRequestProto <: ProtoType
-    _type::Int32
-    GetDatanodeStorageReportRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetDatanodeStorageReportRequestProto
-const __req_GetDatanodeStorageReportRequestProto = Symbol[:_type]
-meta(t::Type{GetDatanodeStorageReportRequestProto}) = meta(t, __req_GetDatanodeStorageReportRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetDatanodeStorageReportRequestProto(; kwargs...)
+        obj = new(meta(GetDatanodeStorageReportRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetDatanodeStorageReportRequestProto
+const __meta_GetDatanodeStorageReportRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetDatanodeStorageReportRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetDatanodeStorageReportRequestProto)
+            __meta_GetDatanodeStorageReportRequestProto[] = target = ProtoMeta(GetDatanodeStorageReportRequestProto)
+            req = Symbol[:_type]
+            allflds = Pair{Symbol,Union{Type,String}}[:_type => Int32]
+            meta(target, GetDatanodeStorageReportRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetDatanodeStorageReportRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetDatanodeStorageReportRequestProto, name::Symbol)
+    if name === :_type
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct DatanodeStorageReportProto <: ProtoType
-    datanodeInfo::DatanodeInfoProto
-    storageReports::Base.Vector{StorageReportProto}
-    DatanodeStorageReportProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct DatanodeStorageReportProto
-const __req_DatanodeStorageReportProto = Symbol[:datanodeInfo]
-meta(t::Type{DatanodeStorageReportProto}) = meta(t, __req_DatanodeStorageReportProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function DatanodeStorageReportProto(; kwargs...)
+        obj = new(meta(DatanodeStorageReportProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct DatanodeStorageReportProto
+const __meta_DatanodeStorageReportProto = Ref{ProtoMeta}()
+function meta(::Type{DatanodeStorageReportProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_DatanodeStorageReportProto)
+            __meta_DatanodeStorageReportProto[] = target = ProtoMeta(DatanodeStorageReportProto)
+            req = Symbol[:datanodeInfo]
+            allflds = Pair{Symbol,Union{Type,String}}[:datanodeInfo => DatanodeInfoProto, :storageReports => Base.Vector{StorageReportProto}]
+            meta(target, DatanodeStorageReportProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_DatanodeStorageReportProto[]
+    end
+end
+function Base.getproperty(obj::DatanodeStorageReportProto, name::Symbol)
+    if name === :datanodeInfo
+        return (obj.__protobuf_jl_internal_values[name])::DatanodeInfoProto
+    elseif name === :storageReports
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{StorageReportProto}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetDatanodeStorageReportResponseProto <: ProtoType
-    datanodeStorageReports::Base.Vector{DatanodeStorageReportProto}
-    GetDatanodeStorageReportResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetDatanodeStorageReportResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetDatanodeStorageReportResponseProto(; kwargs...)
+        obj = new(meta(GetDatanodeStorageReportResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetDatanodeStorageReportResponseProto
+const __meta_GetDatanodeStorageReportResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetDatanodeStorageReportResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetDatanodeStorageReportResponseProto)
+            __meta_GetDatanodeStorageReportResponseProto[] = target = ProtoMeta(GetDatanodeStorageReportResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:datanodeStorageReports => Base.Vector{DatanodeStorageReportProto}]
+            meta(target, GetDatanodeStorageReportResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetDatanodeStorageReportResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetDatanodeStorageReportResponseProto, name::Symbol)
+    if name === :datanodeStorageReports
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{DatanodeStorageReportProto}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetPreferredBlockSizeRequestProto <: ProtoType
-    filename::AbstractString
-    GetPreferredBlockSizeRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetPreferredBlockSizeRequestProto
-const __req_GetPreferredBlockSizeRequestProto = Symbol[:filename]
-meta(t::Type{GetPreferredBlockSizeRequestProto}) = meta(t, __req_GetPreferredBlockSizeRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetPreferredBlockSizeRequestProto(; kwargs...)
+        obj = new(meta(GetPreferredBlockSizeRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetPreferredBlockSizeRequestProto
+const __meta_GetPreferredBlockSizeRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetPreferredBlockSizeRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetPreferredBlockSizeRequestProto)
+            __meta_GetPreferredBlockSizeRequestProto[] = target = ProtoMeta(GetPreferredBlockSizeRequestProto)
+            req = Symbol[:filename]
+            allflds = Pair{Symbol,Union{Type,String}}[:filename => AbstractString]
+            meta(target, GetPreferredBlockSizeRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetPreferredBlockSizeRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetPreferredBlockSizeRequestProto, name::Symbol)
+    if name === :filename
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetPreferredBlockSizeResponseProto <: ProtoType
-    bsize::UInt64
-    GetPreferredBlockSizeResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetPreferredBlockSizeResponseProto
-const __req_GetPreferredBlockSizeResponseProto = Symbol[:bsize]
-meta(t::Type{GetPreferredBlockSizeResponseProto}) = meta(t, __req_GetPreferredBlockSizeResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetPreferredBlockSizeResponseProto(; kwargs...)
+        obj = new(meta(GetPreferredBlockSizeResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetPreferredBlockSizeResponseProto
+const __meta_GetPreferredBlockSizeResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetPreferredBlockSizeResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetPreferredBlockSizeResponseProto)
+            __meta_GetPreferredBlockSizeResponseProto[] = target = ProtoMeta(GetPreferredBlockSizeResponseProto)
+            req = Symbol[:bsize]
+            allflds = Pair{Symbol,Union{Type,String}}[:bsize => UInt64]
+            meta(target, GetPreferredBlockSizeResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetPreferredBlockSizeResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetPreferredBlockSizeResponseProto, name::Symbol)
+    if name === :bsize
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetSafeModeRequestProto <: ProtoType
-    action::Int32
-    checked::Bool
-    SetSafeModeRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetSafeModeRequestProto
-const __req_SetSafeModeRequestProto = Symbol[:action]
-const __val_SetSafeModeRequestProto = Dict(:checked => false)
-meta(t::Type{SetSafeModeRequestProto}) = meta(t, __req_SetSafeModeRequestProto, ProtoBuf.DEF_FNUM, __val_SetSafeModeRequestProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetSafeModeRequestProto(; kwargs...)
+        obj = new(meta(SetSafeModeRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetSafeModeRequestProto
+const __meta_SetSafeModeRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SetSafeModeRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetSafeModeRequestProto)
+            __meta_SetSafeModeRequestProto[] = target = ProtoMeta(SetSafeModeRequestProto)
+            req = Symbol[:action]
+            val = Dict{Symbol,Any}(:checked => false)
+            allflds = Pair{Symbol,Union{Type,String}}[:action => Int32, :checked => Bool]
+            meta(target, SetSafeModeRequestProto, allflds, req, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetSafeModeRequestProto[]
+    end
+end
+function Base.getproperty(obj::SetSafeModeRequestProto, name::Symbol)
+    if name === :action
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :checked
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetSafeModeResponseProto <: ProtoType
-    result::Bool
-    SetSafeModeResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetSafeModeResponseProto
-const __req_SetSafeModeResponseProto = Symbol[:result]
-meta(t::Type{SetSafeModeResponseProto}) = meta(t, __req_SetSafeModeResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetSafeModeResponseProto(; kwargs...)
+        obj = new(meta(SetSafeModeResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetSafeModeResponseProto
+const __meta_SetSafeModeResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SetSafeModeResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetSafeModeResponseProto)
+            __meta_SetSafeModeResponseProto[] = target = ProtoMeta(SetSafeModeResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, SetSafeModeResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetSafeModeResponseProto[]
+    end
+end
+function Base.getproperty(obj::SetSafeModeResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SaveNamespaceRequestProto <: ProtoType
-    SaveNamespaceRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SaveNamespaceRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SaveNamespaceRequestProto(; kwargs...)
+        obj = new(meta(SaveNamespaceRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SaveNamespaceRequestProto
+const __meta_SaveNamespaceRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SaveNamespaceRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SaveNamespaceRequestProto)
+            __meta_SaveNamespaceRequestProto[] = target = ProtoMeta(SaveNamespaceRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, SaveNamespaceRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SaveNamespaceRequestProto[]
+    end
+end
 
 mutable struct SaveNamespaceResponseProto <: ProtoType
-    SaveNamespaceResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SaveNamespaceResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SaveNamespaceResponseProto(; kwargs...)
+        obj = new(meta(SaveNamespaceResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SaveNamespaceResponseProto
+const __meta_SaveNamespaceResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SaveNamespaceResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SaveNamespaceResponseProto)
+            __meta_SaveNamespaceResponseProto[] = target = ProtoMeta(SaveNamespaceResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, SaveNamespaceResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SaveNamespaceResponseProto[]
+    end
+end
 
 mutable struct RollEditsRequestProto <: ProtoType
-    RollEditsRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RollEditsRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RollEditsRequestProto(; kwargs...)
+        obj = new(meta(RollEditsRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RollEditsRequestProto
+const __meta_RollEditsRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RollEditsRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RollEditsRequestProto)
+            __meta_RollEditsRequestProto[] = target = ProtoMeta(RollEditsRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, RollEditsRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RollEditsRequestProto[]
+    end
+end
 
 mutable struct RollEditsResponseProto <: ProtoType
-    newSegmentTxId::UInt64
-    RollEditsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RollEditsResponseProto
-const __req_RollEditsResponseProto = Symbol[:newSegmentTxId]
-meta(t::Type{RollEditsResponseProto}) = meta(t, __req_RollEditsResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RollEditsResponseProto(; kwargs...)
+        obj = new(meta(RollEditsResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RollEditsResponseProto
+const __meta_RollEditsResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RollEditsResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RollEditsResponseProto)
+            __meta_RollEditsResponseProto[] = target = ProtoMeta(RollEditsResponseProto)
+            req = Symbol[:newSegmentTxId]
+            allflds = Pair{Symbol,Union{Type,String}}[:newSegmentTxId => UInt64]
+            meta(target, RollEditsResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RollEditsResponseProto[]
+    end
+end
+function Base.getproperty(obj::RollEditsResponseProto, name::Symbol)
+    if name === :newSegmentTxId
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RestoreFailedStorageRequestProto <: ProtoType
-    arg::AbstractString
-    RestoreFailedStorageRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RestoreFailedStorageRequestProto
-const __req_RestoreFailedStorageRequestProto = Symbol[:arg]
-meta(t::Type{RestoreFailedStorageRequestProto}) = meta(t, __req_RestoreFailedStorageRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RestoreFailedStorageRequestProto(; kwargs...)
+        obj = new(meta(RestoreFailedStorageRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RestoreFailedStorageRequestProto
+const __meta_RestoreFailedStorageRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RestoreFailedStorageRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RestoreFailedStorageRequestProto)
+            __meta_RestoreFailedStorageRequestProto[] = target = ProtoMeta(RestoreFailedStorageRequestProto)
+            req = Symbol[:arg]
+            allflds = Pair{Symbol,Union{Type,String}}[:arg => AbstractString]
+            meta(target, RestoreFailedStorageRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RestoreFailedStorageRequestProto[]
+    end
+end
+function Base.getproperty(obj::RestoreFailedStorageRequestProto, name::Symbol)
+    if name === :arg
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RestoreFailedStorageResponseProto <: ProtoType
-    result::Bool
-    RestoreFailedStorageResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RestoreFailedStorageResponseProto
-const __req_RestoreFailedStorageResponseProto = Symbol[:result]
-meta(t::Type{RestoreFailedStorageResponseProto}) = meta(t, __req_RestoreFailedStorageResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RestoreFailedStorageResponseProto(; kwargs...)
+        obj = new(meta(RestoreFailedStorageResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RestoreFailedStorageResponseProto
+const __meta_RestoreFailedStorageResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RestoreFailedStorageResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RestoreFailedStorageResponseProto)
+            __meta_RestoreFailedStorageResponseProto[] = target = ProtoMeta(RestoreFailedStorageResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, RestoreFailedStorageResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RestoreFailedStorageResponseProto[]
+    end
+end
+function Base.getproperty(obj::RestoreFailedStorageResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RefreshNodesRequestProto <: ProtoType
-    RefreshNodesRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RefreshNodesRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RefreshNodesRequestProto(; kwargs...)
+        obj = new(meta(RefreshNodesRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RefreshNodesRequestProto
+const __meta_RefreshNodesRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RefreshNodesRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RefreshNodesRequestProto)
+            __meta_RefreshNodesRequestProto[] = target = ProtoMeta(RefreshNodesRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, RefreshNodesRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RefreshNodesRequestProto[]
+    end
+end
 
 mutable struct RefreshNodesResponseProto <: ProtoType
-    RefreshNodesResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RefreshNodesResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RefreshNodesResponseProto(; kwargs...)
+        obj = new(meta(RefreshNodesResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RefreshNodesResponseProto
+const __meta_RefreshNodesResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RefreshNodesResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RefreshNodesResponseProto)
+            __meta_RefreshNodesResponseProto[] = target = ProtoMeta(RefreshNodesResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, RefreshNodesResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RefreshNodesResponseProto[]
+    end
+end
 
 mutable struct FinalizeUpgradeRequestProto <: ProtoType
-    FinalizeUpgradeRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct FinalizeUpgradeRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function FinalizeUpgradeRequestProto(; kwargs...)
+        obj = new(meta(FinalizeUpgradeRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct FinalizeUpgradeRequestProto
+const __meta_FinalizeUpgradeRequestProto = Ref{ProtoMeta}()
+function meta(::Type{FinalizeUpgradeRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_FinalizeUpgradeRequestProto)
+            __meta_FinalizeUpgradeRequestProto[] = target = ProtoMeta(FinalizeUpgradeRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, FinalizeUpgradeRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_FinalizeUpgradeRequestProto[]
+    end
+end
 
 mutable struct FinalizeUpgradeResponseProto <: ProtoType
-    FinalizeUpgradeResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct FinalizeUpgradeResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function FinalizeUpgradeResponseProto(; kwargs...)
+        obj = new(meta(FinalizeUpgradeResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct FinalizeUpgradeResponseProto
+const __meta_FinalizeUpgradeResponseProto = Ref{ProtoMeta}()
+function meta(::Type{FinalizeUpgradeResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_FinalizeUpgradeResponseProto)
+            __meta_FinalizeUpgradeResponseProto[] = target = ProtoMeta(FinalizeUpgradeResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, FinalizeUpgradeResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_FinalizeUpgradeResponseProto[]
+    end
+end
 
 mutable struct RollingUpgradeRequestProto <: ProtoType
-    action::Int32
-    RollingUpgradeRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RollingUpgradeRequestProto
-const __req_RollingUpgradeRequestProto = Symbol[:action]
-meta(t::Type{RollingUpgradeRequestProto}) = meta(t, __req_RollingUpgradeRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RollingUpgradeRequestProto(; kwargs...)
+        obj = new(meta(RollingUpgradeRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RollingUpgradeRequestProto
+const __meta_RollingUpgradeRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RollingUpgradeRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RollingUpgradeRequestProto)
+            __meta_RollingUpgradeRequestProto[] = target = ProtoMeta(RollingUpgradeRequestProto)
+            req = Symbol[:action]
+            allflds = Pair{Symbol,Union{Type,String}}[:action => Int32]
+            meta(target, RollingUpgradeRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RollingUpgradeRequestProto[]
+    end
+end
+function Base.getproperty(obj::RollingUpgradeRequestProto, name::Symbol)
+    if name === :action
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RollingUpgradeInfoProto <: ProtoType
-    status::RollingUpgradeStatusProto
-    startTime::UInt64
-    finalizeTime::UInt64
-    createdRollbackImages::Bool
-    RollingUpgradeInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RollingUpgradeInfoProto
-const __req_RollingUpgradeInfoProto = Symbol[:status,:startTime,:finalizeTime,:createdRollbackImages]
-meta(t::Type{RollingUpgradeInfoProto}) = meta(t, __req_RollingUpgradeInfoProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RollingUpgradeInfoProto(; kwargs...)
+        obj = new(meta(RollingUpgradeInfoProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RollingUpgradeInfoProto
+const __meta_RollingUpgradeInfoProto = Ref{ProtoMeta}()
+function meta(::Type{RollingUpgradeInfoProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RollingUpgradeInfoProto)
+            __meta_RollingUpgradeInfoProto[] = target = ProtoMeta(RollingUpgradeInfoProto)
+            req = Symbol[:status,:startTime,:finalizeTime,:createdRollbackImages]
+            allflds = Pair{Symbol,Union{Type,String}}[:status => RollingUpgradeStatusProto, :startTime => UInt64, :finalizeTime => UInt64, :createdRollbackImages => Bool]
+            meta(target, RollingUpgradeInfoProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RollingUpgradeInfoProto[]
+    end
+end
+function Base.getproperty(obj::RollingUpgradeInfoProto, name::Symbol)
+    if name === :status
+        return (obj.__protobuf_jl_internal_values[name])::RollingUpgradeStatusProto
+    elseif name === :startTime
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :finalizeTime
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :createdRollbackImages
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RollingUpgradeResponseProto <: ProtoType
-    rollingUpgradeInfo::RollingUpgradeInfoProto
-    RollingUpgradeResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RollingUpgradeResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RollingUpgradeResponseProto(; kwargs...)
+        obj = new(meta(RollingUpgradeResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RollingUpgradeResponseProto
+const __meta_RollingUpgradeResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RollingUpgradeResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RollingUpgradeResponseProto)
+            __meta_RollingUpgradeResponseProto[] = target = ProtoMeta(RollingUpgradeResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:rollingUpgradeInfo => RollingUpgradeInfoProto]
+            meta(target, RollingUpgradeResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RollingUpgradeResponseProto[]
+    end
+end
+function Base.getproperty(obj::RollingUpgradeResponseProto, name::Symbol)
+    if name === :rollingUpgradeInfo
+        return (obj.__protobuf_jl_internal_values[name])::RollingUpgradeInfoProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ListCorruptFileBlocksRequestProto <: ProtoType
-    path::AbstractString
-    cookie::AbstractString
-    ListCorruptFileBlocksRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ListCorruptFileBlocksRequestProto
-const __req_ListCorruptFileBlocksRequestProto = Symbol[:path]
-meta(t::Type{ListCorruptFileBlocksRequestProto}) = meta(t, __req_ListCorruptFileBlocksRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ListCorruptFileBlocksRequestProto(; kwargs...)
+        obj = new(meta(ListCorruptFileBlocksRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ListCorruptFileBlocksRequestProto
+const __meta_ListCorruptFileBlocksRequestProto = Ref{ProtoMeta}()
+function meta(::Type{ListCorruptFileBlocksRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ListCorruptFileBlocksRequestProto)
+            __meta_ListCorruptFileBlocksRequestProto[] = target = ProtoMeta(ListCorruptFileBlocksRequestProto)
+            req = Symbol[:path]
+            allflds = Pair{Symbol,Union{Type,String}}[:path => AbstractString, :cookie => AbstractString]
+            meta(target, ListCorruptFileBlocksRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ListCorruptFileBlocksRequestProto[]
+    end
+end
+function Base.getproperty(obj::ListCorruptFileBlocksRequestProto, name::Symbol)
+    if name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :cookie
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ListCorruptFileBlocksResponseProto <: ProtoType
-    corrupt::CorruptFileBlocksProto
-    ListCorruptFileBlocksResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ListCorruptFileBlocksResponseProto
-const __req_ListCorruptFileBlocksResponseProto = Symbol[:corrupt]
-meta(t::Type{ListCorruptFileBlocksResponseProto}) = meta(t, __req_ListCorruptFileBlocksResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ListCorruptFileBlocksResponseProto(; kwargs...)
+        obj = new(meta(ListCorruptFileBlocksResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ListCorruptFileBlocksResponseProto
+const __meta_ListCorruptFileBlocksResponseProto = Ref{ProtoMeta}()
+function meta(::Type{ListCorruptFileBlocksResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ListCorruptFileBlocksResponseProto)
+            __meta_ListCorruptFileBlocksResponseProto[] = target = ProtoMeta(ListCorruptFileBlocksResponseProto)
+            req = Symbol[:corrupt]
+            allflds = Pair{Symbol,Union{Type,String}}[:corrupt => CorruptFileBlocksProto]
+            meta(target, ListCorruptFileBlocksResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ListCorruptFileBlocksResponseProto[]
+    end
+end
+function Base.getproperty(obj::ListCorruptFileBlocksResponseProto, name::Symbol)
+    if name === :corrupt
+        return (obj.__protobuf_jl_internal_values[name])::CorruptFileBlocksProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct MetaSaveRequestProto <: ProtoType
-    filename::AbstractString
-    MetaSaveRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct MetaSaveRequestProto
-const __req_MetaSaveRequestProto = Symbol[:filename]
-meta(t::Type{MetaSaveRequestProto}) = meta(t, __req_MetaSaveRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function MetaSaveRequestProto(; kwargs...)
+        obj = new(meta(MetaSaveRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct MetaSaveRequestProto
+const __meta_MetaSaveRequestProto = Ref{ProtoMeta}()
+function meta(::Type{MetaSaveRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_MetaSaveRequestProto)
+            __meta_MetaSaveRequestProto[] = target = ProtoMeta(MetaSaveRequestProto)
+            req = Symbol[:filename]
+            allflds = Pair{Symbol,Union{Type,String}}[:filename => AbstractString]
+            meta(target, MetaSaveRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_MetaSaveRequestProto[]
+    end
+end
+function Base.getproperty(obj::MetaSaveRequestProto, name::Symbol)
+    if name === :filename
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct MetaSaveResponseProto <: ProtoType
-    MetaSaveResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct MetaSaveResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function MetaSaveResponseProto(; kwargs...)
+        obj = new(meta(MetaSaveResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct MetaSaveResponseProto
+const __meta_MetaSaveResponseProto = Ref{ProtoMeta}()
+function meta(::Type{MetaSaveResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_MetaSaveResponseProto)
+            __meta_MetaSaveResponseProto[] = target = ProtoMeta(MetaSaveResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, MetaSaveResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_MetaSaveResponseProto[]
+    end
+end
 
 mutable struct GetFileInfoRequestProto <: ProtoType
-    src::AbstractString
-    GetFileInfoRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetFileInfoRequestProto
-const __req_GetFileInfoRequestProto = Symbol[:src]
-meta(t::Type{GetFileInfoRequestProto}) = meta(t, __req_GetFileInfoRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetFileInfoRequestProto(; kwargs...)
+        obj = new(meta(GetFileInfoRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetFileInfoRequestProto
+const __meta_GetFileInfoRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetFileInfoRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetFileInfoRequestProto)
+            __meta_GetFileInfoRequestProto[] = target = ProtoMeta(GetFileInfoRequestProto)
+            req = Symbol[:src]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString]
+            meta(target, GetFileInfoRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetFileInfoRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetFileInfoRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetFileInfoResponseProto <: ProtoType
-    fs::HdfsFileStatusProto
-    GetFileInfoResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetFileInfoResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetFileInfoResponseProto(; kwargs...)
+        obj = new(meta(GetFileInfoResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetFileInfoResponseProto
+const __meta_GetFileInfoResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetFileInfoResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetFileInfoResponseProto)
+            __meta_GetFileInfoResponseProto[] = target = ProtoMeta(GetFileInfoResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:fs => HdfsFileStatusProto]
+            meta(target, GetFileInfoResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetFileInfoResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetFileInfoResponseProto, name::Symbol)
+    if name === :fs
+        return (obj.__protobuf_jl_internal_values[name])::HdfsFileStatusProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct IsFileClosedRequestProto <: ProtoType
-    src::AbstractString
-    IsFileClosedRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct IsFileClosedRequestProto
-const __req_IsFileClosedRequestProto = Symbol[:src]
-meta(t::Type{IsFileClosedRequestProto}) = meta(t, __req_IsFileClosedRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function IsFileClosedRequestProto(; kwargs...)
+        obj = new(meta(IsFileClosedRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct IsFileClosedRequestProto
+const __meta_IsFileClosedRequestProto = Ref{ProtoMeta}()
+function meta(::Type{IsFileClosedRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_IsFileClosedRequestProto)
+            __meta_IsFileClosedRequestProto[] = target = ProtoMeta(IsFileClosedRequestProto)
+            req = Symbol[:src]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString]
+            meta(target, IsFileClosedRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_IsFileClosedRequestProto[]
+    end
+end
+function Base.getproperty(obj::IsFileClosedRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct IsFileClosedResponseProto <: ProtoType
-    result::Bool
-    IsFileClosedResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct IsFileClosedResponseProto
-const __req_IsFileClosedResponseProto = Symbol[:result]
-meta(t::Type{IsFileClosedResponseProto}) = meta(t, __req_IsFileClosedResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function IsFileClosedResponseProto(; kwargs...)
+        obj = new(meta(IsFileClosedResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct IsFileClosedResponseProto
+const __meta_IsFileClosedResponseProto = Ref{ProtoMeta}()
+function meta(::Type{IsFileClosedResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_IsFileClosedResponseProto)
+            __meta_IsFileClosedResponseProto[] = target = ProtoMeta(IsFileClosedResponseProto)
+            req = Symbol[:result]
+            allflds = Pair{Symbol,Union{Type,String}}[:result => Bool]
+            meta(target, IsFileClosedResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_IsFileClosedResponseProto[]
+    end
+end
+function Base.getproperty(obj::IsFileClosedResponseProto, name::Symbol)
+    if name === :result
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CacheDirectiveInfoExpirationProto <: ProtoType
-    millis::Int64
-    isRelative::Bool
-    CacheDirectiveInfoExpirationProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CacheDirectiveInfoExpirationProto
-const __req_CacheDirectiveInfoExpirationProto = Symbol[:millis,:isRelative]
-meta(t::Type{CacheDirectiveInfoExpirationProto}) = meta(t, __req_CacheDirectiveInfoExpirationProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CacheDirectiveInfoExpirationProto(; kwargs...)
+        obj = new(meta(CacheDirectiveInfoExpirationProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CacheDirectiveInfoExpirationProto
+const __meta_CacheDirectiveInfoExpirationProto = Ref{ProtoMeta}()
+function meta(::Type{CacheDirectiveInfoExpirationProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CacheDirectiveInfoExpirationProto)
+            __meta_CacheDirectiveInfoExpirationProto[] = target = ProtoMeta(CacheDirectiveInfoExpirationProto)
+            req = Symbol[:millis,:isRelative]
+            allflds = Pair{Symbol,Union{Type,String}}[:millis => Int64, :isRelative => Bool]
+            meta(target, CacheDirectiveInfoExpirationProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CacheDirectiveInfoExpirationProto[]
+    end
+end
+function Base.getproperty(obj::CacheDirectiveInfoExpirationProto, name::Symbol)
+    if name === :millis
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :isRelative
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CacheDirectiveInfoProto <: ProtoType
-    id::Int64
-    path::AbstractString
-    replication::UInt32
-    pool::AbstractString
-    expiration::CacheDirectiveInfoExpirationProto
-    CacheDirectiveInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CacheDirectiveInfoProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CacheDirectiveInfoProto(; kwargs...)
+        obj = new(meta(CacheDirectiveInfoProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CacheDirectiveInfoProto
+const __meta_CacheDirectiveInfoProto = Ref{ProtoMeta}()
+function meta(::Type{CacheDirectiveInfoProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CacheDirectiveInfoProto)
+            __meta_CacheDirectiveInfoProto[] = target = ProtoMeta(CacheDirectiveInfoProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:id => Int64, :path => AbstractString, :replication => UInt32, :pool => AbstractString, :expiration => CacheDirectiveInfoExpirationProto]
+            meta(target, CacheDirectiveInfoProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CacheDirectiveInfoProto[]
+    end
+end
+function Base.getproperty(obj::CacheDirectiveInfoProto, name::Symbol)
+    if name === :id
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :replication
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    elseif name === :pool
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :expiration
+        return (obj.__protobuf_jl_internal_values[name])::CacheDirectiveInfoExpirationProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CacheDirectiveStatsProto <: ProtoType
-    bytesNeeded::Int64
-    bytesCached::Int64
-    filesNeeded::Int64
-    filesCached::Int64
-    hasExpired::Bool
-    CacheDirectiveStatsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CacheDirectiveStatsProto
-const __req_CacheDirectiveStatsProto = Symbol[:bytesNeeded,:bytesCached,:filesNeeded,:filesCached,:hasExpired]
-meta(t::Type{CacheDirectiveStatsProto}) = meta(t, __req_CacheDirectiveStatsProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CacheDirectiveStatsProto(; kwargs...)
+        obj = new(meta(CacheDirectiveStatsProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CacheDirectiveStatsProto
+const __meta_CacheDirectiveStatsProto = Ref{ProtoMeta}()
+function meta(::Type{CacheDirectiveStatsProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CacheDirectiveStatsProto)
+            __meta_CacheDirectiveStatsProto[] = target = ProtoMeta(CacheDirectiveStatsProto)
+            req = Symbol[:bytesNeeded,:bytesCached,:filesNeeded,:filesCached,:hasExpired]
+            allflds = Pair{Symbol,Union{Type,String}}[:bytesNeeded => Int64, :bytesCached => Int64, :filesNeeded => Int64, :filesCached => Int64, :hasExpired => Bool]
+            meta(target, CacheDirectiveStatsProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CacheDirectiveStatsProto[]
+    end
+end
+function Base.getproperty(obj::CacheDirectiveStatsProto, name::Symbol)
+    if name === :bytesNeeded
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :bytesCached
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :filesNeeded
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :filesCached
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :hasExpired
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AddCacheDirectiveRequestProto <: ProtoType
-    info::CacheDirectiveInfoProto
-    cacheFlags::UInt32
-    AddCacheDirectiveRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AddCacheDirectiveRequestProto
-const __req_AddCacheDirectiveRequestProto = Symbol[:info]
-meta(t::Type{AddCacheDirectiveRequestProto}) = meta(t, __req_AddCacheDirectiveRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AddCacheDirectiveRequestProto(; kwargs...)
+        obj = new(meta(AddCacheDirectiveRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AddCacheDirectiveRequestProto
+const __meta_AddCacheDirectiveRequestProto = Ref{ProtoMeta}()
+function meta(::Type{AddCacheDirectiveRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AddCacheDirectiveRequestProto)
+            __meta_AddCacheDirectiveRequestProto[] = target = ProtoMeta(AddCacheDirectiveRequestProto)
+            req = Symbol[:info]
+            allflds = Pair{Symbol,Union{Type,String}}[:info => CacheDirectiveInfoProto, :cacheFlags => UInt32]
+            meta(target, AddCacheDirectiveRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AddCacheDirectiveRequestProto[]
+    end
+end
+function Base.getproperty(obj::AddCacheDirectiveRequestProto, name::Symbol)
+    if name === :info
+        return (obj.__protobuf_jl_internal_values[name])::CacheDirectiveInfoProto
+    elseif name === :cacheFlags
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AddCacheDirectiveResponseProto <: ProtoType
-    id::Int64
-    AddCacheDirectiveResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AddCacheDirectiveResponseProto
-const __req_AddCacheDirectiveResponseProto = Symbol[:id]
-meta(t::Type{AddCacheDirectiveResponseProto}) = meta(t, __req_AddCacheDirectiveResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AddCacheDirectiveResponseProto(; kwargs...)
+        obj = new(meta(AddCacheDirectiveResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AddCacheDirectiveResponseProto
+const __meta_AddCacheDirectiveResponseProto = Ref{ProtoMeta}()
+function meta(::Type{AddCacheDirectiveResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AddCacheDirectiveResponseProto)
+            __meta_AddCacheDirectiveResponseProto[] = target = ProtoMeta(AddCacheDirectiveResponseProto)
+            req = Symbol[:id]
+            allflds = Pair{Symbol,Union{Type,String}}[:id => Int64]
+            meta(target, AddCacheDirectiveResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AddCacheDirectiveResponseProto[]
+    end
+end
+function Base.getproperty(obj::AddCacheDirectiveResponseProto, name::Symbol)
+    if name === :id
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ModifyCacheDirectiveRequestProto <: ProtoType
-    info::CacheDirectiveInfoProto
-    cacheFlags::UInt32
-    ModifyCacheDirectiveRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ModifyCacheDirectiveRequestProto
-const __req_ModifyCacheDirectiveRequestProto = Symbol[:info]
-meta(t::Type{ModifyCacheDirectiveRequestProto}) = meta(t, __req_ModifyCacheDirectiveRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ModifyCacheDirectiveRequestProto(; kwargs...)
+        obj = new(meta(ModifyCacheDirectiveRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ModifyCacheDirectiveRequestProto
+const __meta_ModifyCacheDirectiveRequestProto = Ref{ProtoMeta}()
+function meta(::Type{ModifyCacheDirectiveRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ModifyCacheDirectiveRequestProto)
+            __meta_ModifyCacheDirectiveRequestProto[] = target = ProtoMeta(ModifyCacheDirectiveRequestProto)
+            req = Symbol[:info]
+            allflds = Pair{Symbol,Union{Type,String}}[:info => CacheDirectiveInfoProto, :cacheFlags => UInt32]
+            meta(target, ModifyCacheDirectiveRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ModifyCacheDirectiveRequestProto[]
+    end
+end
+function Base.getproperty(obj::ModifyCacheDirectiveRequestProto, name::Symbol)
+    if name === :info
+        return (obj.__protobuf_jl_internal_values[name])::CacheDirectiveInfoProto
+    elseif name === :cacheFlags
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ModifyCacheDirectiveResponseProto <: ProtoType
-    ModifyCacheDirectiveResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ModifyCacheDirectiveResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ModifyCacheDirectiveResponseProto(; kwargs...)
+        obj = new(meta(ModifyCacheDirectiveResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ModifyCacheDirectiveResponseProto
+const __meta_ModifyCacheDirectiveResponseProto = Ref{ProtoMeta}()
+function meta(::Type{ModifyCacheDirectiveResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ModifyCacheDirectiveResponseProto)
+            __meta_ModifyCacheDirectiveResponseProto[] = target = ProtoMeta(ModifyCacheDirectiveResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, ModifyCacheDirectiveResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ModifyCacheDirectiveResponseProto[]
+    end
+end
 
 mutable struct RemoveCacheDirectiveRequestProto <: ProtoType
-    id::Int64
-    RemoveCacheDirectiveRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RemoveCacheDirectiveRequestProto
-const __req_RemoveCacheDirectiveRequestProto = Symbol[:id]
-meta(t::Type{RemoveCacheDirectiveRequestProto}) = meta(t, __req_RemoveCacheDirectiveRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RemoveCacheDirectiveRequestProto(; kwargs...)
+        obj = new(meta(RemoveCacheDirectiveRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RemoveCacheDirectiveRequestProto
+const __meta_RemoveCacheDirectiveRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RemoveCacheDirectiveRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RemoveCacheDirectiveRequestProto)
+            __meta_RemoveCacheDirectiveRequestProto[] = target = ProtoMeta(RemoveCacheDirectiveRequestProto)
+            req = Symbol[:id]
+            allflds = Pair{Symbol,Union{Type,String}}[:id => Int64]
+            meta(target, RemoveCacheDirectiveRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RemoveCacheDirectiveRequestProto[]
+    end
+end
+function Base.getproperty(obj::RemoveCacheDirectiveRequestProto, name::Symbol)
+    if name === :id
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RemoveCacheDirectiveResponseProto <: ProtoType
-    RemoveCacheDirectiveResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RemoveCacheDirectiveResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RemoveCacheDirectiveResponseProto(; kwargs...)
+        obj = new(meta(RemoveCacheDirectiveResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RemoveCacheDirectiveResponseProto
+const __meta_RemoveCacheDirectiveResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RemoveCacheDirectiveResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RemoveCacheDirectiveResponseProto)
+            __meta_RemoveCacheDirectiveResponseProto[] = target = ProtoMeta(RemoveCacheDirectiveResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, RemoveCacheDirectiveResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RemoveCacheDirectiveResponseProto[]
+    end
+end
 
 mutable struct ListCacheDirectivesRequestProto <: ProtoType
-    prevId::Int64
-    filter::CacheDirectiveInfoProto
-    ListCacheDirectivesRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ListCacheDirectivesRequestProto
-const __req_ListCacheDirectivesRequestProto = Symbol[:prevId,:filter]
-meta(t::Type{ListCacheDirectivesRequestProto}) = meta(t, __req_ListCacheDirectivesRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ListCacheDirectivesRequestProto(; kwargs...)
+        obj = new(meta(ListCacheDirectivesRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ListCacheDirectivesRequestProto
+const __meta_ListCacheDirectivesRequestProto = Ref{ProtoMeta}()
+function meta(::Type{ListCacheDirectivesRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ListCacheDirectivesRequestProto)
+            __meta_ListCacheDirectivesRequestProto[] = target = ProtoMeta(ListCacheDirectivesRequestProto)
+            req = Symbol[:prevId,:filter]
+            allflds = Pair{Symbol,Union{Type,String}}[:prevId => Int64, :filter => CacheDirectiveInfoProto]
+            meta(target, ListCacheDirectivesRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ListCacheDirectivesRequestProto[]
+    end
+end
+function Base.getproperty(obj::ListCacheDirectivesRequestProto, name::Symbol)
+    if name === :prevId
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :filter
+        return (obj.__protobuf_jl_internal_values[name])::CacheDirectiveInfoProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CacheDirectiveEntryProto <: ProtoType
-    info::CacheDirectiveInfoProto
-    stats::CacheDirectiveStatsProto
-    CacheDirectiveEntryProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CacheDirectiveEntryProto
-const __req_CacheDirectiveEntryProto = Symbol[:info,:stats]
-meta(t::Type{CacheDirectiveEntryProto}) = meta(t, __req_CacheDirectiveEntryProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CacheDirectiveEntryProto(; kwargs...)
+        obj = new(meta(CacheDirectiveEntryProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CacheDirectiveEntryProto
+const __meta_CacheDirectiveEntryProto = Ref{ProtoMeta}()
+function meta(::Type{CacheDirectiveEntryProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CacheDirectiveEntryProto)
+            __meta_CacheDirectiveEntryProto[] = target = ProtoMeta(CacheDirectiveEntryProto)
+            req = Symbol[:info,:stats]
+            allflds = Pair{Symbol,Union{Type,String}}[:info => CacheDirectiveInfoProto, :stats => CacheDirectiveStatsProto]
+            meta(target, CacheDirectiveEntryProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CacheDirectiveEntryProto[]
+    end
+end
+function Base.getproperty(obj::CacheDirectiveEntryProto, name::Symbol)
+    if name === :info
+        return (obj.__protobuf_jl_internal_values[name])::CacheDirectiveInfoProto
+    elseif name === :stats
+        return (obj.__protobuf_jl_internal_values[name])::CacheDirectiveStatsProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ListCacheDirectivesResponseProto <: ProtoType
-    elements::Base.Vector{CacheDirectiveEntryProto}
-    hasMore::Bool
-    ListCacheDirectivesResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ListCacheDirectivesResponseProto
-const __req_ListCacheDirectivesResponseProto = Symbol[:hasMore]
-meta(t::Type{ListCacheDirectivesResponseProto}) = meta(t, __req_ListCacheDirectivesResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ListCacheDirectivesResponseProto(; kwargs...)
+        obj = new(meta(ListCacheDirectivesResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ListCacheDirectivesResponseProto
+const __meta_ListCacheDirectivesResponseProto = Ref{ProtoMeta}()
+function meta(::Type{ListCacheDirectivesResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ListCacheDirectivesResponseProto)
+            __meta_ListCacheDirectivesResponseProto[] = target = ProtoMeta(ListCacheDirectivesResponseProto)
+            req = Symbol[:hasMore]
+            allflds = Pair{Symbol,Union{Type,String}}[:elements => Base.Vector{CacheDirectiveEntryProto}, :hasMore => Bool]
+            meta(target, ListCacheDirectivesResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ListCacheDirectivesResponseProto[]
+    end
+end
+function Base.getproperty(obj::ListCacheDirectivesResponseProto, name::Symbol)
+    if name === :elements
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{CacheDirectiveEntryProto}
+    elseif name === :hasMore
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CachePoolInfoProto <: ProtoType
-    poolName::AbstractString
-    ownerName::AbstractString
-    groupName::AbstractString
-    mode::Int32
-    limit::Int64
-    maxRelativeExpiry::Int64
-    defaultReplication::UInt32
-    CachePoolInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CachePoolInfoProto
-const __val_CachePoolInfoProto = Dict(:defaultReplication => 1)
-meta(t::Type{CachePoolInfoProto}) = meta(t, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, __val_CachePoolInfoProto, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CachePoolInfoProto(; kwargs...)
+        obj = new(meta(CachePoolInfoProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CachePoolInfoProto
+const __meta_CachePoolInfoProto = Ref{ProtoMeta}()
+function meta(::Type{CachePoolInfoProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CachePoolInfoProto)
+            __meta_CachePoolInfoProto[] = target = ProtoMeta(CachePoolInfoProto)
+            val = Dict{Symbol,Any}(:defaultReplication => 1)
+            allflds = Pair{Symbol,Union{Type,String}}[:poolName => AbstractString, :ownerName => AbstractString, :groupName => AbstractString, :mode => Int32, :limit => Int64, :maxRelativeExpiry => Int64, :defaultReplication => UInt32]
+            meta(target, CachePoolInfoProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CachePoolInfoProto[]
+    end
+end
+function Base.getproperty(obj::CachePoolInfoProto, name::Symbol)
+    if name === :poolName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :ownerName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :groupName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :mode
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :limit
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :maxRelativeExpiry
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :defaultReplication
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CachePoolStatsProto <: ProtoType
-    bytesNeeded::Int64
-    bytesCached::Int64
-    bytesOverlimit::Int64
-    filesNeeded::Int64
-    filesCached::Int64
-    CachePoolStatsProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CachePoolStatsProto
-const __req_CachePoolStatsProto = Symbol[:bytesNeeded,:bytesCached,:bytesOverlimit,:filesNeeded,:filesCached]
-meta(t::Type{CachePoolStatsProto}) = meta(t, __req_CachePoolStatsProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CachePoolStatsProto(; kwargs...)
+        obj = new(meta(CachePoolStatsProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CachePoolStatsProto
+const __meta_CachePoolStatsProto = Ref{ProtoMeta}()
+function meta(::Type{CachePoolStatsProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CachePoolStatsProto)
+            __meta_CachePoolStatsProto[] = target = ProtoMeta(CachePoolStatsProto)
+            req = Symbol[:bytesNeeded,:bytesCached,:bytesOverlimit,:filesNeeded,:filesCached]
+            allflds = Pair{Symbol,Union{Type,String}}[:bytesNeeded => Int64, :bytesCached => Int64, :bytesOverlimit => Int64, :filesNeeded => Int64, :filesCached => Int64]
+            meta(target, CachePoolStatsProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CachePoolStatsProto[]
+    end
+end
+function Base.getproperty(obj::CachePoolStatsProto, name::Symbol)
+    if name === :bytesNeeded
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :bytesCached
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :bytesOverlimit
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :filesNeeded
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :filesCached
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AddCachePoolRequestProto <: ProtoType
-    info::CachePoolInfoProto
-    AddCachePoolRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AddCachePoolRequestProto
-const __req_AddCachePoolRequestProto = Symbol[:info]
-meta(t::Type{AddCachePoolRequestProto}) = meta(t, __req_AddCachePoolRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AddCachePoolRequestProto(; kwargs...)
+        obj = new(meta(AddCachePoolRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AddCachePoolRequestProto
+const __meta_AddCachePoolRequestProto = Ref{ProtoMeta}()
+function meta(::Type{AddCachePoolRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AddCachePoolRequestProto)
+            __meta_AddCachePoolRequestProto[] = target = ProtoMeta(AddCachePoolRequestProto)
+            req = Symbol[:info]
+            allflds = Pair{Symbol,Union{Type,String}}[:info => CachePoolInfoProto]
+            meta(target, AddCachePoolRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AddCachePoolRequestProto[]
+    end
+end
+function Base.getproperty(obj::AddCachePoolRequestProto, name::Symbol)
+    if name === :info
+        return (obj.__protobuf_jl_internal_values[name])::CachePoolInfoProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AddCachePoolResponseProto <: ProtoType
-    AddCachePoolResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AddCachePoolResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AddCachePoolResponseProto(; kwargs...)
+        obj = new(meta(AddCachePoolResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AddCachePoolResponseProto
+const __meta_AddCachePoolResponseProto = Ref{ProtoMeta}()
+function meta(::Type{AddCachePoolResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AddCachePoolResponseProto)
+            __meta_AddCachePoolResponseProto[] = target = ProtoMeta(AddCachePoolResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, AddCachePoolResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AddCachePoolResponseProto[]
+    end
+end
 
 mutable struct ModifyCachePoolRequestProto <: ProtoType
-    info::CachePoolInfoProto
-    ModifyCachePoolRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ModifyCachePoolRequestProto
-const __req_ModifyCachePoolRequestProto = Symbol[:info]
-meta(t::Type{ModifyCachePoolRequestProto}) = meta(t, __req_ModifyCachePoolRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ModifyCachePoolRequestProto(; kwargs...)
+        obj = new(meta(ModifyCachePoolRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ModifyCachePoolRequestProto
+const __meta_ModifyCachePoolRequestProto = Ref{ProtoMeta}()
+function meta(::Type{ModifyCachePoolRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ModifyCachePoolRequestProto)
+            __meta_ModifyCachePoolRequestProto[] = target = ProtoMeta(ModifyCachePoolRequestProto)
+            req = Symbol[:info]
+            allflds = Pair{Symbol,Union{Type,String}}[:info => CachePoolInfoProto]
+            meta(target, ModifyCachePoolRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ModifyCachePoolRequestProto[]
+    end
+end
+function Base.getproperty(obj::ModifyCachePoolRequestProto, name::Symbol)
+    if name === :info
+        return (obj.__protobuf_jl_internal_values[name])::CachePoolInfoProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ModifyCachePoolResponseProto <: ProtoType
-    ModifyCachePoolResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ModifyCachePoolResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ModifyCachePoolResponseProto(; kwargs...)
+        obj = new(meta(ModifyCachePoolResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ModifyCachePoolResponseProto
+const __meta_ModifyCachePoolResponseProto = Ref{ProtoMeta}()
+function meta(::Type{ModifyCachePoolResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ModifyCachePoolResponseProto)
+            __meta_ModifyCachePoolResponseProto[] = target = ProtoMeta(ModifyCachePoolResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, ModifyCachePoolResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ModifyCachePoolResponseProto[]
+    end
+end
 
 mutable struct RemoveCachePoolRequestProto <: ProtoType
-    poolName::AbstractString
-    RemoveCachePoolRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RemoveCachePoolRequestProto
-const __req_RemoveCachePoolRequestProto = Symbol[:poolName]
-meta(t::Type{RemoveCachePoolRequestProto}) = meta(t, __req_RemoveCachePoolRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RemoveCachePoolRequestProto(; kwargs...)
+        obj = new(meta(RemoveCachePoolRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RemoveCachePoolRequestProto
+const __meta_RemoveCachePoolRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RemoveCachePoolRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RemoveCachePoolRequestProto)
+            __meta_RemoveCachePoolRequestProto[] = target = ProtoMeta(RemoveCachePoolRequestProto)
+            req = Symbol[:poolName]
+            allflds = Pair{Symbol,Union{Type,String}}[:poolName => AbstractString]
+            meta(target, RemoveCachePoolRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RemoveCachePoolRequestProto[]
+    end
+end
+function Base.getproperty(obj::RemoveCachePoolRequestProto, name::Symbol)
+    if name === :poolName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RemoveCachePoolResponseProto <: ProtoType
-    RemoveCachePoolResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RemoveCachePoolResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RemoveCachePoolResponseProto(; kwargs...)
+        obj = new(meta(RemoveCachePoolResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RemoveCachePoolResponseProto
+const __meta_RemoveCachePoolResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RemoveCachePoolResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RemoveCachePoolResponseProto)
+            __meta_RemoveCachePoolResponseProto[] = target = ProtoMeta(RemoveCachePoolResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, RemoveCachePoolResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RemoveCachePoolResponseProto[]
+    end
+end
 
 mutable struct ListCachePoolsRequestProto <: ProtoType
-    prevPoolName::AbstractString
-    ListCachePoolsRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ListCachePoolsRequestProto
-const __req_ListCachePoolsRequestProto = Symbol[:prevPoolName]
-meta(t::Type{ListCachePoolsRequestProto}) = meta(t, __req_ListCachePoolsRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ListCachePoolsRequestProto(; kwargs...)
+        obj = new(meta(ListCachePoolsRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ListCachePoolsRequestProto
+const __meta_ListCachePoolsRequestProto = Ref{ProtoMeta}()
+function meta(::Type{ListCachePoolsRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ListCachePoolsRequestProto)
+            __meta_ListCachePoolsRequestProto[] = target = ProtoMeta(ListCachePoolsRequestProto)
+            req = Symbol[:prevPoolName]
+            allflds = Pair{Symbol,Union{Type,String}}[:prevPoolName => AbstractString]
+            meta(target, ListCachePoolsRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ListCachePoolsRequestProto[]
+    end
+end
+function Base.getproperty(obj::ListCachePoolsRequestProto, name::Symbol)
+    if name === :prevPoolName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CachePoolEntryProto <: ProtoType
-    info::CachePoolInfoProto
-    stats::CachePoolStatsProto
-    CachePoolEntryProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CachePoolEntryProto
-const __req_CachePoolEntryProto = Symbol[:info,:stats]
-meta(t::Type{CachePoolEntryProto}) = meta(t, __req_CachePoolEntryProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CachePoolEntryProto(; kwargs...)
+        obj = new(meta(CachePoolEntryProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CachePoolEntryProto
+const __meta_CachePoolEntryProto = Ref{ProtoMeta}()
+function meta(::Type{CachePoolEntryProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CachePoolEntryProto)
+            __meta_CachePoolEntryProto[] = target = ProtoMeta(CachePoolEntryProto)
+            req = Symbol[:info,:stats]
+            allflds = Pair{Symbol,Union{Type,String}}[:info => CachePoolInfoProto, :stats => CachePoolStatsProto]
+            meta(target, CachePoolEntryProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CachePoolEntryProto[]
+    end
+end
+function Base.getproperty(obj::CachePoolEntryProto, name::Symbol)
+    if name === :info
+        return (obj.__protobuf_jl_internal_values[name])::CachePoolInfoProto
+    elseif name === :stats
+        return (obj.__protobuf_jl_internal_values[name])::CachePoolStatsProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ListCachePoolsResponseProto <: ProtoType
-    entries::Base.Vector{CachePoolEntryProto}
-    hasMore::Bool
-    ListCachePoolsResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ListCachePoolsResponseProto
-const __req_ListCachePoolsResponseProto = Symbol[:hasMore]
-meta(t::Type{ListCachePoolsResponseProto}) = meta(t, __req_ListCachePoolsResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ListCachePoolsResponseProto(; kwargs...)
+        obj = new(meta(ListCachePoolsResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ListCachePoolsResponseProto
+const __meta_ListCachePoolsResponseProto = Ref{ProtoMeta}()
+function meta(::Type{ListCachePoolsResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ListCachePoolsResponseProto)
+            __meta_ListCachePoolsResponseProto[] = target = ProtoMeta(ListCachePoolsResponseProto)
+            req = Symbol[:hasMore]
+            allflds = Pair{Symbol,Union{Type,String}}[:entries => Base.Vector{CachePoolEntryProto}, :hasMore => Bool]
+            meta(target, ListCachePoolsResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ListCachePoolsResponseProto[]
+    end
+end
+function Base.getproperty(obj::ListCachePoolsResponseProto, name::Symbol)
+    if name === :entries
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{CachePoolEntryProto}
+    elseif name === :hasMore
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetFileLinkInfoRequestProto <: ProtoType
-    src::AbstractString
-    GetFileLinkInfoRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetFileLinkInfoRequestProto
-const __req_GetFileLinkInfoRequestProto = Symbol[:src]
-meta(t::Type{GetFileLinkInfoRequestProto}) = meta(t, __req_GetFileLinkInfoRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetFileLinkInfoRequestProto(; kwargs...)
+        obj = new(meta(GetFileLinkInfoRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetFileLinkInfoRequestProto
+const __meta_GetFileLinkInfoRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetFileLinkInfoRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetFileLinkInfoRequestProto)
+            __meta_GetFileLinkInfoRequestProto[] = target = ProtoMeta(GetFileLinkInfoRequestProto)
+            req = Symbol[:src]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString]
+            meta(target, GetFileLinkInfoRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetFileLinkInfoRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetFileLinkInfoRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetFileLinkInfoResponseProto <: ProtoType
-    fs::HdfsFileStatusProto
-    GetFileLinkInfoResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetFileLinkInfoResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetFileLinkInfoResponseProto(; kwargs...)
+        obj = new(meta(GetFileLinkInfoResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetFileLinkInfoResponseProto
+const __meta_GetFileLinkInfoResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetFileLinkInfoResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetFileLinkInfoResponseProto)
+            __meta_GetFileLinkInfoResponseProto[] = target = ProtoMeta(GetFileLinkInfoResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:fs => HdfsFileStatusProto]
+            meta(target, GetFileLinkInfoResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetFileLinkInfoResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetFileLinkInfoResponseProto, name::Symbol)
+    if name === :fs
+        return (obj.__protobuf_jl_internal_values[name])::HdfsFileStatusProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetContentSummaryRequestProto <: ProtoType
-    path::AbstractString
-    GetContentSummaryRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetContentSummaryRequestProto
-const __req_GetContentSummaryRequestProto = Symbol[:path]
-meta(t::Type{GetContentSummaryRequestProto}) = meta(t, __req_GetContentSummaryRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetContentSummaryRequestProto(; kwargs...)
+        obj = new(meta(GetContentSummaryRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetContentSummaryRequestProto
+const __meta_GetContentSummaryRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetContentSummaryRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetContentSummaryRequestProto)
+            __meta_GetContentSummaryRequestProto[] = target = ProtoMeta(GetContentSummaryRequestProto)
+            req = Symbol[:path]
+            allflds = Pair{Symbol,Union{Type,String}}[:path => AbstractString]
+            meta(target, GetContentSummaryRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetContentSummaryRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetContentSummaryRequestProto, name::Symbol)
+    if name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetContentSummaryResponseProto <: ProtoType
-    summary::ContentSummaryProto
-    GetContentSummaryResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetContentSummaryResponseProto
-const __req_GetContentSummaryResponseProto = Symbol[:summary]
-meta(t::Type{GetContentSummaryResponseProto}) = meta(t, __req_GetContentSummaryResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetContentSummaryResponseProto(; kwargs...)
+        obj = new(meta(GetContentSummaryResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetContentSummaryResponseProto
+const __meta_GetContentSummaryResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetContentSummaryResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetContentSummaryResponseProto)
+            __meta_GetContentSummaryResponseProto[] = target = ProtoMeta(GetContentSummaryResponseProto)
+            req = Symbol[:summary]
+            allflds = Pair{Symbol,Union{Type,String}}[:summary => ContentSummaryProto]
+            meta(target, GetContentSummaryResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetContentSummaryResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetContentSummaryResponseProto, name::Symbol)
+    if name === :summary
+        return (obj.__protobuf_jl_internal_values[name])::ContentSummaryProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetQuotaUsageRequestProto <: ProtoType
-    path::AbstractString
-    GetQuotaUsageRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetQuotaUsageRequestProto
-const __req_GetQuotaUsageRequestProto = Symbol[:path]
-meta(t::Type{GetQuotaUsageRequestProto}) = meta(t, __req_GetQuotaUsageRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetQuotaUsageRequestProto(; kwargs...)
+        obj = new(meta(GetQuotaUsageRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetQuotaUsageRequestProto
+const __meta_GetQuotaUsageRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetQuotaUsageRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetQuotaUsageRequestProto)
+            __meta_GetQuotaUsageRequestProto[] = target = ProtoMeta(GetQuotaUsageRequestProto)
+            req = Symbol[:path]
+            allflds = Pair{Symbol,Union{Type,String}}[:path => AbstractString]
+            meta(target, GetQuotaUsageRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetQuotaUsageRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetQuotaUsageRequestProto, name::Symbol)
+    if name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetQuotaUsageResponseProto <: ProtoType
-    usage::QuotaUsageProto
-    GetQuotaUsageResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetQuotaUsageResponseProto
-const __req_GetQuotaUsageResponseProto = Symbol[:usage]
-meta(t::Type{GetQuotaUsageResponseProto}) = meta(t, __req_GetQuotaUsageResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetQuotaUsageResponseProto(; kwargs...)
+        obj = new(meta(GetQuotaUsageResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetQuotaUsageResponseProto
+const __meta_GetQuotaUsageResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetQuotaUsageResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetQuotaUsageResponseProto)
+            __meta_GetQuotaUsageResponseProto[] = target = ProtoMeta(GetQuotaUsageResponseProto)
+            req = Symbol[:usage]
+            allflds = Pair{Symbol,Union{Type,String}}[:usage => QuotaUsageProto]
+            meta(target, GetQuotaUsageResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetQuotaUsageResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetQuotaUsageResponseProto, name::Symbol)
+    if name === :usage
+        return (obj.__protobuf_jl_internal_values[name])::QuotaUsageProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetQuotaRequestProto <: ProtoType
-    path::AbstractString
-    namespaceQuota::UInt64
-    storagespaceQuota::UInt64
-    storageType::Int32
-    SetQuotaRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetQuotaRequestProto
-const __req_SetQuotaRequestProto = Symbol[:path,:namespaceQuota,:storagespaceQuota]
-meta(t::Type{SetQuotaRequestProto}) = meta(t, __req_SetQuotaRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetQuotaRequestProto(; kwargs...)
+        obj = new(meta(SetQuotaRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetQuotaRequestProto
+const __meta_SetQuotaRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SetQuotaRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetQuotaRequestProto)
+            __meta_SetQuotaRequestProto[] = target = ProtoMeta(SetQuotaRequestProto)
+            req = Symbol[:path,:namespaceQuota,:storagespaceQuota]
+            allflds = Pair{Symbol,Union{Type,String}}[:path => AbstractString, :namespaceQuota => UInt64, :storagespaceQuota => UInt64, :storageType => Int32]
+            meta(target, SetQuotaRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetQuotaRequestProto[]
+    end
+end
+function Base.getproperty(obj::SetQuotaRequestProto, name::Symbol)
+    if name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :namespaceQuota
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :storagespaceQuota
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :storageType
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetQuotaResponseProto <: ProtoType
-    SetQuotaResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetQuotaResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetQuotaResponseProto(; kwargs...)
+        obj = new(meta(SetQuotaResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetQuotaResponseProto
+const __meta_SetQuotaResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SetQuotaResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetQuotaResponseProto)
+            __meta_SetQuotaResponseProto[] = target = ProtoMeta(SetQuotaResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, SetQuotaResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetQuotaResponseProto[]
+    end
+end
 
 mutable struct FsyncRequestProto <: ProtoType
-    src::AbstractString
-    client::AbstractString
-    lastBlockLength::Int64
-    fileId::UInt64
-    FsyncRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct FsyncRequestProto
-const __req_FsyncRequestProto = Symbol[:src,:client]
-const __val_FsyncRequestProto = Dict(:lastBlockLength => -1, :fileId => 0)
-const __wtype_FsyncRequestProto = Dict(:lastBlockLength => :sint64)
-meta(t::Type{FsyncRequestProto}) = meta(t, __req_FsyncRequestProto, ProtoBuf.DEF_FNUM, __val_FsyncRequestProto, true, ProtoBuf.DEF_PACK, __wtype_FsyncRequestProto, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function FsyncRequestProto(; kwargs...)
+        obj = new(meta(FsyncRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct FsyncRequestProto
+const __meta_FsyncRequestProto = Ref{ProtoMeta}()
+function meta(::Type{FsyncRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_FsyncRequestProto)
+            __meta_FsyncRequestProto[] = target = ProtoMeta(FsyncRequestProto)
+            req = Symbol[:src,:client]
+            val = Dict{Symbol,Any}(:lastBlockLength => -1, :fileId => 0)
+            wtype = Dict(:lastBlockLength => :sint64)
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :client => AbstractString, :lastBlockLength => Int64, :fileId => UInt64]
+            meta(target, FsyncRequestProto, allflds, req, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, wtype, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_FsyncRequestProto[]
+    end
+end
+function Base.getproperty(obj::FsyncRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :client
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :lastBlockLength
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :fileId
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct FsyncResponseProto <: ProtoType
-    FsyncResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct FsyncResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function FsyncResponseProto(; kwargs...)
+        obj = new(meta(FsyncResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct FsyncResponseProto
+const __meta_FsyncResponseProto = Ref{ProtoMeta}()
+function meta(::Type{FsyncResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_FsyncResponseProto)
+            __meta_FsyncResponseProto[] = target = ProtoMeta(FsyncResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, FsyncResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_FsyncResponseProto[]
+    end
+end
 
 mutable struct SetTimesRequestProto <: ProtoType
-    src::AbstractString
-    mtime::UInt64
-    atime::UInt64
-    SetTimesRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetTimesRequestProto
-const __req_SetTimesRequestProto = Symbol[:src,:mtime,:atime]
-meta(t::Type{SetTimesRequestProto}) = meta(t, __req_SetTimesRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetTimesRequestProto(; kwargs...)
+        obj = new(meta(SetTimesRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetTimesRequestProto
+const __meta_SetTimesRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SetTimesRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetTimesRequestProto)
+            __meta_SetTimesRequestProto[] = target = ProtoMeta(SetTimesRequestProto)
+            req = Symbol[:src,:mtime,:atime]
+            allflds = Pair{Symbol,Union{Type,String}}[:src => AbstractString, :mtime => UInt64, :atime => UInt64]
+            meta(target, SetTimesRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetTimesRequestProto[]
+    end
+end
+function Base.getproperty(obj::SetTimesRequestProto, name::Symbol)
+    if name === :src
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :mtime
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    elseif name === :atime
+        return (obj.__protobuf_jl_internal_values[name])::UInt64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetTimesResponseProto <: ProtoType
-    SetTimesResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetTimesResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetTimesResponseProto(; kwargs...)
+        obj = new(meta(SetTimesResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetTimesResponseProto
+const __meta_SetTimesResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SetTimesResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetTimesResponseProto)
+            __meta_SetTimesResponseProto[] = target = ProtoMeta(SetTimesResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, SetTimesResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetTimesResponseProto[]
+    end
+end
 
 mutable struct CreateSymlinkRequestProto <: ProtoType
-    target::AbstractString
-    link::AbstractString
-    dirPerm::FsPermissionProto
-    createParent::Bool
-    CreateSymlinkRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CreateSymlinkRequestProto
-const __req_CreateSymlinkRequestProto = Symbol[:target,:link,:dirPerm,:createParent]
-meta(t::Type{CreateSymlinkRequestProto}) = meta(t, __req_CreateSymlinkRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CreateSymlinkRequestProto(; kwargs...)
+        obj = new(meta(CreateSymlinkRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CreateSymlinkRequestProto
+const __meta_CreateSymlinkRequestProto = Ref{ProtoMeta}()
+function meta(::Type{CreateSymlinkRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CreateSymlinkRequestProto)
+            __meta_CreateSymlinkRequestProto[] = target = ProtoMeta(CreateSymlinkRequestProto)
+            req = Symbol[:target,:link,:dirPerm,:createParent]
+            allflds = Pair{Symbol,Union{Type,String}}[:target => AbstractString, :link => AbstractString, :dirPerm => FsPermissionProto, :createParent => Bool]
+            meta(target, CreateSymlinkRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CreateSymlinkRequestProto[]
+    end
+end
+function Base.getproperty(obj::CreateSymlinkRequestProto, name::Symbol)
+    if name === :target
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :link
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :dirPerm
+        return (obj.__protobuf_jl_internal_values[name])::FsPermissionProto
+    elseif name === :createParent
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CreateSymlinkResponseProto <: ProtoType
-    CreateSymlinkResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CreateSymlinkResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CreateSymlinkResponseProto(; kwargs...)
+        obj = new(meta(CreateSymlinkResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CreateSymlinkResponseProto
+const __meta_CreateSymlinkResponseProto = Ref{ProtoMeta}()
+function meta(::Type{CreateSymlinkResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CreateSymlinkResponseProto)
+            __meta_CreateSymlinkResponseProto[] = target = ProtoMeta(CreateSymlinkResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, CreateSymlinkResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CreateSymlinkResponseProto[]
+    end
+end
 
 mutable struct GetLinkTargetRequestProto <: ProtoType
-    path::AbstractString
-    GetLinkTargetRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetLinkTargetRequestProto
-const __req_GetLinkTargetRequestProto = Symbol[:path]
-meta(t::Type{GetLinkTargetRequestProto}) = meta(t, __req_GetLinkTargetRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetLinkTargetRequestProto(; kwargs...)
+        obj = new(meta(GetLinkTargetRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetLinkTargetRequestProto
+const __meta_GetLinkTargetRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetLinkTargetRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetLinkTargetRequestProto)
+            __meta_GetLinkTargetRequestProto[] = target = ProtoMeta(GetLinkTargetRequestProto)
+            req = Symbol[:path]
+            allflds = Pair{Symbol,Union{Type,String}}[:path => AbstractString]
+            meta(target, GetLinkTargetRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetLinkTargetRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetLinkTargetRequestProto, name::Symbol)
+    if name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetLinkTargetResponseProto <: ProtoType
-    targetPath::AbstractString
-    GetLinkTargetResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetLinkTargetResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetLinkTargetResponseProto(; kwargs...)
+        obj = new(meta(GetLinkTargetResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetLinkTargetResponseProto
+const __meta_GetLinkTargetResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetLinkTargetResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetLinkTargetResponseProto)
+            __meta_GetLinkTargetResponseProto[] = target = ProtoMeta(GetLinkTargetResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:targetPath => AbstractString]
+            meta(target, GetLinkTargetResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetLinkTargetResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetLinkTargetResponseProto, name::Symbol)
+    if name === :targetPath
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct UpdateBlockForPipelineRequestProto <: ProtoType
-    block::ExtendedBlockProto
-    clientName::AbstractString
-    UpdateBlockForPipelineRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct UpdateBlockForPipelineRequestProto
-const __req_UpdateBlockForPipelineRequestProto = Symbol[:block,:clientName]
-meta(t::Type{UpdateBlockForPipelineRequestProto}) = meta(t, __req_UpdateBlockForPipelineRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function UpdateBlockForPipelineRequestProto(; kwargs...)
+        obj = new(meta(UpdateBlockForPipelineRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct UpdateBlockForPipelineRequestProto
+const __meta_UpdateBlockForPipelineRequestProto = Ref{ProtoMeta}()
+function meta(::Type{UpdateBlockForPipelineRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_UpdateBlockForPipelineRequestProto)
+            __meta_UpdateBlockForPipelineRequestProto[] = target = ProtoMeta(UpdateBlockForPipelineRequestProto)
+            req = Symbol[:block,:clientName]
+            allflds = Pair{Symbol,Union{Type,String}}[:block => ExtendedBlockProto, :clientName => AbstractString]
+            meta(target, UpdateBlockForPipelineRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_UpdateBlockForPipelineRequestProto[]
+    end
+end
+function Base.getproperty(obj::UpdateBlockForPipelineRequestProto, name::Symbol)
+    if name === :block
+        return (obj.__protobuf_jl_internal_values[name])::ExtendedBlockProto
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct UpdateBlockForPipelineResponseProto <: ProtoType
-    block::LocatedBlockProto
-    UpdateBlockForPipelineResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct UpdateBlockForPipelineResponseProto
-const __req_UpdateBlockForPipelineResponseProto = Symbol[:block]
-meta(t::Type{UpdateBlockForPipelineResponseProto}) = meta(t, __req_UpdateBlockForPipelineResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function UpdateBlockForPipelineResponseProto(; kwargs...)
+        obj = new(meta(UpdateBlockForPipelineResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct UpdateBlockForPipelineResponseProto
+const __meta_UpdateBlockForPipelineResponseProto = Ref{ProtoMeta}()
+function meta(::Type{UpdateBlockForPipelineResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_UpdateBlockForPipelineResponseProto)
+            __meta_UpdateBlockForPipelineResponseProto[] = target = ProtoMeta(UpdateBlockForPipelineResponseProto)
+            req = Symbol[:block]
+            allflds = Pair{Symbol,Union{Type,String}}[:block => LocatedBlockProto]
+            meta(target, UpdateBlockForPipelineResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_UpdateBlockForPipelineResponseProto[]
+    end
+end
+function Base.getproperty(obj::UpdateBlockForPipelineResponseProto, name::Symbol)
+    if name === :block
+        return (obj.__protobuf_jl_internal_values[name])::LocatedBlockProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct UpdatePipelineRequestProto <: ProtoType
-    clientName::AbstractString
-    oldBlock::ExtendedBlockProto
-    newBlock::ExtendedBlockProto
-    newNodes::Base.Vector{DatanodeIDProto}
-    storageIDs::Base.Vector{AbstractString}
-    UpdatePipelineRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct UpdatePipelineRequestProto
-const __req_UpdatePipelineRequestProto = Symbol[:clientName,:oldBlock,:newBlock]
-meta(t::Type{UpdatePipelineRequestProto}) = meta(t, __req_UpdatePipelineRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function UpdatePipelineRequestProto(; kwargs...)
+        obj = new(meta(UpdatePipelineRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct UpdatePipelineRequestProto
+const __meta_UpdatePipelineRequestProto = Ref{ProtoMeta}()
+function meta(::Type{UpdatePipelineRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_UpdatePipelineRequestProto)
+            __meta_UpdatePipelineRequestProto[] = target = ProtoMeta(UpdatePipelineRequestProto)
+            req = Symbol[:clientName,:oldBlock,:newBlock]
+            allflds = Pair{Symbol,Union{Type,String}}[:clientName => AbstractString, :oldBlock => ExtendedBlockProto, :newBlock => ExtendedBlockProto, :newNodes => Base.Vector{DatanodeIDProto}, :storageIDs => Base.Vector{AbstractString}]
+            meta(target, UpdatePipelineRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_UpdatePipelineRequestProto[]
+    end
+end
+function Base.getproperty(obj::UpdatePipelineRequestProto, name::Symbol)
+    if name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :oldBlock
+        return (obj.__protobuf_jl_internal_values[name])::ExtendedBlockProto
+    elseif name === :newBlock
+        return (obj.__protobuf_jl_internal_values[name])::ExtendedBlockProto
+    elseif name === :newNodes
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{DatanodeIDProto}
+    elseif name === :storageIDs
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{AbstractString}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct UpdatePipelineResponseProto <: ProtoType
-    UpdatePipelineResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct UpdatePipelineResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function UpdatePipelineResponseProto(; kwargs...)
+        obj = new(meta(UpdatePipelineResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct UpdatePipelineResponseProto
+const __meta_UpdatePipelineResponseProto = Ref{ProtoMeta}()
+function meta(::Type{UpdatePipelineResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_UpdatePipelineResponseProto)
+            __meta_UpdatePipelineResponseProto[] = target = ProtoMeta(UpdatePipelineResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, UpdatePipelineResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_UpdatePipelineResponseProto[]
+    end
+end
 
 mutable struct SetBalancerBandwidthRequestProto <: ProtoType
-    bandwidth::Int64
-    SetBalancerBandwidthRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetBalancerBandwidthRequestProto
-const __req_SetBalancerBandwidthRequestProto = Symbol[:bandwidth]
-meta(t::Type{SetBalancerBandwidthRequestProto}) = meta(t, __req_SetBalancerBandwidthRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetBalancerBandwidthRequestProto(; kwargs...)
+        obj = new(meta(SetBalancerBandwidthRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetBalancerBandwidthRequestProto
+const __meta_SetBalancerBandwidthRequestProto = Ref{ProtoMeta}()
+function meta(::Type{SetBalancerBandwidthRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetBalancerBandwidthRequestProto)
+            __meta_SetBalancerBandwidthRequestProto[] = target = ProtoMeta(SetBalancerBandwidthRequestProto)
+            req = Symbol[:bandwidth]
+            allflds = Pair{Symbol,Union{Type,String}}[:bandwidth => Int64]
+            meta(target, SetBalancerBandwidthRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetBalancerBandwidthRequestProto[]
+    end
+end
+function Base.getproperty(obj::SetBalancerBandwidthRequestProto, name::Symbol)
+    if name === :bandwidth
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct SetBalancerBandwidthResponseProto <: ProtoType
-    SetBalancerBandwidthResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct SetBalancerBandwidthResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function SetBalancerBandwidthResponseProto(; kwargs...)
+        obj = new(meta(SetBalancerBandwidthResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct SetBalancerBandwidthResponseProto
+const __meta_SetBalancerBandwidthResponseProto = Ref{ProtoMeta}()
+function meta(::Type{SetBalancerBandwidthResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_SetBalancerBandwidthResponseProto)
+            __meta_SetBalancerBandwidthResponseProto[] = target = ProtoMeta(SetBalancerBandwidthResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, SetBalancerBandwidthResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_SetBalancerBandwidthResponseProto[]
+    end
+end
 
 mutable struct GetDataEncryptionKeyRequestProto <: ProtoType
-    GetDataEncryptionKeyRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetDataEncryptionKeyRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetDataEncryptionKeyRequestProto(; kwargs...)
+        obj = new(meta(GetDataEncryptionKeyRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetDataEncryptionKeyRequestProto
+const __meta_GetDataEncryptionKeyRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetDataEncryptionKeyRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetDataEncryptionKeyRequestProto)
+            __meta_GetDataEncryptionKeyRequestProto[] = target = ProtoMeta(GetDataEncryptionKeyRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, GetDataEncryptionKeyRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetDataEncryptionKeyRequestProto[]
+    end
+end
 
 mutable struct GetDataEncryptionKeyResponseProto <: ProtoType
-    dataEncryptionKey::DataEncryptionKeyProto
-    GetDataEncryptionKeyResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetDataEncryptionKeyResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetDataEncryptionKeyResponseProto(; kwargs...)
+        obj = new(meta(GetDataEncryptionKeyResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetDataEncryptionKeyResponseProto
+const __meta_GetDataEncryptionKeyResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetDataEncryptionKeyResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetDataEncryptionKeyResponseProto)
+            __meta_GetDataEncryptionKeyResponseProto[] = target = ProtoMeta(GetDataEncryptionKeyResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:dataEncryptionKey => DataEncryptionKeyProto]
+            meta(target, GetDataEncryptionKeyResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetDataEncryptionKeyResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetDataEncryptionKeyResponseProto, name::Symbol)
+    if name === :dataEncryptionKey
+        return (obj.__protobuf_jl_internal_values[name])::DataEncryptionKeyProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CreateSnapshotRequestProto <: ProtoType
-    snapshotRoot::AbstractString
-    snapshotName::AbstractString
-    CreateSnapshotRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CreateSnapshotRequestProto
-const __req_CreateSnapshotRequestProto = Symbol[:snapshotRoot]
-meta(t::Type{CreateSnapshotRequestProto}) = meta(t, __req_CreateSnapshotRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CreateSnapshotRequestProto(; kwargs...)
+        obj = new(meta(CreateSnapshotRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CreateSnapshotRequestProto
+const __meta_CreateSnapshotRequestProto = Ref{ProtoMeta}()
+function meta(::Type{CreateSnapshotRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CreateSnapshotRequestProto)
+            __meta_CreateSnapshotRequestProto[] = target = ProtoMeta(CreateSnapshotRequestProto)
+            req = Symbol[:snapshotRoot]
+            allflds = Pair{Symbol,Union{Type,String}}[:snapshotRoot => AbstractString, :snapshotName => AbstractString]
+            meta(target, CreateSnapshotRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CreateSnapshotRequestProto[]
+    end
+end
+function Base.getproperty(obj::CreateSnapshotRequestProto, name::Symbol)
+    if name === :snapshotRoot
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :snapshotName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CreateSnapshotResponseProto <: ProtoType
-    snapshotPath::AbstractString
-    CreateSnapshotResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CreateSnapshotResponseProto
-const __req_CreateSnapshotResponseProto = Symbol[:snapshotPath]
-meta(t::Type{CreateSnapshotResponseProto}) = meta(t, __req_CreateSnapshotResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CreateSnapshotResponseProto(; kwargs...)
+        obj = new(meta(CreateSnapshotResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CreateSnapshotResponseProto
+const __meta_CreateSnapshotResponseProto = Ref{ProtoMeta}()
+function meta(::Type{CreateSnapshotResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CreateSnapshotResponseProto)
+            __meta_CreateSnapshotResponseProto[] = target = ProtoMeta(CreateSnapshotResponseProto)
+            req = Symbol[:snapshotPath]
+            allflds = Pair{Symbol,Union{Type,String}}[:snapshotPath => AbstractString]
+            meta(target, CreateSnapshotResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CreateSnapshotResponseProto[]
+    end
+end
+function Base.getproperty(obj::CreateSnapshotResponseProto, name::Symbol)
+    if name === :snapshotPath
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RenameSnapshotRequestProto <: ProtoType
-    snapshotRoot::AbstractString
-    snapshotOldName::AbstractString
-    snapshotNewName::AbstractString
-    RenameSnapshotRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RenameSnapshotRequestProto
-const __req_RenameSnapshotRequestProto = Symbol[:snapshotRoot,:snapshotOldName,:snapshotNewName]
-meta(t::Type{RenameSnapshotRequestProto}) = meta(t, __req_RenameSnapshotRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RenameSnapshotRequestProto(; kwargs...)
+        obj = new(meta(RenameSnapshotRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RenameSnapshotRequestProto
+const __meta_RenameSnapshotRequestProto = Ref{ProtoMeta}()
+function meta(::Type{RenameSnapshotRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RenameSnapshotRequestProto)
+            __meta_RenameSnapshotRequestProto[] = target = ProtoMeta(RenameSnapshotRequestProto)
+            req = Symbol[:snapshotRoot,:snapshotOldName,:snapshotNewName]
+            allflds = Pair{Symbol,Union{Type,String}}[:snapshotRoot => AbstractString, :snapshotOldName => AbstractString, :snapshotNewName => AbstractString]
+            meta(target, RenameSnapshotRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RenameSnapshotRequestProto[]
+    end
+end
+function Base.getproperty(obj::RenameSnapshotRequestProto, name::Symbol)
+    if name === :snapshotRoot
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :snapshotOldName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :snapshotNewName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RenameSnapshotResponseProto <: ProtoType
-    RenameSnapshotResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RenameSnapshotResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RenameSnapshotResponseProto(; kwargs...)
+        obj = new(meta(RenameSnapshotResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RenameSnapshotResponseProto
+const __meta_RenameSnapshotResponseProto = Ref{ProtoMeta}()
+function meta(::Type{RenameSnapshotResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RenameSnapshotResponseProto)
+            __meta_RenameSnapshotResponseProto[] = target = ProtoMeta(RenameSnapshotResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, RenameSnapshotResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RenameSnapshotResponseProto[]
+    end
+end
 
 mutable struct AllowSnapshotRequestProto <: ProtoType
-    snapshotRoot::AbstractString
-    AllowSnapshotRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AllowSnapshotRequestProto
-const __req_AllowSnapshotRequestProto = Symbol[:snapshotRoot]
-meta(t::Type{AllowSnapshotRequestProto}) = meta(t, __req_AllowSnapshotRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AllowSnapshotRequestProto(; kwargs...)
+        obj = new(meta(AllowSnapshotRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AllowSnapshotRequestProto
+const __meta_AllowSnapshotRequestProto = Ref{ProtoMeta}()
+function meta(::Type{AllowSnapshotRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AllowSnapshotRequestProto)
+            __meta_AllowSnapshotRequestProto[] = target = ProtoMeta(AllowSnapshotRequestProto)
+            req = Symbol[:snapshotRoot]
+            allflds = Pair{Symbol,Union{Type,String}}[:snapshotRoot => AbstractString]
+            meta(target, AllowSnapshotRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AllowSnapshotRequestProto[]
+    end
+end
+function Base.getproperty(obj::AllowSnapshotRequestProto, name::Symbol)
+    if name === :snapshotRoot
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct AllowSnapshotResponseProto <: ProtoType
-    AllowSnapshotResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct AllowSnapshotResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function AllowSnapshotResponseProto(; kwargs...)
+        obj = new(meta(AllowSnapshotResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct AllowSnapshotResponseProto
+const __meta_AllowSnapshotResponseProto = Ref{ProtoMeta}()
+function meta(::Type{AllowSnapshotResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_AllowSnapshotResponseProto)
+            __meta_AllowSnapshotResponseProto[] = target = ProtoMeta(AllowSnapshotResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, AllowSnapshotResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_AllowSnapshotResponseProto[]
+    end
+end
 
 mutable struct DisallowSnapshotRequestProto <: ProtoType
-    snapshotRoot::AbstractString
-    DisallowSnapshotRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct DisallowSnapshotRequestProto
-const __req_DisallowSnapshotRequestProto = Symbol[:snapshotRoot]
-meta(t::Type{DisallowSnapshotRequestProto}) = meta(t, __req_DisallowSnapshotRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function DisallowSnapshotRequestProto(; kwargs...)
+        obj = new(meta(DisallowSnapshotRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct DisallowSnapshotRequestProto
+const __meta_DisallowSnapshotRequestProto = Ref{ProtoMeta}()
+function meta(::Type{DisallowSnapshotRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_DisallowSnapshotRequestProto)
+            __meta_DisallowSnapshotRequestProto[] = target = ProtoMeta(DisallowSnapshotRequestProto)
+            req = Symbol[:snapshotRoot]
+            allflds = Pair{Symbol,Union{Type,String}}[:snapshotRoot => AbstractString]
+            meta(target, DisallowSnapshotRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_DisallowSnapshotRequestProto[]
+    end
+end
+function Base.getproperty(obj::DisallowSnapshotRequestProto, name::Symbol)
+    if name === :snapshotRoot
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct DisallowSnapshotResponseProto <: ProtoType
-    DisallowSnapshotResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct DisallowSnapshotResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function DisallowSnapshotResponseProto(; kwargs...)
+        obj = new(meta(DisallowSnapshotResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct DisallowSnapshotResponseProto
+const __meta_DisallowSnapshotResponseProto = Ref{ProtoMeta}()
+function meta(::Type{DisallowSnapshotResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_DisallowSnapshotResponseProto)
+            __meta_DisallowSnapshotResponseProto[] = target = ProtoMeta(DisallowSnapshotResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, DisallowSnapshotResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_DisallowSnapshotResponseProto[]
+    end
+end
 
 mutable struct DeleteSnapshotRequestProto <: ProtoType
-    snapshotRoot::AbstractString
-    snapshotName::AbstractString
-    DeleteSnapshotRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct DeleteSnapshotRequestProto
-const __req_DeleteSnapshotRequestProto = Symbol[:snapshotRoot,:snapshotName]
-meta(t::Type{DeleteSnapshotRequestProto}) = meta(t, __req_DeleteSnapshotRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function DeleteSnapshotRequestProto(; kwargs...)
+        obj = new(meta(DeleteSnapshotRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct DeleteSnapshotRequestProto
+const __meta_DeleteSnapshotRequestProto = Ref{ProtoMeta}()
+function meta(::Type{DeleteSnapshotRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_DeleteSnapshotRequestProto)
+            __meta_DeleteSnapshotRequestProto[] = target = ProtoMeta(DeleteSnapshotRequestProto)
+            req = Symbol[:snapshotRoot,:snapshotName]
+            allflds = Pair{Symbol,Union{Type,String}}[:snapshotRoot => AbstractString, :snapshotName => AbstractString]
+            meta(target, DeleteSnapshotRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_DeleteSnapshotRequestProto[]
+    end
+end
+function Base.getproperty(obj::DeleteSnapshotRequestProto, name::Symbol)
+    if name === :snapshotRoot
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :snapshotName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct DeleteSnapshotResponseProto <: ProtoType
-    DeleteSnapshotResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct DeleteSnapshotResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function DeleteSnapshotResponseProto(; kwargs...)
+        obj = new(meta(DeleteSnapshotResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct DeleteSnapshotResponseProto
+const __meta_DeleteSnapshotResponseProto = Ref{ProtoMeta}()
+function meta(::Type{DeleteSnapshotResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_DeleteSnapshotResponseProto)
+            __meta_DeleteSnapshotResponseProto[] = target = ProtoMeta(DeleteSnapshotResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, DeleteSnapshotResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_DeleteSnapshotResponseProto[]
+    end
+end
 
 mutable struct CheckAccessRequestProto <: ProtoType
-    path::AbstractString
-    mode::Int32
-    CheckAccessRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CheckAccessRequestProto
-const __req_CheckAccessRequestProto = Symbol[:path,:mode]
-meta(t::Type{CheckAccessRequestProto}) = meta(t, __req_CheckAccessRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CheckAccessRequestProto(; kwargs...)
+        obj = new(meta(CheckAccessRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CheckAccessRequestProto
+const __meta_CheckAccessRequestProto = Ref{ProtoMeta}()
+function meta(::Type{CheckAccessRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CheckAccessRequestProto)
+            __meta_CheckAccessRequestProto[] = target = ProtoMeta(CheckAccessRequestProto)
+            req = Symbol[:path,:mode]
+            allflds = Pair{Symbol,Union{Type,String}}[:path => AbstractString, :mode => Int32]
+            meta(target, CheckAccessRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CheckAccessRequestProto[]
+    end
+end
+function Base.getproperty(obj::CheckAccessRequestProto, name::Symbol)
+    if name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :mode
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct CheckAccessResponseProto <: ProtoType
-    CheckAccessResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct CheckAccessResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function CheckAccessResponseProto(; kwargs...)
+        obj = new(meta(CheckAccessResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct CheckAccessResponseProto
+const __meta_CheckAccessResponseProto = Ref{ProtoMeta}()
+function meta(::Type{CheckAccessResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_CheckAccessResponseProto)
+            __meta_CheckAccessResponseProto[] = target = ProtoMeta(CheckAccessResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, CheckAccessResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_CheckAccessResponseProto[]
+    end
+end
 
 mutable struct GetCurrentEditLogTxidRequestProto <: ProtoType
-    GetCurrentEditLogTxidRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetCurrentEditLogTxidRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetCurrentEditLogTxidRequestProto(; kwargs...)
+        obj = new(meta(GetCurrentEditLogTxidRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetCurrentEditLogTxidRequestProto
+const __meta_GetCurrentEditLogTxidRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetCurrentEditLogTxidRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetCurrentEditLogTxidRequestProto)
+            __meta_GetCurrentEditLogTxidRequestProto[] = target = ProtoMeta(GetCurrentEditLogTxidRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, GetCurrentEditLogTxidRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetCurrentEditLogTxidRequestProto[]
+    end
+end
 
 mutable struct GetCurrentEditLogTxidResponseProto <: ProtoType
-    txid::Int64
-    GetCurrentEditLogTxidResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetCurrentEditLogTxidResponseProto
-const __req_GetCurrentEditLogTxidResponseProto = Symbol[:txid]
-meta(t::Type{GetCurrentEditLogTxidResponseProto}) = meta(t, __req_GetCurrentEditLogTxidResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetCurrentEditLogTxidResponseProto(; kwargs...)
+        obj = new(meta(GetCurrentEditLogTxidResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetCurrentEditLogTxidResponseProto
+const __meta_GetCurrentEditLogTxidResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetCurrentEditLogTxidResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetCurrentEditLogTxidResponseProto)
+            __meta_GetCurrentEditLogTxidResponseProto[] = target = ProtoMeta(GetCurrentEditLogTxidResponseProto)
+            req = Symbol[:txid]
+            allflds = Pair{Symbol,Union{Type,String}}[:txid => Int64]
+            meta(target, GetCurrentEditLogTxidResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetCurrentEditLogTxidResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetCurrentEditLogTxidResponseProto, name::Symbol)
+    if name === :txid
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetEditsFromTxidRequestProto <: ProtoType
-    txid::Int64
-    GetEditsFromTxidRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetEditsFromTxidRequestProto
-const __req_GetEditsFromTxidRequestProto = Symbol[:txid]
-meta(t::Type{GetEditsFromTxidRequestProto}) = meta(t, __req_GetEditsFromTxidRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetEditsFromTxidRequestProto(; kwargs...)
+        obj = new(meta(GetEditsFromTxidRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetEditsFromTxidRequestProto
+const __meta_GetEditsFromTxidRequestProto = Ref{ProtoMeta}()
+function meta(::Type{GetEditsFromTxidRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetEditsFromTxidRequestProto)
+            __meta_GetEditsFromTxidRequestProto[] = target = ProtoMeta(GetEditsFromTxidRequestProto)
+            req = Symbol[:txid]
+            allflds = Pair{Symbol,Union{Type,String}}[:txid => Int64]
+            meta(target, GetEditsFromTxidRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetEditsFromTxidRequestProto[]
+    end
+end
+function Base.getproperty(obj::GetEditsFromTxidRequestProto, name::Symbol)
+    if name === :txid
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct GetEditsFromTxidResponseProto <: ProtoType
-    eventsList::EventsListProto
-    GetEditsFromTxidResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct GetEditsFromTxidResponseProto
-const __req_GetEditsFromTxidResponseProto = Symbol[:eventsList]
-meta(t::Type{GetEditsFromTxidResponseProto}) = meta(t, __req_GetEditsFromTxidResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function GetEditsFromTxidResponseProto(; kwargs...)
+        obj = new(meta(GetEditsFromTxidResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct GetEditsFromTxidResponseProto
+const __meta_GetEditsFromTxidResponseProto = Ref{ProtoMeta}()
+function meta(::Type{GetEditsFromTxidResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_GetEditsFromTxidResponseProto)
+            __meta_GetEditsFromTxidResponseProto[] = target = ProtoMeta(GetEditsFromTxidResponseProto)
+            req = Symbol[:eventsList]
+            allflds = Pair{Symbol,Union{Type,String}}[:eventsList => EventsListProto]
+            meta(target, GetEditsFromTxidResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_GetEditsFromTxidResponseProto[]
+    end
+end
+function Base.getproperty(obj::GetEditsFromTxidResponseProto, name::Symbol)
+    if name === :eventsList
+        return (obj.__protobuf_jl_internal_values[name])::EventsListProto
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ListOpenFilesRequestProto <: ProtoType
-    id::Int64
-    ListOpenFilesRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ListOpenFilesRequestProto
-const __req_ListOpenFilesRequestProto = Symbol[:id]
-meta(t::Type{ListOpenFilesRequestProto}) = meta(t, __req_ListOpenFilesRequestProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ListOpenFilesRequestProto(; kwargs...)
+        obj = new(meta(ListOpenFilesRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ListOpenFilesRequestProto
+const __meta_ListOpenFilesRequestProto = Ref{ProtoMeta}()
+function meta(::Type{ListOpenFilesRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ListOpenFilesRequestProto)
+            __meta_ListOpenFilesRequestProto[] = target = ProtoMeta(ListOpenFilesRequestProto)
+            req = Symbol[:id]
+            allflds = Pair{Symbol,Union{Type,String}}[:id => Int64]
+            meta(target, ListOpenFilesRequestProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ListOpenFilesRequestProto[]
+    end
+end
+function Base.getproperty(obj::ListOpenFilesRequestProto, name::Symbol)
+    if name === :id
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct OpenFilesBatchResponseProto <: ProtoType
-    id::Int64
-    path::AbstractString
-    clientName::AbstractString
-    clientMachine::AbstractString
-    OpenFilesBatchResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct OpenFilesBatchResponseProto
-const __req_OpenFilesBatchResponseProto = Symbol[:id,:path,:clientName,:clientMachine]
-meta(t::Type{OpenFilesBatchResponseProto}) = meta(t, __req_OpenFilesBatchResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function OpenFilesBatchResponseProto(; kwargs...)
+        obj = new(meta(OpenFilesBatchResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct OpenFilesBatchResponseProto
+const __meta_OpenFilesBatchResponseProto = Ref{ProtoMeta}()
+function meta(::Type{OpenFilesBatchResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_OpenFilesBatchResponseProto)
+            __meta_OpenFilesBatchResponseProto[] = target = ProtoMeta(OpenFilesBatchResponseProto)
+            req = Symbol[:id,:path,:clientName,:clientMachine]
+            allflds = Pair{Symbol,Union{Type,String}}[:id => Int64, :path => AbstractString, :clientName => AbstractString, :clientMachine => AbstractString]
+            meta(target, OpenFilesBatchResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_OpenFilesBatchResponseProto[]
+    end
+end
+function Base.getproperty(obj::OpenFilesBatchResponseProto, name::Symbol)
+    if name === :id
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :path
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :clientName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :clientMachine
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct ListOpenFilesResponseProto <: ProtoType
-    entries::Base.Vector{OpenFilesBatchResponseProto}
-    hasMore::Bool
-    ListOpenFilesResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct ListOpenFilesResponseProto
-const __req_ListOpenFilesResponseProto = Symbol[:hasMore]
-meta(t::Type{ListOpenFilesResponseProto}) = meta(t, __req_ListOpenFilesResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function ListOpenFilesResponseProto(; kwargs...)
+        obj = new(meta(ListOpenFilesResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct ListOpenFilesResponseProto
+const __meta_ListOpenFilesResponseProto = Ref{ProtoMeta}()
+function meta(::Type{ListOpenFilesResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_ListOpenFilesResponseProto)
+            __meta_ListOpenFilesResponseProto[] = target = ProtoMeta(ListOpenFilesResponseProto)
+            req = Symbol[:hasMore]
+            allflds = Pair{Symbol,Union{Type,String}}[:entries => Base.Vector{OpenFilesBatchResponseProto}, :hasMore => Bool]
+            meta(target, ListOpenFilesResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_ListOpenFilesResponseProto[]
+    end
+end
+function Base.getproperty(obj::ListOpenFilesResponseProto, name::Symbol)
+    if name === :entries
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{OpenFilesBatchResponseProto}
+    elseif name === :hasMore
+        return (obj.__protobuf_jl_internal_values[name])::Bool
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct MsyncRequestProto <: ProtoType
-    MsyncRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct MsyncRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function MsyncRequestProto(; kwargs...)
+        obj = new(meta(MsyncRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct MsyncRequestProto
+const __meta_MsyncRequestProto = Ref{ProtoMeta}()
+function meta(::Type{MsyncRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_MsyncRequestProto)
+            __meta_MsyncRequestProto[] = target = ProtoMeta(MsyncRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, MsyncRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_MsyncRequestProto[]
+    end
+end
 
 mutable struct MsyncResponseProto <: ProtoType
-    MsyncResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct MsyncResponseProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function MsyncResponseProto(; kwargs...)
+        obj = new(meta(MsyncResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct MsyncResponseProto
+const __meta_MsyncResponseProto = Ref{ProtoMeta}()
+function meta(::Type{MsyncResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_MsyncResponseProto)
+            __meta_MsyncResponseProto[] = target = ProtoMeta(MsyncResponseProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, MsyncResponseProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_MsyncResponseProto[]
+    end
+end
 
 mutable struct HAServiceStateRequestProto <: ProtoType
-    HAServiceStateRequestProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct HAServiceStateRequestProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function HAServiceStateRequestProto(; kwargs...)
+        obj = new(meta(HAServiceStateRequestProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct HAServiceStateRequestProto
+const __meta_HAServiceStateRequestProto = Ref{ProtoMeta}()
+function meta(::Type{HAServiceStateRequestProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_HAServiceStateRequestProto)
+            __meta_HAServiceStateRequestProto[] = target = ProtoMeta(HAServiceStateRequestProto)
+            allflds = Pair{Symbol,Union{Type,String}}[]
+            meta(target, HAServiceStateRequestProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_HAServiceStateRequestProto[]
+    end
+end
 
 mutable struct HAServiceStateResponseProto <: ProtoType
-    state::Int32
-    HAServiceStateResponseProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct HAServiceStateResponseProto
-const __req_HAServiceStateResponseProto = Symbol[:state]
-meta(t::Type{HAServiceStateResponseProto}) = meta(t, __req_HAServiceStateResponseProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function HAServiceStateResponseProto(; kwargs...)
+        obj = new(meta(HAServiceStateResponseProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct HAServiceStateResponseProto
+const __meta_HAServiceStateResponseProto = Ref{ProtoMeta}()
+function meta(::Type{HAServiceStateResponseProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_HAServiceStateResponseProto)
+            __meta_HAServiceStateResponseProto[] = target = ProtoMeta(HAServiceStateResponseProto)
+            req = Symbol[:state]
+            allflds = Pair{Symbol,Union{Type,String}}[:state => Int32]
+            meta(target, HAServiceStateResponseProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_HAServiceStateResponseProto[]
+    end
+end
+function Base.getproperty(obj::HAServiceStateResponseProto, name::Symbol)
+    if name === :state
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    else
+        getfield(obj, name)
+    end
+end
 
 # service methods for ClientNamenodeProtocol
 const _ClientNamenodeProtocol_methods = MethodDescriptor[

@@ -37,8 +37,8 @@ function parse_container_id(cidstr::String)
 end
 
 function container_id_string(cid::ContainerIdProto)
-    app_id = isdefined(cid, :app_id) ? cid.app_id : cid.app_attempt_id.application_id
-    attempt_id = isdefined(cid, :app_attempt_id) ? cid.app_attempt_id.attemptId : 0
+    app_id = hasproperty(cid, :app_id) ? cid.app_id : cid.app_attempt_id.application_id
+    attempt_id = hasproperty(cid, :app_attempt_id) ? cid.app_attempt_id.attemptId : 0
     id = cid.id
     epoch = id >> 40
     id = CONTAINER_ID_BITMASK & id

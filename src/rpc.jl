@@ -472,12 +472,12 @@ function buffer_readblock(reader::HDFSBlockReader)
 
     token = TokenProto()
     for fld in (:identifier, :password, :kind, :service)
-        setproperty!(token, fld, get_field(block.blockToken, fld))
+        setproperty!(token, fld, getproperty(block.blockToken, fld))
     end
 
     exblock = ExtendedBlockProto()
     for fld in (:poolId, :blockId, :generationStamp)
-        setproperty!(exblock, fld, get_field(block.b, fld))
+        setproperty!(exblock, fld, getproperty(block.b, fld))
     end
 
     basehdr = BaseHeaderProto(block=exblock, token=token)
@@ -963,12 +963,12 @@ function buffer_writeblock(writer::HDFSBlockWriter)
 
     token = TokenProto()
     for fld in (:identifier, :password, :kind, :service)
-        setproperty!(token, fld, get_field(block.blockToken, fld))
+        setproperty!(token, fld, getproperty(block.blockToken, fld))
     end
 
     exblock = ExtendedBlockProto()
     for fld in (:poolId, :blockId, :generationStamp)
-        setproperty!(exblock, fld, get_field(block.b, fld))
+        setproperty!(exblock, fld, getproperty(block.b, fld))
     end
     setproperty!(exblock, :numBytes, zero(UInt64))
 

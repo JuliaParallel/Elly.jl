@@ -124,8 +124,10 @@ function show(io::IO, st::HDFSFileInfo)
 end
 
 function _as_dict(obj, d=Dict{Symbol,Any}())
-    for name in fieldnames(typeof(obj))
-        d[name] = getfield(obj, name)
+    for name in propertynames(obj)
+        if hasproperty(obj, name)
+            d[name] = getproperty(obj, name)
+        end
     end
     d
 end
@@ -138,9 +140,9 @@ function _walkdir(client::HDFSClient, path::AbstractString, process_entry::Funct
         inp = GetListingRequestProto(src=path, startAfter=start_after, needLocation=false)
         resp = getListing(client.nn_conn, inp)
 
-        if isfilled(resp, :dirList)
+        if hasproperty(resp, :dirList)
             dir_list = resp.dirList
-            if isfilled(dir_list, :partialListing)
+            if hasproperty(dir_list, :partialListing)
                 partial_listing = dir_list.partialListing
                 for filestatus in partial_listing
                     cont = process_entry(filestatus)
@@ -148,7 +150,7 @@ function _walkdir(client::HDFSClient, path::AbstractString, process_entry::Funct
                 end
                 (cont == false) && break
             end
-            if isfilled(dir_list, :remainingEntries) && (dir_list.remainingEntries > 0)
+            if hasproperty(dir_list, :remainingEntries) && (dir_list.remainingEntries > 0)
                 start_after = dir_list.partialListing[end].path
             else
                 cont = false
@@ -164,7 +166,7 @@ function _get_file_info(client::HDFSClient, path::AbstractString)
     path = abspath(client, path)
     inp = GetFileInfoRequestProto(src=path)
     resp = getFileInfo(client.nn_conn, inp)
-    isfilled(resp, :fs) ? resp.fs : nothing
+    hasproperty(resp, :fs) ? resp.fs : nothing
 end
 
 function _get_block_locations(client::HDFSClient, path::AbstractString, offset::UInt64=zero(UInt64), length::UInt64=zero(UInt64))
@@ -174,7 +176,7 @@ function _get_block_locations(client::HDFSClient, path::AbstractString, offset::
     end
     inp = GetBlockLocationsRequestProto(src=path, offset=offset, length=length)
     resp = getBlockLocations(client.nn_conn, inp)
-    isfilled(resp, :locations) ? resp.locations : nothing
+    hasproperty(resp, :locations) ? resp.locations : nothing
 end
 
 #
@@ -362,7 +364,7 @@ function _create_file(client::HDFSClient, path::AbstractString, overwrite::Bool=
     inp = CreateRequestProto(src=path, masked=perms, clientName=ELLY_CLIENTNAME, createFlag=createFlag, createParent=false, replication=replication, blockSize=blocksz)
 
     resp = create(client.nn_conn, inp)
-    isfilled(resp, :fs) || (return nothing)
+    hasproperty(resp, :fs) || (return nothing)
 
     if docomplete
         _complete_file(client, path) || (return nothing)

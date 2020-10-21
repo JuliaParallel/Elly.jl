@@ -35,7 +35,7 @@ show(io::IO, client::YarnClient) = show(io, client.rm_conn)
 function nodecount(client::YarnClient)
     inp = GetClusterMetricsRequestProto()
     resp = getClusterMetrics(client.rm_conn, inp)
-    isfilled(resp, :cluster_metrics) ? resp.cluster_metrics.num_node_managers : 0
+    hasproperty(resp, :cluster_metrics) ? resp.cluster_metrics.num_node_managers : 0
 end
 
 function nodes(client::YarnClient; all::Bool=false, nodelist::YarnNodes=YarnNodes(client.rm_conn.channel.ugi))
@@ -65,19 +65,19 @@ end
 function show(io::IO, status::YarnAppStatus)
     report = status.report
 
-    if isfilled(report, :final_application_status) && report.final_application_status > 0
+    if hasproperty(report, :final_application_status) && report.final_application_status > 0
         final_state = "-$(FINAL_APP_STATES[report.final_application_status])"
     else
         final_state = ""
     end
-    if isfilled(report, :progress)
+    if hasproperty(report, :progress)
         final_state *= "-$(report.progress)"
     end
     println(io, "YarnApp $(report.applicationType) ($(report.name)/$(report.applicationId.id)): $(APP_STATES[report.yarn_application_state])$(final_state)")
     println(io, "    location: $(report.user)@$(report.host):$(report.rpc_port)/$(report.queue)")
     if report.yarn_application_state > YarnApplicationStateProto.RUNNING
         println(io, "    time: $(report.startTime) to $(report.finishTime)")
-        if isfilled(report, :app_resource_Usage)
+        if hasproperty(report, :app_resource_Usage)
             rusage = report.app_resource_Usage
             println(io, "    rusage:")
             println(io, "        mem,vcore seconds: $(rusage.memory_seconds), $(rusage.vcore_seconds)")
@@ -85,7 +85,7 @@ function show(io::IO, status::YarnAppStatus)
             println(io, "        mem: used $(rusage.used_resources.memory), reserved $(rusage.reserved_resources.memory), needed $(rusage.needed_resources.memory)")
             println(io, "        vcores: used $(rusage.used_resources.virtual_cores), reserved $(rusage.reserved_resources.virtual_cores), needed $(rusage.needed_resources.virtual_cores)")
         end
-        if isfilled(report, :diagnostics)
+        if hasproperty(report, :diagnostics)
             println(io, "    diagnostics: $(report.diagnostics)")
         end
     elseif report.yarn_application_state == YarnApplicationStateProto.RUNNING
@@ -114,7 +114,7 @@ function show(io::IO, status::YarnAppAttemptStatus)
     atmpt_id = report.application_attempt_id
 
     atmpt_str = "$(atmpt_id.application_id.id)"
-    if isfilled(report, :am_container_id)
+    if hasproperty(report, :am_container_id)
         atmpt_str *= "/$(report.am_container_id.id)"
     else
         atmpt_str *= "/-"
@@ -123,7 +123,7 @@ function show(io::IO, status::YarnAppAttemptStatus)
 
     println(io, "YarnAppAttempt $(atmpt_str): $(ATTEMPT_STATES[report.yarn_application_attempt_state])")
     println(io, "    location: $(report.host):$(report.rpc_port)")
-    if isfilled(report, :diagnostics)
+    if hasproperty(report, :diagnostics)
         println(io, "    diagnostics: $(report.diagnostics)")
     end
     nothing
@@ -187,7 +187,7 @@ function submit(client::YarnClient, container_spec::ContainerLaunchContextProto;
         # the application master would need these environment variables to initialize itself
         # TODO: we need ability to read hadoop configuration to avoid this
         rm_chan = client.rm_conn.channel
-        isdefined(container_spec, :environment) || (container_spec.environment = StringStringMapProto[])
+        hasproperty(container_spec, :environment) || (container_spec.environment = StringStringMapProto[])
         push!(container_spec.environment, StringStringMapProto(; key="JULIA_YARN_RESOURCEMANAGER_ADDRESS", value="$(rm_chan.host):$(rm_chan.port)"))
         push!(container_spec.environment, StringStringMapProto(; key="JULIA_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS", value=schedaddr))
     end
@@ -227,7 +227,7 @@ function status(app::YarnApp, refresh::Bool=true)
         inp = GetApplicationReportRequestProto(application_id=app.appid)
 
         resp = getApplicationReport(client.rm_conn, inp) 
-        app.status = isfilled(resp.application_report) ?  YarnAppStatus(resp.application_report) : nothing
+        app.status = hasproperty(resp, :application_report) ?  YarnAppStatus(resp.application_report) : nothing
     end
     app.status
 end
@@ -263,7 +263,7 @@ function attempts(app::YarnApp, refresh::Bool=true)
         resp = getApplicationAttempts(client.rm_conn, inp)
         atmptlist = app.attempts
         empty!(atmptlist)
-        if isfilled(resp.application_attempts)
+        if hasproperty(resp, :application_attempts)
             for atmpt in resp.application_attempts
                 push!(atmptlist, YarnAppAttemptStatus(atmpt))
             end

@@ -23,7 +23,7 @@ end
 add_token!(ugi::UserGroupInformation, token::TokenProto) = add_token!(ugi.credentials, token)
 add_token!(ugi::UserGroupInformation, alias::AbstractString, token::TokenProto) = add_token!(ugi.credentials, alias, token)
 
-username(userinfo::UserInformationProto) = isfilled(userinfo, :realUser) ? userinfo.realUser : userinfo.effectiveUser
+username(userinfo::UserInformationProto) = hasproperty(userinfo, :realUser) ? userinfo.realUser : userinfo.effectiveUser
 username(ugi::UserGroupInformation) = username(ugi.userinfo)
 
 find_tokens(ugi::UserGroupInformation; alias::AbstractString="", kind::AbstractString="") = find_tokens(ugi.credentials; alias=alias, kind=kind)
@@ -31,8 +31,8 @@ find_tokens(ugi::UserGroupInformation; alias::AbstractString="", kind::AbstractS
 function show(io::IO, ugi::UserGroupInformation)
     uinfo = ugi.userinfo
     print(io, "User:")
-    isfilled(uinfo, :realUser) && print(io, ' ', uinfo.realUser)
-    isfilled(uinfo, :effectiveUser) && print(io, " (", uinfo.effectiveUser, ')')
+    hasproperty(uinfo, :realUser) && print(io, ' ', uinfo.realUser)
+    hasproperty(uinfo, :effectiveUser) && print(io, " (", uinfo.effectiveUser, ')')
     isempty(ugi.credentials.tokens) || print(io, " with ", length(ugi.credentials.tokens), " tokens")
     nothing
 end

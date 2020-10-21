@@ -2,124 +2,319 @@
 using ProtoBuf
 import ProtoBuf.meta
 
-struct __enum_RpcKindProto <: ProtoEnum
-    RPC_BUILTIN::Int32
-    RPC_WRITABLE::Int32
-    RPC_PROTOCOL_BUFFER::Int32
-    __enum_RpcKindProto() = new(0,1,2)
-end #struct __enum_RpcKindProto
-const RpcKindProto = __enum_RpcKindProto()
+const RpcKindProto = (;[
+    Symbol("RPC_BUILTIN") => Int32(0),
+    Symbol("RPC_WRITABLE") => Int32(1),
+    Symbol("RPC_PROTOCOL_BUFFER") => Int32(2),
+]...)
 
 mutable struct RPCTraceInfoProto <: ProtoType
-    traceId::Int64
-    parentId::Int64
-    RPCTraceInfoProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RPCTraceInfoProto
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RPCTraceInfoProto(; kwargs...)
+        obj = new(meta(RPCTraceInfoProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RPCTraceInfoProto
+const __meta_RPCTraceInfoProto = Ref{ProtoMeta}()
+function meta(::Type{RPCTraceInfoProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RPCTraceInfoProto)
+            __meta_RPCTraceInfoProto[] = target = ProtoMeta(RPCTraceInfoProto)
+            allflds = Pair{Symbol,Union{Type,String}}[:traceId => Int64, :parentId => Int64]
+            meta(target, RPCTraceInfoProto, allflds, ProtoBuf.DEF_REQ, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RPCTraceInfoProto[]
+    end
+end
+function Base.getproperty(obj::RPCTraceInfoProto, name::Symbol)
+    if name === :traceId
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    elseif name === :parentId
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RPCCallerContextProto <: ProtoType
-    context::AbstractString
-    signature::Array{UInt8,1}
-    RPCCallerContextProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RPCCallerContextProto
-const __req_RPCCallerContextProto = Symbol[:context]
-meta(t::Type{RPCCallerContextProto}) = meta(t, __req_RPCCallerContextProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
 
-struct __enum_RpcRequestHeaderProto_OperationProto <: ProtoEnum
-    RPC_FINAL_PACKET::Int32
-    RPC_CONTINUATION_PACKET::Int32
-    RPC_CLOSE_CONNECTION::Int32
-    __enum_RpcRequestHeaderProto_OperationProto() = new(0,1,2)
-end #struct __enum_RpcRequestHeaderProto_OperationProto
-const RpcRequestHeaderProto_OperationProto = __enum_RpcRequestHeaderProto_OperationProto()
+    function RPCCallerContextProto(; kwargs...)
+        obj = new(meta(RPCCallerContextProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RPCCallerContextProto
+const __meta_RPCCallerContextProto = Ref{ProtoMeta}()
+function meta(::Type{RPCCallerContextProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RPCCallerContextProto)
+            __meta_RPCCallerContextProto[] = target = ProtoMeta(RPCCallerContextProto)
+            req = Symbol[:context]
+            allflds = Pair{Symbol,Union{Type,String}}[:context => AbstractString, :signature => Array{UInt8,1}]
+            meta(target, RPCCallerContextProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RPCCallerContextProto[]
+    end
+end
+function Base.getproperty(obj::RPCCallerContextProto, name::Symbol)
+    if name === :context
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :signature
+        return (obj.__protobuf_jl_internal_values[name])::Array{UInt8,1}
+    else
+        getfield(obj, name)
+    end
+end
+
+const RpcRequestHeaderProto_OperationProto = (;[
+    Symbol("RPC_FINAL_PACKET") => Int32(0),
+    Symbol("RPC_CONTINUATION_PACKET") => Int32(1),
+    Symbol("RPC_CLOSE_CONNECTION") => Int32(2),
+]...)
 
 mutable struct RpcRequestHeaderProto <: ProtoType
-    rpcKind::Int32
-    rpcOp::Int32
-    callId::Int32
-    clientId::Array{UInt8,1}
-    retryCount::Int32
-    traceInfo::RPCTraceInfoProto
-    callerContext::RPCCallerContextProto
-    stateId::Int64
-    RpcRequestHeaderProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RpcRequestHeaderProto
-const __req_RpcRequestHeaderProto = Symbol[:callId,:clientId]
-const __val_RpcRequestHeaderProto = Dict(:retryCount => -1)
-const __wtype_RpcRequestHeaderProto = Dict(:callId => :sint32, :retryCount => :sint32)
-meta(t::Type{RpcRequestHeaderProto}) = meta(t, __req_RpcRequestHeaderProto, ProtoBuf.DEF_FNUM, __val_RpcRequestHeaderProto, true, ProtoBuf.DEF_PACK, __wtype_RpcRequestHeaderProto, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
 
-struct __enum_RpcResponseHeaderProto_RpcStatusProto <: ProtoEnum
-    SUCCESS::Int32
-    ERROR::Int32
-    FATAL::Int32
-    __enum_RpcResponseHeaderProto_RpcStatusProto() = new(0,1,2)
-end #struct __enum_RpcResponseHeaderProto_RpcStatusProto
-const RpcResponseHeaderProto_RpcStatusProto = __enum_RpcResponseHeaderProto_RpcStatusProto()
+    function RpcRequestHeaderProto(; kwargs...)
+        obj = new(meta(RpcRequestHeaderProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RpcRequestHeaderProto
+const __meta_RpcRequestHeaderProto = Ref{ProtoMeta}()
+function meta(::Type{RpcRequestHeaderProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RpcRequestHeaderProto)
+            __meta_RpcRequestHeaderProto[] = target = ProtoMeta(RpcRequestHeaderProto)
+            req = Symbol[:callId,:clientId]
+            val = Dict{Symbol,Any}(:retryCount => -1)
+            wtype = Dict(:callId => :sint32, :retryCount => :sint32)
+            allflds = Pair{Symbol,Union{Type,String}}[:rpcKind => Int32, :rpcOp => Int32, :callId => Int32, :clientId => Array{UInt8,1}, :retryCount => Int32, :traceInfo => RPCTraceInfoProto, :callerContext => RPCCallerContextProto, :stateId => Int64]
+            meta(target, RpcRequestHeaderProto, allflds, req, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, wtype, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RpcRequestHeaderProto[]
+    end
+end
+function Base.getproperty(obj::RpcRequestHeaderProto, name::Symbol)
+    if name === :rpcKind
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :rpcOp
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :callId
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :clientId
+        return (obj.__protobuf_jl_internal_values[name])::Array{UInt8,1}
+    elseif name === :retryCount
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :traceInfo
+        return (obj.__protobuf_jl_internal_values[name])::RPCTraceInfoProto
+    elseif name === :callerContext
+        return (obj.__protobuf_jl_internal_values[name])::RPCCallerContextProto
+    elseif name === :stateId
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
 
-struct __enum_RpcResponseHeaderProto_RpcErrorCodeProto <: ProtoEnum
-    ERROR_APPLICATION::Int32
-    ERROR_NO_SUCH_METHOD::Int32
-    ERROR_NO_SUCH_PROTOCOL::Int32
-    ERROR_RPC_SERVER::Int32
-    ERROR_SERIALIZING_RESPONSE::Int32
-    ERROR_RPC_VERSION_MISMATCH::Int32
-    FATAL_UNKNOWN::Int32
-    FATAL_UNSUPPORTED_SERIALIZATION::Int32
-    FATAL_INVALID_RPC_HEADER::Int32
-    FATAL_DESERIALIZING_REQUEST::Int32
-    FATAL_VERSION_MISMATCH::Int32
-    FATAL_UNAUTHORIZED::Int32
-    __enum_RpcResponseHeaderProto_RpcErrorCodeProto() = new(1,2,3,4,5,6,10,11,12,13,14,15)
-end #struct __enum_RpcResponseHeaderProto_RpcErrorCodeProto
-const RpcResponseHeaderProto_RpcErrorCodeProto = __enum_RpcResponseHeaderProto_RpcErrorCodeProto()
+const RpcResponseHeaderProto_RpcStatusProto = (;[
+    Symbol("SUCCESS") => Int32(0),
+    Symbol("ERROR") => Int32(1),
+    Symbol("FATAL") => Int32(2),
+]...)
+
+const RpcResponseHeaderProto_RpcErrorCodeProto = (;[
+    Symbol("ERROR_APPLICATION") => Int32(1),
+    Symbol("ERROR_NO_SUCH_METHOD") => Int32(2),
+    Symbol("ERROR_NO_SUCH_PROTOCOL") => Int32(3),
+    Symbol("ERROR_RPC_SERVER") => Int32(4),
+    Symbol("ERROR_SERIALIZING_RESPONSE") => Int32(5),
+    Symbol("ERROR_RPC_VERSION_MISMATCH") => Int32(6),
+    Symbol("FATAL_UNKNOWN") => Int32(10),
+    Symbol("FATAL_UNSUPPORTED_SERIALIZATION") => Int32(11),
+    Symbol("FATAL_INVALID_RPC_HEADER") => Int32(12),
+    Symbol("FATAL_DESERIALIZING_REQUEST") => Int32(13),
+    Symbol("FATAL_VERSION_MISMATCH") => Int32(14),
+    Symbol("FATAL_UNAUTHORIZED") => Int32(15),
+]...)
 
 mutable struct RpcResponseHeaderProto <: ProtoType
-    callId::UInt32
-    status::Int32
-    serverIpcVersionNum::UInt32
-    exceptionClassName::AbstractString
-    errorMsg::AbstractString
-    errorDetail::Int32
-    clientId::Array{UInt8,1}
-    retryCount::Int32
-    stateId::Int64
-    RpcResponseHeaderProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RpcResponseHeaderProto
-const __req_RpcResponseHeaderProto = Symbol[:callId,:status]
-const __val_RpcResponseHeaderProto = Dict(:retryCount => -1)
-const __wtype_RpcResponseHeaderProto = Dict(:retryCount => :sint32)
-meta(t::Type{RpcResponseHeaderProto}) = meta(t, __req_RpcResponseHeaderProto, ProtoBuf.DEF_FNUM, __val_RpcResponseHeaderProto, true, ProtoBuf.DEF_PACK, __wtype_RpcResponseHeaderProto, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
 
-struct __enum_RpcSaslProto_SaslState <: ProtoEnum
-    SUCCESS::Int32
-    NEGOTIATE::Int32
-    INITIATE::Int32
-    CHALLENGE::Int32
-    RESPONSE::Int32
-    WRAP::Int32
-    __enum_RpcSaslProto_SaslState() = new(0,1,2,3,4,5)
-end #struct __enum_RpcSaslProto_SaslState
-const RpcSaslProto_SaslState = __enum_RpcSaslProto_SaslState()
+    function RpcResponseHeaderProto(; kwargs...)
+        obj = new(meta(RpcResponseHeaderProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RpcResponseHeaderProto
+const __meta_RpcResponseHeaderProto = Ref{ProtoMeta}()
+function meta(::Type{RpcResponseHeaderProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RpcResponseHeaderProto)
+            __meta_RpcResponseHeaderProto[] = target = ProtoMeta(RpcResponseHeaderProto)
+            req = Symbol[:callId,:status]
+            val = Dict{Symbol,Any}(:retryCount => -1)
+            wtype = Dict(:retryCount => :sint32)
+            allflds = Pair{Symbol,Union{Type,String}}[:callId => UInt32, :status => Int32, :serverIpcVersionNum => UInt32, :exceptionClassName => AbstractString, :errorMsg => AbstractString, :errorDetail => Int32, :clientId => Array{UInt8,1}, :retryCount => Int32, :stateId => Int64]
+            meta(target, RpcResponseHeaderProto, allflds, req, ProtoBuf.DEF_FNUM, val, ProtoBuf.DEF_PACK, wtype, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RpcResponseHeaderProto[]
+    end
+end
+function Base.getproperty(obj::RpcResponseHeaderProto, name::Symbol)
+    if name === :callId
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    elseif name === :status
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :serverIpcVersionNum
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    elseif name === :exceptionClassName
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :errorMsg
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :errorDetail
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :clientId
+        return (obj.__protobuf_jl_internal_values[name])::Array{UInt8,1}
+    elseif name === :retryCount
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :stateId
+        return (obj.__protobuf_jl_internal_values[name])::Int64
+    else
+        getfield(obj, name)
+    end
+end
+
+const RpcSaslProto_SaslState = (;[
+    Symbol("SUCCESS") => Int32(0),
+    Symbol("NEGOTIATE") => Int32(1),
+    Symbol("INITIATE") => Int32(2),
+    Symbol("CHALLENGE") => Int32(3),
+    Symbol("RESPONSE") => Int32(4),
+    Symbol("WRAP") => Int32(5),
+]...)
 
 mutable struct RpcSaslProto_SaslAuth <: ProtoType
-    method::AbstractString
-    mechanism::AbstractString
-    protocol::AbstractString
-    serverId::AbstractString
-    challenge::Array{UInt8,1}
-    RpcSaslProto_SaslAuth(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RpcSaslProto_SaslAuth
-const __req_RpcSaslProto_SaslAuth = Symbol[:method,:mechanism]
-meta(t::Type{RpcSaslProto_SaslAuth}) = meta(t, __req_RpcSaslProto_SaslAuth, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RpcSaslProto_SaslAuth(; kwargs...)
+        obj = new(meta(RpcSaslProto_SaslAuth), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RpcSaslProto_SaslAuth
+const __meta_RpcSaslProto_SaslAuth = Ref{ProtoMeta}()
+function meta(::Type{RpcSaslProto_SaslAuth})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RpcSaslProto_SaslAuth)
+            __meta_RpcSaslProto_SaslAuth[] = target = ProtoMeta(RpcSaslProto_SaslAuth)
+            req = Symbol[:method,:mechanism]
+            allflds = Pair{Symbol,Union{Type,String}}[:method => AbstractString, :mechanism => AbstractString, :protocol => AbstractString, :serverId => AbstractString, :challenge => Array{UInt8,1}]
+            meta(target, RpcSaslProto_SaslAuth, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RpcSaslProto_SaslAuth[]
+    end
+end
+function Base.getproperty(obj::RpcSaslProto_SaslAuth, name::Symbol)
+    if name === :method
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :mechanism
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :protocol
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :serverId
+        return (obj.__protobuf_jl_internal_values[name])::AbstractString
+    elseif name === :challenge
+        return (obj.__protobuf_jl_internal_values[name])::Array{UInt8,1}
+    else
+        getfield(obj, name)
+    end
+end
 
 mutable struct RpcSaslProto <: ProtoType
-    version::UInt32
-    state::Int32
-    token::Array{UInt8,1}
-    auths::Base.Vector{RpcSaslProto_SaslAuth}
-    RpcSaslProto(; kwargs...) = (o=new(); fillunset(o); isempty(kwargs) || ProtoBuf._protobuild(o, kwargs); o)
-end #mutable struct RpcSaslProto
-const __req_RpcSaslProto = Symbol[:state]
-meta(t::Type{RpcSaslProto}) = meta(t, __req_RpcSaslProto, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, true, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES, ProtoBuf.DEF_FIELD_TYPES)
+    __protobuf_jl_internal_meta::ProtoMeta
+    __protobuf_jl_internal_values::Dict{Symbol,Any}
+
+    function RpcSaslProto(; kwargs...)
+        obj = new(meta(RpcSaslProto), Dict{Symbol,Any}())
+        values = obj.__protobuf_jl_internal_values
+        symdict = obj.__protobuf_jl_internal_meta.symdict
+        for nv in kwargs
+            fldname, fldval = nv
+            fldtype = symdict[fldname].jtyp
+            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
+            values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
+        end
+        obj
+    end
+end # mutable struct RpcSaslProto
+const __meta_RpcSaslProto = Ref{ProtoMeta}()
+function meta(::Type{RpcSaslProto})
+    ProtoBuf.metalock() do
+        if !isassigned(__meta_RpcSaslProto)
+            __meta_RpcSaslProto[] = target = ProtoMeta(RpcSaslProto)
+            req = Symbol[:state]
+            allflds = Pair{Symbol,Union{Type,String}}[:version => UInt32, :state => Int32, :token => Array{UInt8,1}, :auths => Base.Vector{RpcSaslProto_SaslAuth}]
+            meta(target, RpcSaslProto, allflds, req, ProtoBuf.DEF_FNUM, ProtoBuf.DEF_VAL, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
+        end
+        __meta_RpcSaslProto[]
+    end
+end
+function Base.getproperty(obj::RpcSaslProto, name::Symbol)
+    if name === :version
+        return (obj.__protobuf_jl_internal_values[name])::UInt32
+    elseif name === :state
+        return (obj.__protobuf_jl_internal_values[name])::Int32
+    elseif name === :token
+        return (obj.__protobuf_jl_internal_values[name])::Array{UInt8,1}
+    elseif name === :auths
+        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{RpcSaslProto_SaslAuth}
+    else
+        getfield(obj, name)
+    end
+end
 
 export RpcKindProto, RPCTraceInfoProto, RPCCallerContextProto, RpcRequestHeaderProto_OperationProto, RpcRequestHeaderProto, RpcResponseHeaderProto_RpcStatusProto, RpcResponseHeaderProto_RpcErrorCodeProto, RpcResponseHeaderProto, RpcSaslProto_SaslState, RpcSaslProto_SaslAuth, RpcSaslProto
