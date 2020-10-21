@@ -69,7 +69,7 @@ skip(reader::HDFSFileReader, n::Integer) = seek(reader, UInt64(n+position(reader
 _block_has_offset(block::LocatedBlockProto, offset::UInt64, block_sz::UInt64) = (block.offset <= offset < (block.offset + block_sz))
 
 function _find_block(blocks::LocatedBlocksProto, offset::UInt64, block_sz::UInt64)
-    if isfilled(blocks, :blocks)
+    if hasproperty(blocks, :blocks)
         blockarr = blocks.blocks
         for block in blockarr
             if _block_has_offset(block, offset, block_sz)

@@ -43,11 +43,11 @@ end
 
 function show(io::IO, serex::SerializedExceptionProto)
     print(io, "Exception: ")
-    isfilled(serex, :class_name) && print(io, serex.class_name, ": ")
-    isfilled(serex, :message) && print(io, serex.message)
-    isfilled(serex, :trace) && print(io, '\n', serex.trace, '\n')
+    hasproperty(serex, :class_name) && print(io, serex.class_name, ": ")
+    hasproperty(serex, :message) && print(io, serex.message)
+    hasproperty(serex, :trace) && print(io, '\n', serex.trace, '\n')
 
-    if isfilled(serex, :cause)
+    if hasproperty(serex, :cause)
         println(io, "Caused by:")
         show(io, serex.cause)
     end
@@ -146,8 +146,8 @@ function show(io::IO, nodes::YarnNodes)
 end
 
 function update(nodes::YarnNodes, arp::AllocateResponseProto)
-    isfilled(arp, :num_cluster_nodes) && (nodes.count = arp.num_cluster_nodes)
-    if isfilled(arp, :updated_nodes)
+    hasproperty(arp, :num_cluster_nodes) && (nodes.count = arp.num_cluster_nodes)
+    if hasproperty(arp, :updated_nodes)
         for nrep in arp.updated_nodes
             @debug("updating node status", nodeid=nrep.nodeId)
             nodes.status[nrep.nodeId] = YarnNode(nrep)
@@ -157,7 +157,7 @@ function update(nodes::YarnNodes, arp::AllocateResponseProto)
 end
 
 function update(nodes::YarnNodes, gcnrp::GetClusterNodesResponseProto)
-    isfilled(gcnrp, :nodeReports) || return
+    hasproperty(gcnrp, :nodeReports) || return
 
     nlist = gcnrp.nodeReports
     nodes.count = length(nlist)
@@ -310,7 +310,7 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
     cballoc = containers.on_container_alloc
     cbfinish = containers.on_container_finish
 
-    if isfilled(arp, :allocated_containers)
+    if hasproperty(arp, :allocated_containers)
         for cont in arp.allocated_containers
             id = cont.id
             idstr = container_id_string(id)
@@ -320,7 +320,7 @@ function update(containers::YarnContainers, arp::AllocateResponseProto)
             (cballoc === nothing) || @async cballoc(id)
         end
     end
-    if isfilled(arp, :completed_container_statuses)
+    if hasproperty(arp, :completed_container_statuses)
         @debug("have completed containers")
         for contst in arp.completed_container_statuses
             id = contst.container_id

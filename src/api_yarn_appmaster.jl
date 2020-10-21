@@ -129,12 +129,12 @@ function register(yam::YarnAppMaster)
     end
     yam.registration = resp
 
-    if isfilled(resp, :maximumCapability)
+    if hasproperty(resp, :maximumCapability)
         yam.max_mem = resp.maximumCapability.memory
         yam.max_cores = resp.maximumCapability.virtual_cores
     end
     @debug("max capability", mem=yam.max_mem, cores=yam.max_cores)
-    if isfilled(resp, :queue)
+    if hasproperty(resp, :queue)
         yam.queue = resp.queue
     end
 
@@ -148,7 +148,7 @@ can_schedule_mem(yam::YarnAppMaster) = can_schedule(yam, SchedulerResourceTypes.
 can_schedule_cores(yam::YarnAppMaster) = can_schedule(yam, SchedulerResourceTypes.CPU)
 function can_schedule(yam::YarnAppMaster, restype::Int32)
     reg = yam.registration
-    !isfilled(reg, :scheduler_resource_types) && (return false)
+    !hasproperty(reg, :scheduler_resource_types) && (return false)
     restype in reg.scheduler_resource_types
 end
 
@@ -191,7 +191,7 @@ function container_start(yam::YarnAppMaster, container::ContainerProto, containe
         release_connection(yam.nodes, nodeid, nm_conn, success)
     end
     success || throw(YarnException("Error starting container"))
-    isfilled(resp, :succeeded_requests) || throw(YarnException(isfilled(resp,:failed_requests) ? resp.failed_requests[1] : "Error starting container"))
+    hasproperty(resp, :succeeded_requests) || throw(YarnException(hasproperty(resp,:failed_requests) ? resp.failed_requests[1] : "Error starting container"))
     cid = resp.succeeded_requests[1]
     (cid == container.id) || throw(YarnException("Unexpected container id mismatch"))
     set_busy(yam.containers, cid)
@@ -217,7 +217,7 @@ function container_stop(yam::YarnAppMaster, container::ContainerProto)
         release_connection(yam.nodes, nodeid, nm_conn, success)
     end
     success || throw(YarnException("Error stopping container"))
-    isfilled(resp, :succeeded_requests) || throw(YarnException(isfilled(resp,:failed_requests) ? resp.failed_requests[1] : "Error stopping container"))
+    hasproperty(resp, :succeeded_requests) || throw(YarnException(hasproperty(resp,:failed_requests) ? resp.failed_requests[1] : "Error stopping container"))
     cid = resp.succeeded_requests[1]
     (cid == container.id) || throw(YarnException("Unexpected container id mismatch"))
     set_free(yam.containers, cid)
@@ -248,15 +248,15 @@ function _update_rm(yam::YarnAppMaster)
     # store/update tokens
     channel = yam.amrm_conn.channel
     ugi = channel.ugi
-    isfilled(resp, :am_rm_token) && add_token!(ugi, token_alias(channel), resp.am_rm_token)
-    if isfilled(resp, :nm_tokens)
+    hasproperty(resp, :am_rm_token) && add_token!(ugi, token_alias(channel), resp.am_rm_token)
+    if hasproperty(resp, :nm_tokens)
         for nmtok in resp.nm_tokens
             add_token!(ugi, token_alias(nmtok.nodeId), nmtok.token)
         end
     end
 
     # update available headroom
-    if isfilled(resp, :limit)
+    if hasproperty(resp, :limit)
         yam.available_mem = resp.limit.memory
         yam.available_cores = resp.limit.virtual_cores
     end
