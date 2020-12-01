@@ -19,9 +19,10 @@ const XAttrProto_XAttrNamespaceProto = (;[
 mutable struct XAttrProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function XAttrProto(; kwargs...)
-        obj = new(meta(XAttrProto), Dict{Symbol,Any}())
+        obj = new(meta(XAttrProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -60,9 +61,10 @@ end
 mutable struct SetXAttrRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function SetXAttrRequestProto(; kwargs...)
-        obj = new(meta(SetXAttrRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(SetXAttrRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -101,9 +103,10 @@ end
 mutable struct SetXAttrResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function SetXAttrResponseProto(; kwargs...)
-        obj = new(meta(SetXAttrResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(SetXAttrResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -130,9 +133,10 @@ end
 mutable struct GetXAttrsRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetXAttrsRequestProto(; kwargs...)
-        obj = new(meta(GetXAttrsRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(GetXAttrsRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -169,9 +173,10 @@ end
 mutable struct GetXAttrsResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetXAttrsResponseProto(; kwargs...)
-        obj = new(meta(GetXAttrsResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(GetXAttrsResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -205,9 +210,10 @@ end
 mutable struct ListXAttrsRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ListXAttrsRequestProto(; kwargs...)
-        obj = new(meta(ListXAttrsRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ListXAttrsRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -242,9 +248,10 @@ end
 mutable struct ListXAttrsResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ListXAttrsResponseProto(; kwargs...)
-        obj = new(meta(ListXAttrsResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(ListXAttrsResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -278,9 +285,10 @@ end
 mutable struct RemoveXAttrRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RemoveXAttrRequestProto(; kwargs...)
-        obj = new(meta(RemoveXAttrRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(RemoveXAttrRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -317,9 +325,10 @@ end
 mutable struct RemoveXAttrResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RemoveXAttrResponseProto(; kwargs...)
-        obj = new(meta(RemoveXAttrResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(RemoveXAttrResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs

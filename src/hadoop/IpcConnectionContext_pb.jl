@@ -6,9 +6,10 @@ import ProtoBuf.meta
 mutable struct UserInformationProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function UserInformationProto(; kwargs...)
-        obj = new(meta(UserInformationProto), Dict{Symbol,Any}())
+        obj = new(meta(UserInformationProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -44,9 +45,10 @@ end
 mutable struct IpcConnectionContextProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function IpcConnectionContextProto(; kwargs...)
-        obj = new(meta(IpcConnectionContextProto), Dict{Symbol,Any}())
+        obj = new(meta(IpcConnectionContextProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs

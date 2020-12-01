@@ -20,9 +20,10 @@ const HARequestSource = (;[
 mutable struct HAStateChangeRequestInfoProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function HAStateChangeRequestInfoProto(; kwargs...)
-        obj = new(meta(HAStateChangeRequestInfoProto), Dict{Symbol,Any}())
+        obj = new(meta(HAStateChangeRequestInfoProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -57,9 +58,10 @@ end
 mutable struct MonitorHealthRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function MonitorHealthRequestProto(; kwargs...)
-        obj = new(meta(MonitorHealthRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(MonitorHealthRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -86,9 +88,10 @@ end
 mutable struct MonitorHealthResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function MonitorHealthResponseProto(; kwargs...)
-        obj = new(meta(MonitorHealthResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(MonitorHealthResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -115,9 +118,10 @@ end
 mutable struct TransitionToActiveRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function TransitionToActiveRequestProto(; kwargs...)
-        obj = new(meta(TransitionToActiveRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(TransitionToActiveRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -152,9 +156,10 @@ end
 mutable struct TransitionToActiveResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function TransitionToActiveResponseProto(; kwargs...)
-        obj = new(meta(TransitionToActiveResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(TransitionToActiveResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -181,9 +186,10 @@ end
 mutable struct TransitionToStandbyRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function TransitionToStandbyRequestProto(; kwargs...)
-        obj = new(meta(TransitionToStandbyRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(TransitionToStandbyRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -218,9 +224,10 @@ end
 mutable struct TransitionToStandbyResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function TransitionToStandbyResponseProto(; kwargs...)
-        obj = new(meta(TransitionToStandbyResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(TransitionToStandbyResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -247,9 +254,10 @@ end
 mutable struct TransitionToObserverRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function TransitionToObserverRequestProto(; kwargs...)
-        obj = new(meta(TransitionToObserverRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(TransitionToObserverRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -284,9 +292,10 @@ end
 mutable struct TransitionToObserverResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function TransitionToObserverResponseProto(; kwargs...)
-        obj = new(meta(TransitionToObserverResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(TransitionToObserverResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -313,9 +322,10 @@ end
 mutable struct GetServiceStatusRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetServiceStatusRequestProto(; kwargs...)
-        obj = new(meta(GetServiceStatusRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(GetServiceStatusRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -342,9 +352,10 @@ end
 mutable struct GetServiceStatusResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetServiceStatusResponseProto(; kwargs...)
-        obj = new(meta(GetServiceStatusResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(GetServiceStatusResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs

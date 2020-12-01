@@ -6,9 +6,10 @@ import ProtoBuf.meta
 mutable struct CreateEncryptionZoneRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function CreateEncryptionZoneRequestProto(; kwargs...)
-        obj = new(meta(CreateEncryptionZoneRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(CreateEncryptionZoneRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -45,9 +46,10 @@ end
 mutable struct CreateEncryptionZoneResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function CreateEncryptionZoneResponseProto(; kwargs...)
-        obj = new(meta(CreateEncryptionZoneResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(CreateEncryptionZoneResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -74,9 +76,10 @@ end
 mutable struct ListEncryptionZonesRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ListEncryptionZonesRequestProto(; kwargs...)
-        obj = new(meta(ListEncryptionZonesRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ListEncryptionZonesRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -111,9 +114,10 @@ end
 mutable struct EncryptionZoneProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function EncryptionZoneProto(; kwargs...)
-        obj = new(meta(EncryptionZoneProto), Dict{Symbol,Any}())
+        obj = new(meta(EncryptionZoneProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -156,9 +160,10 @@ end
 mutable struct ListEncryptionZonesResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ListEncryptionZonesResponseProto(; kwargs...)
-        obj = new(meta(ListEncryptionZonesResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(ListEncryptionZonesResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -195,9 +200,10 @@ end
 mutable struct GetEZForPathRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetEZForPathRequestProto(; kwargs...)
-        obj = new(meta(GetEZForPathRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(GetEZForPathRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -232,9 +238,10 @@ end
 mutable struct GetEZForPathResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetEZForPathResponseProto(; kwargs...)
-        obj = new(meta(GetEZForPathResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(GetEZForPathResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs

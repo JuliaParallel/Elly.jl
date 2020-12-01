@@ -6,9 +6,10 @@ import ProtoBuf.meta
 mutable struct TokenProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function TokenProto(; kwargs...)
-        obj = new(meta(TokenProto), Dict{Symbol,Any}())
+        obj = new(meta(TokenProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -49,9 +50,10 @@ end
 mutable struct GetDelegationTokenRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetDelegationTokenRequestProto(; kwargs...)
-        obj = new(meta(GetDelegationTokenRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(GetDelegationTokenRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -86,9 +88,10 @@ end
 mutable struct GetDelegationTokenResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetDelegationTokenResponseProto(; kwargs...)
-        obj = new(meta(GetDelegationTokenResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(GetDelegationTokenResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -122,9 +125,10 @@ end
 mutable struct RenewDelegationTokenRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RenewDelegationTokenRequestProto(; kwargs...)
-        obj = new(meta(RenewDelegationTokenRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(RenewDelegationTokenRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -159,9 +163,10 @@ end
 mutable struct RenewDelegationTokenResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RenewDelegationTokenResponseProto(; kwargs...)
-        obj = new(meta(RenewDelegationTokenResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(RenewDelegationTokenResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -196,9 +201,10 @@ end
 mutable struct CancelDelegationTokenRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function CancelDelegationTokenRequestProto(; kwargs...)
-        obj = new(meta(CancelDelegationTokenRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(CancelDelegationTokenRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -233,9 +239,10 @@ end
 mutable struct CancelDelegationTokenResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function CancelDelegationTokenResponseProto(; kwargs...)
-        obj = new(meta(CancelDelegationTokenResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(CancelDelegationTokenResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs

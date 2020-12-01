@@ -152,9 +152,10 @@ const ContainerRetryPolicyProto = (;[
 mutable struct SerializedExceptionProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function SerializedExceptionProto(; kwargs...)
-        obj = new(meta(SerializedExceptionProto), Dict{Symbol,Any}())
+        obj = new(meta(SerializedExceptionProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -194,9 +195,10 @@ end
 mutable struct ApplicationIdProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationIdProto(; kwargs...)
-        obj = new(meta(ApplicationIdProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationIdProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -232,9 +234,10 @@ end
 mutable struct ApplicationAttemptIdProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationAttemptIdProto(; kwargs...)
-        obj = new(meta(ApplicationAttemptIdProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationAttemptIdProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -270,9 +273,10 @@ end
 mutable struct ContainerIdProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerIdProto(; kwargs...)
-        obj = new(meta(ContainerIdProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerIdProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -310,9 +314,10 @@ end
 mutable struct ResourceInformationProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ResourceInformationProto(; kwargs...)
-        obj = new(meta(ResourceInformationProto), Dict{Symbol,Any}())
+        obj = new(meta(ResourceInformationProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -353,9 +358,10 @@ end
 mutable struct ResourceTypeInfoProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ResourceTypeInfoProto(; kwargs...)
-        obj = new(meta(ResourceTypeInfoProto), Dict{Symbol,Any}())
+        obj = new(meta(ResourceTypeInfoProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -394,9 +400,10 @@ end
 mutable struct ResourceProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ResourceProto(; kwargs...)
-        obj = new(meta(ResourceProto), Dict{Symbol,Any}())
+        obj = new(meta(ResourceProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -434,9 +441,10 @@ end
 mutable struct ResourceUtilizationProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ResourceUtilizationProto(; kwargs...)
-        obj = new(meta(ResourceUtilizationProto), Dict{Symbol,Any}())
+        obj = new(meta(ResourceUtilizationProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -474,9 +482,10 @@ end
 mutable struct ResourceOptionProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ResourceOptionProto(; kwargs...)
-        obj = new(meta(ResourceOptionProto), Dict{Symbol,Any}())
+        obj = new(meta(ResourceOptionProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -512,9 +521,10 @@ end
 mutable struct PriorityProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function PriorityProto(; kwargs...)
-        obj = new(meta(PriorityProto), Dict{Symbol,Any}())
+        obj = new(meta(PriorityProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -548,9 +558,10 @@ end
 mutable struct URLProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function URLProto(; kwargs...)
-        obj = new(meta(URLProto), Dict{Symbol,Any}())
+        obj = new(meta(URLProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -592,9 +603,10 @@ end
 mutable struct LocalResourceProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function LocalResourceProto(; kwargs...)
-        obj = new(meta(LocalResourceProto), Dict{Symbol,Any}())
+        obj = new(meta(LocalResourceProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -640,9 +652,10 @@ end
 mutable struct StringLongMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function StringLongMapProto(; kwargs...)
-        obj = new(meta(StringLongMapProto), Dict{Symbol,Any}())
+        obj = new(meta(StringLongMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -679,9 +692,10 @@ end
 mutable struct ApplicationResourceUsageReportProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationResourceUsageReportProto(; kwargs...)
-        obj = new(meta(ApplicationResourceUsageReportProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationResourceUsageReportProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -739,9 +753,10 @@ end
 mutable struct ApplicationTimeoutProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationTimeoutProto(; kwargs...)
-        obj = new(meta(ApplicationTimeoutProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationTimeoutProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -780,9 +795,10 @@ end
 mutable struct AppTimeoutsMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function AppTimeoutsMapProto(; kwargs...)
-        obj = new(meta(AppTimeoutsMapProto), Dict{Symbol,Any}())
+        obj = new(meta(AppTimeoutsMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -818,9 +834,10 @@ end
 mutable struct ApplicationReportProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationReportProto(; kwargs...)
-        obj = new(meta(ApplicationReportProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationReportProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -909,9 +926,10 @@ end
 mutable struct ApplicationAttemptReportProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationAttemptReportProto(; kwargs...)
-        obj = new(meta(ApplicationAttemptReportProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationAttemptReportProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -964,9 +982,10 @@ end
 mutable struct NodeIdProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function NodeIdProto(; kwargs...)
-        obj = new(meta(NodeIdProto), Dict{Symbol,Any}())
+        obj = new(meta(NodeIdProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1002,9 +1021,10 @@ end
 mutable struct NodeResourceMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function NodeResourceMapProto(; kwargs...)
-        obj = new(meta(NodeResourceMapProto), Dict{Symbol,Any}())
+        obj = new(meta(NodeResourceMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1040,9 +1060,10 @@ end
 mutable struct ContainerReportProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerReportProto(; kwargs...)
-        obj = new(meta(ContainerReportProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerReportProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1099,9 +1120,10 @@ end
 mutable struct ContainerProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerProto(; kwargs...)
-        obj = new(meta(ContainerProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1152,9 +1174,10 @@ end
 mutable struct NodeReportProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function NodeReportProto(; kwargs...)
-        obj = new(meta(NodeReportProto), Dict{Symbol,Any}())
+        obj = new(meta(NodeReportProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1210,9 +1233,10 @@ end
 mutable struct NodeIdToLabelsProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function NodeIdToLabelsProto(; kwargs...)
-        obj = new(meta(NodeIdToLabelsProto), Dict{Symbol,Any}())
+        obj = new(meta(NodeIdToLabelsProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1248,9 +1272,10 @@ end
 mutable struct LabelsToNodeIdsProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function LabelsToNodeIdsProto(; kwargs...)
-        obj = new(meta(LabelsToNodeIdsProto), Dict{Symbol,Any}())
+        obj = new(meta(LabelsToNodeIdsProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1286,9 +1311,10 @@ end
 mutable struct NodeLabelProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function NodeLabelProto(; kwargs...)
-        obj = new(meta(NodeLabelProto), Dict{Symbol,Any}())
+        obj = new(meta(NodeLabelProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1325,9 +1351,10 @@ end
 mutable struct AMBlackListingRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function AMBlackListingRequestProto(; kwargs...)
-        obj = new(meta(AMBlackListingRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(AMBlackListingRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1364,9 +1391,10 @@ end
 mutable struct ExecutionTypeRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ExecutionTypeRequestProto(; kwargs...)
-        obj = new(meta(ExecutionTypeRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ExecutionTypeRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1403,9 +1431,10 @@ end
 mutable struct ResourceRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ResourceRequestProto(; kwargs...)
-        obj = new(meta(ResourceRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ResourceRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1454,9 +1483,10 @@ end
 mutable struct PreemptionContainerProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function PreemptionContainerProto(; kwargs...)
-        obj = new(meta(PreemptionContainerProto), Dict{Symbol,Any}())
+        obj = new(meta(PreemptionContainerProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1490,9 +1520,10 @@ end
 mutable struct StrictPreemptionContractProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function StrictPreemptionContractProto(; kwargs...)
-        obj = new(meta(StrictPreemptionContractProto), Dict{Symbol,Any}())
+        obj = new(meta(StrictPreemptionContractProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1526,9 +1557,10 @@ end
 mutable struct PreemptionResourceRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function PreemptionResourceRequestProto(; kwargs...)
-        obj = new(meta(PreemptionResourceRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(PreemptionResourceRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1562,9 +1594,10 @@ end
 mutable struct PreemptionContractProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function PreemptionContractProto(; kwargs...)
-        obj = new(meta(PreemptionContractProto), Dict{Symbol,Any}())
+        obj = new(meta(PreemptionContractProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1600,9 +1633,10 @@ end
 mutable struct PreemptionMessageProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function PreemptionMessageProto(; kwargs...)
-        obj = new(meta(PreemptionMessageProto), Dict{Symbol,Any}())
+        obj = new(meta(PreemptionMessageProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1638,9 +1672,10 @@ end
 mutable struct ResourceBlacklistRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ResourceBlacklistRequestProto(; kwargs...)
-        obj = new(meta(ResourceBlacklistRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ResourceBlacklistRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1676,9 +1711,10 @@ end
 mutable struct ApplicationTimeoutMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationTimeoutMapProto(; kwargs...)
-        obj = new(meta(ApplicationTimeoutMapProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationTimeoutMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1714,9 +1750,10 @@ end
 mutable struct ApplicationUpdateTimeoutMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationUpdateTimeoutMapProto(; kwargs...)
-        obj = new(meta(ApplicationUpdateTimeoutMapProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationUpdateTimeoutMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1752,9 +1789,10 @@ end
 mutable struct LogAggregationContextProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function LogAggregationContextProto(; kwargs...)
-        obj = new(meta(LogAggregationContextProto), Dict{Symbol,Any}())
+        obj = new(meta(LogAggregationContextProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1799,9 +1837,10 @@ end
 mutable struct ApplicationACLMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationACLMapProto(; kwargs...)
-        obj = new(meta(ApplicationACLMapProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationACLMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1838,9 +1877,10 @@ end
 mutable struct YarnClusterMetricsProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function YarnClusterMetricsProto(; kwargs...)
-        obj = new(meta(YarnClusterMetricsProto), Dict{Symbol,Any}())
+        obj = new(meta(YarnClusterMetricsProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1884,9 +1924,10 @@ end
 mutable struct QueueStatisticsProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function QueueStatisticsProto(; kwargs...)
-        obj = new(meta(QueueStatisticsProto), Dict{Symbol,Any}())
+        obj = new(meta(QueueStatisticsProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1954,9 +1995,10 @@ end
 mutable struct QueueConfigurationsProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function QueueConfigurationsProto(; kwargs...)
-        obj = new(meta(QueueConfigurationsProto), Dict{Symbol,Any}())
+        obj = new(meta(QueueConfigurationsProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1998,9 +2040,10 @@ end
 mutable struct QueueConfigurationsMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function QueueConfigurationsMapProto(; kwargs...)
-        obj = new(meta(QueueConfigurationsMapProto), Dict{Symbol,Any}())
+        obj = new(meta(QueueConfigurationsMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2037,9 +2080,10 @@ end
 mutable struct QueueInfoProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function QueueInfoProto(; kwargs...)
-        obj = new(meta(QueueInfoProto), Dict{Symbol,Any}())
+        obj = new(meta(QueueInfoProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2097,9 +2141,10 @@ end
 mutable struct QueueUserACLInfoProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function QueueUserACLInfoProto(; kwargs...)
-        obj = new(meta(QueueUserACLInfoProto), Dict{Symbol,Any}())
+        obj = new(meta(QueueUserACLInfoProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2135,9 +2180,10 @@ end
 mutable struct ReservationIdProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ReservationIdProto(; kwargs...)
-        obj = new(meta(ReservationIdProto), Dict{Symbol,Any}())
+        obj = new(meta(ReservationIdProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2173,9 +2219,10 @@ end
 mutable struct ReservationRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ReservationRequestProto(; kwargs...)
-        obj = new(meta(ReservationRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ReservationRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2216,9 +2263,10 @@ end
 mutable struct ReservationRequestsProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ReservationRequestsProto(; kwargs...)
-        obj = new(meta(ReservationRequestsProto), Dict{Symbol,Any}())
+        obj = new(meta(ReservationRequestsProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2255,9 +2303,10 @@ end
 mutable struct ReservationDefinitionProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ReservationDefinitionProto(; kwargs...)
-        obj = new(meta(ReservationDefinitionProto), Dict{Symbol,Any}())
+        obj = new(meta(ReservationDefinitionProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2302,9 +2351,10 @@ end
 mutable struct ResourceAllocationRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ResourceAllocationRequestProto(; kwargs...)
-        obj = new(meta(ResourceAllocationRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ResourceAllocationRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2342,9 +2392,10 @@ end
 mutable struct ReservationAllocationStateProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ReservationAllocationStateProto(; kwargs...)
-        obj = new(meta(ReservationAllocationStateProto), Dict{Symbol,Any}())
+        obj = new(meta(ReservationAllocationStateProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2392,9 +2443,10 @@ end
 mutable struct ContainerRetryContextProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerRetryContextProto(; kwargs...)
-        obj = new(meta(ContainerRetryContextProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerRetryContextProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2435,9 +2487,10 @@ end
 mutable struct StringLocalResourceMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function StringLocalResourceMapProto(; kwargs...)
-        obj = new(meta(StringLocalResourceMapProto), Dict{Symbol,Any}())
+        obj = new(meta(StringLocalResourceMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2473,9 +2526,10 @@ end
 mutable struct StringStringMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function StringStringMapProto(; kwargs...)
-        obj = new(meta(StringStringMapProto), Dict{Symbol,Any}())
+        obj = new(meta(StringStringMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2511,9 +2565,10 @@ end
 mutable struct ContainerStatusProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerStatusProto(; kwargs...)
-        obj = new(meta(ContainerStatusProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerStatusProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2562,9 +2617,10 @@ end
 mutable struct StringBytesMapProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function StringBytesMapProto(; kwargs...)
-        obj = new(meta(StringBytesMapProto), Dict{Symbol,Any}())
+        obj = new(meta(StringBytesMapProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2600,9 +2656,10 @@ end
 mutable struct ContainerLaunchContextProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerLaunchContextProto(; kwargs...)
-        obj = new(meta(ContainerLaunchContextProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerLaunchContextProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2650,9 +2707,10 @@ end
 mutable struct ApplicationSubmissionContextProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ApplicationSubmissionContextProto(; kwargs...)
-        obj = new(meta(ApplicationSubmissionContextProto), Dict{Symbol,Any}())
+        obj = new(meta(ApplicationSubmissionContextProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2721,9 +2779,10 @@ end
 mutable struct ContainerResourceIncreaseRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerResourceIncreaseRequestProto(; kwargs...)
-        obj = new(meta(ContainerResourceIncreaseRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerResourceIncreaseRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2759,9 +2818,10 @@ end
 mutable struct ContainerResourceIncreaseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerResourceIncreaseProto(; kwargs...)
-        obj = new(meta(ContainerResourceIncreaseProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerResourceIncreaseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2799,9 +2859,10 @@ end
 mutable struct ContainerResourceDecreaseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ContainerResourceDecreaseProto(; kwargs...)
-        obj = new(meta(ContainerResourceDecreaseProto), Dict{Symbol,Any}())
+        obj = new(meta(ContainerResourceDecreaseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -2837,9 +2898,10 @@ end
 mutable struct CollectorInfoProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function CollectorInfoProto(; kwargs...)
-        obj = new(meta(CollectorInfoProto), Dict{Symbol,Any}())
+        obj = new(meta(CollectorInfoProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
