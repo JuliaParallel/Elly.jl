@@ -28,9 +28,10 @@ const ShortCircuitFdResponse = (;[
 mutable struct HandshakeSecretProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function HandshakeSecretProto(; kwargs...)
-        obj = new(meta(HandshakeSecretProto), Dict{Symbol,Any}())
+        obj = new(meta(HandshakeSecretProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -73,9 +74,10 @@ const DataTransferEncryptorMessageProto_DataTransferEncryptorStatus = (;[
 mutable struct DataTransferEncryptorMessageProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function DataTransferEncryptorMessageProto(; kwargs...)
-        obj = new(meta(DataTransferEncryptorMessageProto), Dict{Symbol,Any}())
+        obj = new(meta(DataTransferEncryptorMessageProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -118,9 +120,10 @@ end
 mutable struct DataTransferTraceInfoProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function DataTransferTraceInfoProto(; kwargs...)
-        obj = new(meta(DataTransferTraceInfoProto), Dict{Symbol,Any}())
+        obj = new(meta(DataTransferTraceInfoProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -157,9 +160,10 @@ end
 mutable struct BaseHeaderProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function BaseHeaderProto(; kwargs...)
-        obj = new(meta(BaseHeaderProto), Dict{Symbol,Any}())
+        obj = new(meta(BaseHeaderProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -198,9 +202,10 @@ end
 mutable struct ClientOperationHeaderProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ClientOperationHeaderProto(; kwargs...)
-        obj = new(meta(ClientOperationHeaderProto), Dict{Symbol,Any}())
+        obj = new(meta(ClientOperationHeaderProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -237,9 +242,10 @@ end
 mutable struct CachingStrategyProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function CachingStrategyProto(; kwargs...)
-        obj = new(meta(CachingStrategyProto), Dict{Symbol,Any}())
+        obj = new(meta(CachingStrategyProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -275,9 +281,10 @@ end
 mutable struct OpReadBlockProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpReadBlockProto(; kwargs...)
-        obj = new(meta(OpReadBlockProto), Dict{Symbol,Any}())
+        obj = new(meta(OpReadBlockProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -321,9 +328,10 @@ end
 mutable struct ChecksumProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ChecksumProto(; kwargs...)
-        obj = new(meta(ChecksumProto), Dict{Symbol,Any}())
+        obj = new(meta(ChecksumProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -372,9 +380,10 @@ const OpWriteBlockProto_BlockConstructionStage = (;[
 mutable struct OpWriteBlockProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpWriteBlockProto(; kwargs...)
-        obj = new(meta(OpWriteBlockProto), Dict{Symbol,Any}())
+        obj = new(meta(OpWriteBlockProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -438,9 +447,10 @@ end
 mutable struct OpTransferBlockProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpTransferBlockProto(; kwargs...)
-        obj = new(meta(OpTransferBlockProto), Dict{Symbol,Any}())
+        obj = new(meta(OpTransferBlockProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -479,9 +489,10 @@ end
 mutable struct OpReplaceBlockProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpReplaceBlockProto(; kwargs...)
-        obj = new(meta(OpReplaceBlockProto), Dict{Symbol,Any}())
+        obj = new(meta(OpReplaceBlockProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -523,9 +534,10 @@ end
 mutable struct OpCopyBlockProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpCopyBlockProto(; kwargs...)
-        obj = new(meta(OpCopyBlockProto), Dict{Symbol,Any}())
+        obj = new(meta(OpCopyBlockProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -560,9 +572,10 @@ end
 mutable struct OpBlockChecksumProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpBlockChecksumProto(; kwargs...)
-        obj = new(meta(OpBlockChecksumProto), Dict{Symbol,Any}())
+        obj = new(meta(OpBlockChecksumProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -597,9 +610,10 @@ end
 mutable struct ShortCircuitShmIdProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ShortCircuitShmIdProto(; kwargs...)
-        obj = new(meta(ShortCircuitShmIdProto), Dict{Symbol,Any}())
+        obj = new(meta(ShortCircuitShmIdProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -636,9 +650,10 @@ end
 mutable struct ShortCircuitShmSlotProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ShortCircuitShmSlotProto(; kwargs...)
-        obj = new(meta(ShortCircuitShmSlotProto), Dict{Symbol,Any}())
+        obj = new(meta(ShortCircuitShmSlotProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -675,9 +690,10 @@ end
 mutable struct OpRequestShortCircuitAccessProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpRequestShortCircuitAccessProto(; kwargs...)
-        obj = new(meta(OpRequestShortCircuitAccessProto), Dict{Symbol,Any}())
+        obj = new(meta(OpRequestShortCircuitAccessProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -719,9 +735,10 @@ end
 mutable struct ReleaseShortCircuitAccessRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ReleaseShortCircuitAccessRequestProto(; kwargs...)
-        obj = new(meta(ReleaseShortCircuitAccessRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ReleaseShortCircuitAccessRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -758,9 +775,10 @@ end
 mutable struct ReleaseShortCircuitAccessResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ReleaseShortCircuitAccessResponseProto(; kwargs...)
-        obj = new(meta(ReleaseShortCircuitAccessResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(ReleaseShortCircuitAccessResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -797,9 +815,10 @@ end
 mutable struct ShortCircuitShmRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ShortCircuitShmRequestProto(; kwargs...)
-        obj = new(meta(ShortCircuitShmRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ShortCircuitShmRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -836,9 +855,10 @@ end
 mutable struct ShortCircuitShmResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ShortCircuitShmResponseProto(; kwargs...)
-        obj = new(meta(ShortCircuitShmResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(ShortCircuitShmResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -877,9 +897,10 @@ end
 mutable struct PacketHeaderProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function PacketHeaderProto(; kwargs...)
-        obj = new(meta(PacketHeaderProto), Dict{Symbol,Any}())
+        obj = new(meta(PacketHeaderProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -924,9 +945,10 @@ end
 mutable struct PipelineAckProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function PipelineAckProto(; kwargs...)
-        obj = new(meta(PipelineAckProto), Dict{Symbol,Any}())
+        obj = new(meta(PipelineAckProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -970,9 +992,10 @@ end
 mutable struct ReadOpChecksumInfoProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ReadOpChecksumInfoProto(; kwargs...)
-        obj = new(meta(ReadOpChecksumInfoProto), Dict{Symbol,Any}())
+        obj = new(meta(ReadOpChecksumInfoProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1009,9 +1032,10 @@ end
 mutable struct ClientReadStatusProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ClientReadStatusProto(; kwargs...)
-        obj = new(meta(ClientReadStatusProto), Dict{Symbol,Any}())
+        obj = new(meta(ClientReadStatusProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1046,9 +1070,10 @@ end
 mutable struct DNTransferAckProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function DNTransferAckProto(; kwargs...)
-        obj = new(meta(DNTransferAckProto), Dict{Symbol,Any}())
+        obj = new(meta(DNTransferAckProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1083,9 +1108,10 @@ end
 mutable struct OpBlockChecksumResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpBlockChecksumResponseProto(; kwargs...)
-        obj = new(meta(OpBlockChecksumResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(OpBlockChecksumResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1126,9 +1152,10 @@ end
 mutable struct BlockOpResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function BlockOpResponseProto(; kwargs...)
-        obj = new(meta(BlockOpResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(BlockOpResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -1173,9 +1200,10 @@ end
 mutable struct OpCustomProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function OpCustomProto(; kwargs...)
-        obj = new(meta(OpCustomProto), Dict{Symbol,Any}())
+        obj = new(meta(OpCustomProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs

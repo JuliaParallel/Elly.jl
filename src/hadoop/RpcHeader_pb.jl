@@ -12,9 +12,10 @@ const RpcKindProto = (;[
 mutable struct RPCTraceInfoProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RPCTraceInfoProto(; kwargs...)
-        obj = new(meta(RPCTraceInfoProto), Dict{Symbol,Any}())
+        obj = new(meta(RPCTraceInfoProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -50,9 +51,10 @@ end
 mutable struct RPCCallerContextProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RPCCallerContextProto(; kwargs...)
-        obj = new(meta(RPCCallerContextProto), Dict{Symbol,Any}())
+        obj = new(meta(RPCCallerContextProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -95,9 +97,10 @@ const RpcRequestHeaderProto_OperationProto = (;[
 mutable struct RpcRequestHeaderProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RpcRequestHeaderProto(; kwargs...)
-        obj = new(meta(RpcRequestHeaderProto), Dict{Symbol,Any}())
+        obj = new(meta(RpcRequestHeaderProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -169,9 +172,10 @@ const RpcResponseHeaderProto_RpcErrorCodeProto = (;[
 mutable struct RpcResponseHeaderProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RpcResponseHeaderProto(; kwargs...)
-        obj = new(meta(RpcResponseHeaderProto), Dict{Symbol,Any}())
+        obj = new(meta(RpcResponseHeaderProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -233,9 +237,10 @@ const RpcSaslProto_SaslState = (;[
 mutable struct RpcSaslProto_SaslAuth <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RpcSaslProto_SaslAuth(; kwargs...)
-        obj = new(meta(RpcSaslProto_SaslAuth), Dict{Symbol,Any}())
+        obj = new(meta(RpcSaslProto_SaslAuth), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -278,9 +283,10 @@ end
 mutable struct RpcSaslProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RpcSaslProto(; kwargs...)
-        obj = new(meta(RpcSaslProto), Dict{Symbol,Any}())
+        obj = new(meta(RpcSaslProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs

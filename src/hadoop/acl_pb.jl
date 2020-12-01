@@ -29,9 +29,10 @@ const AclEntryProto_FsActionProto = (;[
 mutable struct AclEntryProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function AclEntryProto(; kwargs...)
-        obj = new(meta(AclEntryProto), Dict{Symbol,Any}())
+        obj = new(meta(AclEntryProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -72,9 +73,10 @@ end
 mutable struct AclStatusProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function AclStatusProto(; kwargs...)
-        obj = new(meta(AclStatusProto), Dict{Symbol,Any}())
+        obj = new(meta(AclStatusProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -117,9 +119,10 @@ end
 mutable struct ModifyAclEntriesRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ModifyAclEntriesRequestProto(; kwargs...)
-        obj = new(meta(ModifyAclEntriesRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(ModifyAclEntriesRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -156,9 +159,10 @@ end
 mutable struct ModifyAclEntriesResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function ModifyAclEntriesResponseProto(; kwargs...)
-        obj = new(meta(ModifyAclEntriesResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(ModifyAclEntriesResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -185,9 +189,10 @@ end
 mutable struct RemoveAclRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RemoveAclRequestProto(; kwargs...)
-        obj = new(meta(RemoveAclRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(RemoveAclRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -222,9 +227,10 @@ end
 mutable struct RemoveAclResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RemoveAclResponseProto(; kwargs...)
-        obj = new(meta(RemoveAclResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(RemoveAclResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -251,9 +257,10 @@ end
 mutable struct RemoveAclEntriesRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RemoveAclEntriesRequestProto(; kwargs...)
-        obj = new(meta(RemoveAclEntriesRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(RemoveAclEntriesRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -290,9 +297,10 @@ end
 mutable struct RemoveAclEntriesResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RemoveAclEntriesResponseProto(; kwargs...)
-        obj = new(meta(RemoveAclEntriesResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(RemoveAclEntriesResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -319,9 +327,10 @@ end
 mutable struct RemoveDefaultAclRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RemoveDefaultAclRequestProto(; kwargs...)
-        obj = new(meta(RemoveDefaultAclRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(RemoveDefaultAclRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -356,9 +365,10 @@ end
 mutable struct RemoveDefaultAclResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RemoveDefaultAclResponseProto(; kwargs...)
-        obj = new(meta(RemoveDefaultAclResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(RemoveDefaultAclResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -385,9 +395,10 @@ end
 mutable struct SetAclRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function SetAclRequestProto(; kwargs...)
-        obj = new(meta(SetAclRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(SetAclRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -424,9 +435,10 @@ end
 mutable struct SetAclResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function SetAclResponseProto(; kwargs...)
-        obj = new(meta(SetAclResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(SetAclResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -453,9 +465,10 @@ end
 mutable struct GetAclStatusRequestProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetAclStatusRequestProto(; kwargs...)
-        obj = new(meta(GetAclStatusRequestProto), Dict{Symbol,Any}())
+        obj = new(meta(GetAclStatusRequestProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -490,9 +503,10 @@ end
 mutable struct GetAclStatusResponseProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function GetAclStatusResponseProto(; kwargs...)
-        obj = new(meta(GetAclStatusResponseProto), Dict{Symbol,Any}())
+        obj = new(meta(GetAclStatusResponseProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs

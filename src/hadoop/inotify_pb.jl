@@ -31,9 +31,10 @@ const MetadataUpdateType = (;[
 mutable struct EventProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function EventProto(; kwargs...)
-        obj = new(meta(EventProto), Dict{Symbol,Any}())
+        obj = new(meta(EventProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -70,9 +71,10 @@ end
 mutable struct EventBatchProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function EventBatchProto(; kwargs...)
-        obj = new(meta(EventBatchProto), Dict{Symbol,Any}())
+        obj = new(meta(EventBatchProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -109,9 +111,10 @@ end
 mutable struct CreateEventProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function CreateEventProto(; kwargs...)
-        obj = new(meta(CreateEventProto), Dict{Symbol,Any}())
+        obj = new(meta(CreateEventProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -165,9 +168,10 @@ end
 mutable struct CloseEventProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function CloseEventProto(; kwargs...)
-        obj = new(meta(CloseEventProto), Dict{Symbol,Any}())
+        obj = new(meta(CloseEventProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -206,9 +210,10 @@ end
 mutable struct TruncateEventProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function TruncateEventProto(; kwargs...)
-        obj = new(meta(TruncateEventProto), Dict{Symbol,Any}())
+        obj = new(meta(TruncateEventProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -247,9 +252,10 @@ end
 mutable struct AppendEventProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function AppendEventProto(; kwargs...)
-        obj = new(meta(AppendEventProto), Dict{Symbol,Any}())
+        obj = new(meta(AppendEventProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -287,9 +293,10 @@ end
 mutable struct RenameEventProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function RenameEventProto(; kwargs...)
-        obj = new(meta(RenameEventProto), Dict{Symbol,Any}())
+        obj = new(meta(RenameEventProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -328,9 +335,10 @@ end
 mutable struct MetadataUpdateEventProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function MetadataUpdateEventProto(; kwargs...)
-        obj = new(meta(MetadataUpdateEventProto), Dict{Symbol,Any}())
+        obj = new(meta(MetadataUpdateEventProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -385,9 +393,10 @@ end
 mutable struct UnlinkEventProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function UnlinkEventProto(; kwargs...)
-        obj = new(meta(UnlinkEventProto), Dict{Symbol,Any}())
+        obj = new(meta(UnlinkEventProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
@@ -424,9 +433,10 @@ end
 mutable struct EventsListProto <: ProtoType
     __protobuf_jl_internal_meta::ProtoMeta
     __protobuf_jl_internal_values::Dict{Symbol,Any}
+    __protobuf_jl_internal_defaultset::Set{Symbol}
 
     function EventsListProto(; kwargs...)
-        obj = new(meta(EventsListProto), Dict{Symbol,Any}())
+        obj = new(meta(EventsListProto), Dict{Symbol,Any}(), Set{Symbol}())
         values = obj.__protobuf_jl_internal_values
         symdict = obj.__protobuf_jl_internal_meta.symdict
         for nv in kwargs
