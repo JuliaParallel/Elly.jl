@@ -858,7 +858,12 @@ end
 
 function write(writer::HDFSBlockWriter, buff::Vector{UInt8})
     nbytes = _can_write(writer, length(buff))
-    (nbytes > 0) && Base.write_sub(writer.buffer, buff, 1, nbytes)
+    if (nbytes > 0) 
+        if nbytes > length(buff)
+            throw(BoundsError())
+        end
+        GC.@preserve buff Base.unsafe_write(writer.buffer, pointer(buff, 1), UInt(nbytes))
+    end
     check_write_buffer(writer)
     nbytes
 end
